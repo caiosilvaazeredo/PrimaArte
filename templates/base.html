@@ -1,74 +1,143 @@
-<!DOCTYPE html> <html lang="pt-BR"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>{% block title %}Prima Arte - Ateliê Feito à Mão{% endblock %}</title> <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.ico') }}"> <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='images/favicon.svg') }}"> <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/favicon.svg') }}"> <meta name="description" content="Ateliê Prima Arte - Artesanato feito à mão com amor. Bolsas, acessórios e peças únicas do Rio de Janeiro."> <meta name="theme-color" content="#8B4513"> <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"> <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"> <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css"/> {% block page_css %}{% endblock %} </head> <body> <header class="header">
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Val's - Luxury Handcrafted{% endblock %}</title>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='images/favicon.svg') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/favicon.svg') }}">
+    <meta name="description" content="Val's - Peças artesanais de luxo, feitas à mão com materiais nobres. Bolsas, acessórios e decoração exclusiva.">
+    <meta name="theme-color" content="#1B2A4A">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css"/>
+    {% block page_css %}{% endblock %}
+</head>
+<body>
+    <header class="header">
         <div class="container">
             <div class="header-content">
-                <!-- Logo e Menu Mobile juntos -->
                 <div class="mobile-header-left">
                     <div class="logo">
                         <a href="{{ url_for('index') }}">
                             <div class="logo-circle">
-                                <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="Prima Arte" 
+                                <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="Val's"
                                      style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
                             </div>
                             <div class="logo-text">
-                                <h1>PRIMA ARTE</h1>
-                                <span class="handmade">feito à mão</span>
+                                <h1>VAL'S</h1>
+                                <span class="tagline">LUXURY HANDCRAFTED</span>
                             </div>
                         </a>
                     </div>
-                    
-                    <!-- Mobile Menu Toggle ao lado da logo -->
+
                     <button class="mobile-menu-toggle" id="mobileMenuToggle">
                         <span class="hamburger-line"></span>
                         <span class="hamburger-line"></span>
                         <span class="hamburger-line"></span>
                     </button>
                 </div>
-                
-                <!-- Desktop Navigation -->
+
                 <nav class="main-nav desktop-nav">
                     <ul>
-                        <li><a href="{{ url_for('index') }}"><i class="fas fa-home"></i> <span class="nav-text">Início</span></a></li>
-                        <li><a href="{{ url_for('products') }}"><i class="fas fa-box-open"></i> <span class="nav-text">Produtos</span></a></li>
-                        <li><a href="{{ url_for('about') }}"><i class="fas fa-heart"></i> <span class="nav-text">Sobre</span></a></li>
-                        <li><a href="https://www.instagram.com/primaarte2025/" target="_blank"><i class="fab fa-instagram"></i> <span class="nav-text">Instagram</span></a></li>
+                        <li><a href="{{ url_for('index') }}"><span class="nav-text">INICIO</span></a></li>
+                        <li><a href="{{ url_for('products') }}"><span class="nav-text">COLECAO</span></a></li>
+                        <li><a href="{{ url_for('about') }}"><span class="nav-text">NOSSA HISTORIA</span></a></li>
+                        <li><a href="https://www.instagram.com/primaarte2025/" target="_blank"><span class="nav-text">INSTAGRAM</span></a></li>
                     </ul>
                 </nav>
-                
-                <!-- Mobile Navigation -->
+
                 <nav class="main-nav mobile-nav" id="mobileNav">
                     <ul>
-                        <li><a href="{{ url_for('index') }}"><i class="fas fa-home"></i> Início</a></li>
-                        <li><a href="{{ url_for('products') }}"><i class="fas fa-box-open"></i> Produtos</a></li>
-                        <li><a href="{{ url_for('about') }}"><i class="fas fa-heart"></i> Sobre</a></li>
-                        <li><a href="https://www.instagram.com/primaarte2025/" target="_blank"><i class="fab fa-instagram"></i> Instagram</a></li>
-                        <li><a href="{{ url_for('cart') }}" class="mobile-cart-link"><i class="fas fa-shopping-cart"></i> Carrinho <span class="cart-count">{{ session.get('cart_count', 0) }}</span></a></li>
+                        <li><a href="{{ url_for('index') }}">Inicio</a></li>
+                        <li><a href="{{ url_for('products') }}">Colecao</a></li>
+                        <li><a href="{{ url_for('about') }}">Nossa Historia</a></li>
+                        <li><a href="https://www.instagram.com/primaarte2025/" target="_blank">Instagram</a></li>
+                        <li><a href="{{ url_for('cart') }}" class="mobile-cart-link"><i class="fas fa-shopping-bag"></i> Sacola <span class="cart-count">{{ session.get('cart_count', 0) }}</span></a></li>
                     </ul>
                 </nav>
-                
-                <!-- Desktop Cart Button -->
+
                 <div class="header-actions desktop-actions">
                     <a href="{{ url_for('cart') }}" class="cart-btn">
-                        <i class="fas fa-shopping-cart"></i>
+                        <i class="fas fa-shopping-bag"></i>
                         <span class="cart-count">{{ session.get('cart_count', 0) }}</span>
                     </a>
                 </div>
             </div>
         </div>
-    </header> <main class="main-content"> {% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} <div class="flash-messages"> {% for category, message in messages %} <div class="flash flash-{{ category }}"> <span>{{ message }}</span> <button class="flash-close" onclick="this.parentElement.remove()">×</button> </div> {% endfor %} </div> {% endif %} {% endwith %} {% block content %}{% endblock %} </main> <footer class="footer"> <div class="container"> <div class="footer-content"> <div class="footer-section"> <h3><i class="fas fa-heart"></i> Prima Arte</h3> <p>Artesanato feito à mão com amor e dedicação. Cada peça é única e especial.</p> <div class="social-links"> <a href="https://www.instagram.com/primaarte2025/" target="_blank"> <i class="fab fa-instagram"></i> </a> <a target="_blank"> <i class="fab fa-whatsapp"></i> </a> </div> </div> <div class="footer-section"> <h3><i class="fas fa-phone"></i> Contato</h3> <p><i class="fab fa-whatsapp"></i> (21) 97310-8293</p> <p><i class="fab fa-instagram"></i> @primaarte2025</p> <p><i class="fas fa-map-marker-alt"></i> Saquarema e Araruama, RJ</p> </div> </div> <div class="footer-bottom"> <p>&copy; 2025 Prima Arte - Feito com amor por Flávia & Valéria</p> </div> </div> </footer> <script src="{{ url_for('static', filename='js/main.js') }}"></script> <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script> <script> // Mobile Menu Toggle document.addEventListener('DOMContentLoaded', function() { const mobileMenuToggle = document.getElementById('mobileMenuToggle'); const mobileNav = document.getElementById('mobileNav'); if (mobileMenuToggle && mobileNav) { mobileMenuToggle.addEventListener('click', function() { mobileNav.classList.toggle('active'); mobileMenuToggle.classList.toggle('active'); document.body.classList.toggle('menu-open'); }); // Fechar menu ao clicar em link const mobileLinks = mobileNav.querySelectorAll('a'); mobileLinks.forEach(link => { link.addEventListener('click', function() { mobileNav.classList.remove('active'); mobileMenuToggle.classList.remove('active'); document.body.classList.remove('menu-open'); }); }); // Fechar menu ao redimensionar tela window.addEventListener('resize', function() { if (window.innerWidth > 768) { mobileNav.classList.remove('active'); mobileMenuToggle.classList.remove('active'); document.body.classList.remove('menu-open'); } }); } }); </script> 
+    </header>
+
+    <main class="main-content">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-messages">
+            {% for category, message in messages %}
+            <div class="flash flash-{{ category }}">
+                <span>{{ message }}</span>
+                <button class="flash-close" onclick="this.parentElement.remove()">&times;</button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section footer-brand">
+                    <h3>VAL'S</h3>
+                    <p class="footer-tagline">LUXURY HANDCRAFTED</p>
+                    <p>Pecas artesanais de luxo, confeccionadas a mao com materiais nobres e atencao a cada detalhe.</p>
+                    <div class="social-links">
+                        <a href="https://www.instagram.com/primaarte2025/" target="_blank" aria-label="Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a target="_blank" aria-label="WhatsApp">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>NAVEGACAO</h4>
+                    <ul class="footer-links">
+                        <li><a href="{{ url_for('index') }}">Inicio</a></li>
+                        <li><a href="{{ url_for('products') }}">Colecao</a></li>
+                        <li><a href="{{ url_for('about') }}">Nossa Historia</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>CONTATO</h4>
+                    <p><i class="fab fa-whatsapp"></i> (21) 97310-8293</p>
+                    <p><i class="fab fa-instagram"></i> @primaarte2025</p>
+                    <p><i class="fas fa-map-marker-alt"></i> Saquarema e Araruama, RJ</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div class="footer-divider"></div>
+                <p>&copy; 2025 Val's &mdash; Luxury Handcrafted</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
     <script>
-    // Mobile Menu Toggle
     document.addEventListener('DOMContentLoaded', function() {
         const mobileMenuToggle = document.getElementById('mobileMenuToggle');
         const mobileNav = document.getElementById('mobileNav');
-        
+
         if (mobileMenuToggle && mobileNav) {
             mobileMenuToggle.addEventListener('click', function() {
                 mobileNav.classList.toggle('active');
                 mobileMenuToggle.classList.toggle('active');
                 document.body.classList.toggle('menu-open');
             });
-            
-            // Fechar menu ao clicar em link
+
             const mobileLinks = mobileNav.querySelectorAll('a');
             mobileLinks.forEach(link => {
                 link.addEventListener('click', function() {
@@ -77,8 +146,7 @@
                     document.body.classList.remove('menu-open');
                 });
             });
-            
-            // Fechar menu ao redimensionar tela
+
             window.addEventListener('resize', function() {
                 if (window.innerWidth > 768) {
                     mobileNav.classList.remove('active');
@@ -89,5 +157,5 @@
         }
     });
     </script>
-        
-</body> </html>
+</body>
+</html>

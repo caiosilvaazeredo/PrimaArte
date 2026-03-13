@@ -1,1 +1,148 @@
-{% extends "base.html" %} {% block page_css %} <link rel="stylesheet" href="{{ url_for('static', filename='css/products.css') }}"> {% endblock %} {% block title %}Carrinho - Prima Arte{% endblock %} {% block content %} <section class="section"> <div class="container"> <div class="section-header"> <h1 class="section-title">Meu Carrinho</h1> <p class="section-subtitle">Revise seus itens antes de finalizar o pedido</p> </div> {% if cart_items %} <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;"> <!-- Itens do Carrinho --> <div class="cart-container"> <h2 style="font-family: var(--font-heading); color: var(--dark-brown); margin-bottom: 1.5rem;"> <i class="fas fa-shopping-cart"></i> Itens do Pedido </h2> {% for item in cart_items %} <div class="cart-item"> {% if item.images and item.images|length > 0 %} <img src="{{ item.images[0] }}" alt="{{ item.name }}" class="cart-item-image"> {% else %} <div class="cart-item-image no-image"> <i class="fas fa-image"></i> </div> {% endif %} <div class="cart-item-info"> <h3 class="cart-item-name">{{ item.name }}</h3> <p style="color: var(--gray); font-size: 0.9rem; margin-bottom: 0.5rem;"> Quantidade: <strong>{{ item.quantity }}</strong> </p> {% if item.description %} <p style="color: var(--gray); font-size: 0.8rem; margin-bottom: 0.5rem;"> <strong>Obs:</strong> {{ item.description }} </p> {% endif %} <div class="cart-item-price">R$ {{ "%.2f"|format(item.price) }} cada</div> </div> <div style="text-align: right;"> <div style="font-size: 1.2rem; font-weight: 700; color: var(--primary-pink); margin-bottom: 1rem;"> R$ {{ "%.2f"|format(item.total) }} </div> <a href="{{ url_for('remove_from_cart', product_id=item.id) }}" class="remove-btn" onclick="return confirm('Remover este item do carrinho?')"> <i class="fas fa-trash"></i> </a> </div> </div> {% endfor %} </div> <!-- Resumo do Pedido --> <div class="cart-summary"> <h2 style="font-family: var(--font-heading); color: var(--dark-brown); margin-bottom: 1.5rem;"> <i class="fas fa-calculator"></i> Resumo do Pedido </h2> <div style="background: white; padding: 1.5rem; border-radius: 10px; margin-bottom: 1.5rem;"> <div style="display: flex; justify-content: space-between; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--primary-beige);"> <span>Subtotal:</span> <span>R$ {{ "%.2f"|format(total) }}</span> </div> <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;"> <span style="color: var(--gray); font-size: 0.9rem;"> <i class="fab fa-whatsapp"></i> Finalização via WhatsApp </span> <span style="color: var(--primary-teal); font-weight: 600;">GRÁTIS</span> </div> <hr style="border: none; border-top: 2px solid var(--primary-gold); margin: 1rem 0;"> <div class="cart-total"> <strong>TOTAL: R$ {{ "%.2f"|format(total) }}</strong> </div> </div> <a href="{{ url_for('checkout') }}" class="btn-primary-large" style="width: 100%; margin-bottom: 1rem; text-align: center;"> <i class="fab fa-whatsapp"></i> Finalizar via WhatsApp </a> <a href="{{ url_for('products') }}" class="btn-secondary-large" style="width: 100%; text-align: center;"> <i class="fas fa-arrow-left"></i> Continuar Comprando </a> <!-- Informações sobre Finalização --> <div style="background: rgba(38, 198, 218, 0.1); padding: 1rem; border-radius: 10px; margin-top: 1rem; border-left: 4px solid var(--primary-teal);"> <h4 style="color: var(--primary-teal); margin-bottom: 0.5rem;"> <i class="fas fa-info-circle"></i> Como Funciona? </h4> <p style="font-size: 0.9rem; color: var(--gray); margin: 0; line-height: 1.4;"> Ao finalizar, você será redirecionado para o WhatsApp com os detalhes do seu pedido. Conversaremos sobre forma de pagamento e entrega! </p> </div> <!-- Informação sobre Pagamento Futuro --> <div style="background: rgba(212, 175, 55, 0.1); padding: 1rem; border-radius: 10px; margin-top: 1rem; border-left: 4px solid var(--primary-gold); text-align: center;"> <h4 style="color: var(--primary-gold); margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;"> <i class="fas fa-credit-card"></i> Em Breve </h4> <p style="font-size: 0.9rem; color: var(--gray); margin: 0; line-height: 1.4;"> Estamos trabalhando para disponibilizar <strong>pagamento online</strong> diretamente pelo site! Em breve você poderá finalizar suas compras de forma ainda mais rápida e prática. </p> <p style="font-size: 0.8rem; color: var(--primary-gold); margin: 0.5rem 0 0 0; font-weight: 600;"> Pix • Cartão • Boleto • E muito mais! </p> </div> </div> </div> {% else %} <!-- Carrinho Vazio --> <div class="empty-state"> <i class="fas fa-shopping-cart"></i> <h3>Seu carrinho está vazio</h3> <p>Que tal conhecer nossos produtos artesanais feitos com muito carinho?</p> <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 2rem;"> <a href="{{ url_for('products') }}" class="btn-primary-large"> <i class="fas fa-box-open"></i> Ver Produtos </a> <a href="https://wa.me/5521973108293" target="_blank" class="btn-secondary-large"> <i class="fab fa-whatsapp"></i> Fale Conosco </a> </div> </div> {% endif %} </div> </section> <style> @media (max-width: 768px) { .container > div:first-child { grid-template-columns: 1fr !important; } .cart-summary { order: -1; } .cart-item { flex-direction: column; text-align: center; gap: 1rem; } .cart-item > div:last-child { text-align: center; } } </style> {% endblock %}
+{% extends "base.html" %}
+
+{% block page_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/products.css') }}">
+{% endblock %}
+
+{% block title %}Sacola - Val's{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-label" style="display: block; font-size: 0.7rem; font-weight: 500; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.8rem;">Sua Selecao</span>
+            <h1 class="section-title">Sua Sacola</h1>
+            <div style="width: 60px; height: 1px; background: var(--gold); margin: 1rem auto 0;"></div>
+            <p class="section-subtitle">Revise seus itens antes de finalizar</p>
+        </div>
+
+        {% if cart_items %}
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 3rem;">
+            <!-- Itens -->
+            <div class="cart-container">
+                <h2 style="font-family: var(--font-heading); color: var(--navy); margin-bottom: 1.5rem; font-weight: 400; font-size: 1.5rem;">
+                    Itens do Pedido
+                </h2>
+
+                {% for item in cart_items %}
+                <div class="cart-item">
+                    {% if item.images and item.images|length > 0 %}
+                    <img src="{{ item.images[0] }}" alt="{{ item.name }}" class="cart-item-image">
+                    {% else %}
+                    <div class="cart-item-image no-image">
+                        <i class="fas fa-image"></i>
+                    </div>
+                    {% endif %}
+
+                    <div class="cart-item-info">
+                        <h3 class="cart-item-name">{{ item.name }}</h3>
+                        <p style="color: var(--gray); font-size: 0.85rem; margin-bottom: 0.5rem;">
+                            Quantidade: <strong>{{ item.quantity }}</strong>
+                        </p>
+                        {% if item.description %}
+                        <p style="color: var(--gray); font-size: 0.8rem; margin-bottom: 0.5rem;">
+                            <strong>Obs:</strong> {{ item.description }}
+                        </p>
+                        {% endif %}
+                        <div class="cart-item-price">R$ {{ "%.2f"|format(item.price) }} cada</div>
+                    </div>
+
+                    <div style="text-align: right;">
+                        <div style="font-size: 1.2rem; font-weight: 600; color: var(--navy); margin-bottom: 1rem; font-family: var(--font-heading);">
+                            R$ {{ "%.2f"|format(item.total) }}
+                        </div>
+                        <a href="{{ url_for('remove_from_cart', product_id=item.id) }}" class="remove-btn" onclick="return confirm('Remover este item?')">
+                            <i class="fas fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Resumo -->
+            <div class="cart-summary">
+                <h2 style="font-family: var(--font-heading); color: var(--navy); margin-bottom: 1.5rem; font-weight: 400; font-size: 1.5rem;">
+                    Resumo
+                </h2>
+
+                <div style="background: var(--white); padding: 1.5rem; margin-bottom: 1.5rem; border: 1px solid rgba(27,42,74,0.08);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(27,42,74,0.08);">
+                        <span style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em;">Subtotal</span>
+                        <span>R$ {{ "%.2f"|format(total) }}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                        <span style="color: var(--gray); font-size: 0.85rem;">Via WhatsApp</span>
+                        <span style="color: var(--gold); font-weight: 600; font-size: 0.85rem;">CORTESIA</span>
+                    </div>
+                    <hr style="border: none; border-top: 1px solid var(--gold); margin: 1rem 0;">
+                    <div class="cart-total">
+                        <strong>TOTAL: R$ {{ "%.2f"|format(total) }}</strong>
+                    </div>
+                </div>
+
+                <a href="{{ url_for('checkout') }}" class="btn-primary-large" style="width: 100%; margin-bottom: 1rem; text-align: center;">
+                    Finalizar via WhatsApp
+                </a>
+                <a href="{{ url_for('products') }}" class="btn-secondary-large" style="width: 100%; text-align: center;">
+                    Continuar Comprando
+                </a>
+
+                <div style="padding: 1.2rem; margin-top: 1.5rem; border: 1px solid rgba(27,42,74,0.08); background: var(--white);">
+                    <h4 style="color: var(--navy); margin-bottom: 0.5rem; font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 600;">
+                        Como Funciona
+                    </h4>
+                    <p style="font-size: 0.85rem; color: var(--gray); margin: 0; line-height: 1.6;">
+                        Ao finalizar, voce sera redirecionado para o WhatsApp com os detalhes do pedido. Conversaremos sobre pagamento e entrega.
+                    </p>
+                </div>
+
+                <div style="padding: 1.2rem; margin-top: 1rem; border: 1px solid rgba(201,168,76,0.3); background: var(--white); text-align: center;">
+                    <h4 style="color: var(--gold); margin-bottom: 0.5rem; font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 600;">
+                        Em Breve
+                    </h4>
+                    <p style="font-size: 0.85rem; color: var(--gray); margin: 0; line-height: 1.6;">
+                        Pagamento online diretamente pelo site.
+                    </p>
+                    <p style="font-size: 0.75rem; color: var(--gold); margin: 0.5rem 0 0 0; font-weight: 500; letter-spacing: 0.1em;">
+                        PIX &bull; CARTAO &bull; BOLETO
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-shopping-bag"></i>
+            <h3>Sua sacola esta vazia</h3>
+            <p>Explore nossa colecao e encontre pecas exclusivas.</p>
+            <div style="display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; margin-top: 2rem;">
+                <a href="{{ url_for('products') }}" class="btn-primary-large">
+                    Explorar Colecao
+                </a>
+                <a href="https://wa.me/5521973108293" target="_blank" class="btn-secondary-large">
+                    <i class="fab fa-whatsapp"></i> Fale Conosco
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<style>
+@media (max-width: 768px) {
+    .container > div:first-child {
+        grid-template-columns: 1fr !important;
+    }
+    .cart-summary {
+        order: -1;
+    }
+    .cart-item {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+    .cart-item > div:last-child {
+        text-align: center;
+    }
+}
+</style>
+{% endblock %}

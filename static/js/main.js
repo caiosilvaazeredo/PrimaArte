@@ -1,36 +1,38 @@
-// Prima Arte - JavaScript
+// Val's - Luxury Handcrafted - JavaScript
 document.addEventListener('DOMContentLoaded', function() {
     // Auto close flash messages
     const flashMessages = document.querySelectorAll('.flash');
     flashMessages.forEach(flash => {
         setTimeout(() => {
             if (flash.parentNode) {
-                flash.style.animation = 'slideOut 0.3s ease forwards';
+                flash.style.animation = 'slideOut 0.4s ease forwards';
                 setTimeout(() => {
                     if (flash.parentNode) {
                         flash.remove();
                     }
-                }, 300);
+                }, 400);
             }
         }, 5000);
     });
-    
+
     // Add to cart animation
     const addToCartBtns = document.querySelectorAll('form[action*="adicionar-carrinho"] button');
     addToCartBtns.forEach(btn => {
         btn.addEventListener('click', function() {
             const originalText = this.innerHTML;
-            this.innerHTML = '<i class="fas fa-check"></i> Adicionado!';
-            this.style.background = 'linear-gradient(135deg, #4CAF50, #45A049)';
-            
+            this.innerHTML = '<span>Adicionado</span>';
+            this.style.background = 'var(--gold)';
+            this.style.borderColor = 'var(--gold)';
+            this.style.color = 'var(--navy)';
+
             setTimeout(() => {
                 this.innerHTML = originalText;
                 this.style.background = '';
+                this.style.borderColor = '';
+                this.style.color = '';
             }, 2000);
         });
     });
-    
-    console.log('🎨 Prima Arte - Site carregado!');
 });
 
 // CSS adicional
@@ -50,8 +52,9 @@ const additionalCSS = `
 const style = document.createElement('style');
 style.textContent = additionalCSS;
 document.head.appendChild(style);
+
 // ================================
-// SISTEMA DE ZOOM CORRIGIDO
+// SISTEMA DE ZOOM
 // ================================
 let currentImageIndex = 0;
 let images = [];
@@ -62,23 +65,20 @@ let startY = 0;
 let translateX = 0;
 let translateY = 0;
 
-function openImageModal(imageSrc, imageIndex = 0, imageArray = []) {
+function openImageModal(imageSrc, imageIndex, imageArray) {
     const modal = document.getElementById('imageModal');
     const modalImage = document.getElementById('modalImage');
     if (!modal || !modalImage) return;
-    
-    images = imageArray.length > 0 ? imageArray : [imageSrc];
-    currentImageIndex = imageIndex;
-    
+
+    images = imageArray && imageArray.length > 0 ? imageArray : [imageSrc];
+    currentImageIndex = imageIndex || 0;
+
     modalImage.src = images[currentImageIndex];
     modalImage.style.transform = 'scale(1) translate(0, 0)';
     zoomLevel = 1;
     translateX = 0;
     translateY = 0;
-    
-     / ${images.length}`;
-    }
-    
+
     modal.classList.add('active');
     document.body.style.overflow = 'hidden';
 }
@@ -111,7 +111,7 @@ function resetZoom() {
 function updateImageTransform() {
     const modalImage = document.getElementById('modalImage');
     if (modalImage) {
-        modalImage.style.transform = `scale(${zoomLevel}) translate(${translateX}px, ${translateY}px)`;
+        modalImage.style.transform = 'scale(' + zoomLevel + ') translate(' + translateX + 'px, ' + translateY + 'px)';
         modalImage.classList.toggle('zoomed', zoomLevel > 1);
     }
 }
@@ -136,9 +136,6 @@ function changeImage() {
         modalImage.src = images[currentImageIndex];
         resetZoom();
     }
-    
-     / ${images.length}`;
-    }
 }
 
 // Event listeners para o zoom
@@ -159,7 +156,7 @@ document.addEventListener('DOMContentLoaded', function() {
             resetZoom();
         }
     });
-    
+
     // Arrastar imagem quando zoom > 1
     const modalImage = document.getElementById('modalImage');
     if (modalImage) {
@@ -171,7 +168,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 e.preventDefault();
             }
         });
-        
+
         document.addEventListener('mousemove', function(e) {
             if (isDragging && zoomLevel > 1) {
                 translateX = e.clientX - startX;
@@ -179,26 +176,26 @@ document.addEventListener('DOMContentLoaded', function() {
                 updateImageTransform();
             }
         });
-        
+
         document.addEventListener('mouseup', function() {
             isDragging = false;
         });
     }
-    
+
     // Configurar miniaturas para abrir modal
     const thumbnails = document.querySelectorAll('.thumbnail');
-    thumbnails.forEach((thumb, index) => {
+    thumbnails.forEach(function(thumb, index) {
         thumb.addEventListener('click', function() {
-            const imageSources = Array.from(thumbnails).map(t => t.src);
+            var imageSources = Array.from(thumbnails).map(function(t) { return t.src; });
             openImageModal(thumb.src, index, imageSources);
         });
     });
-    
+
     // Configurar imagem principal para abrir modal
     const mainImage = document.querySelector('.main-image');
     if (mainImage) {
         mainImage.addEventListener('click', function() {
-            const imageSources = Array.from(thumbnails).map(t => t.src);
+            var imageSources = Array.from(thumbnails).map(function(t) { return t.src; });
             openImageModal(mainImage.src, 0, imageSources);
         });
     }

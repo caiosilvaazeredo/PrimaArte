@@ -1,815 +1,748 @@
-/* Prima Arte - Estilos da Página Inicial (Beach Theme) */
+/* Val's - Luxury Home Page Styles */
 
 /* ================================
-   HERO SECTION PRAIANO
+   HERO SECTION - LUXURY
    ================================ */
-.hero-beach {
+.hero-luxury {
     position: relative;
     min-height: 100vh;
-    background: linear-gradient(135deg, #87CEEB 0%, #4682B4 50%, #20B2AA 100%);
+    background: var(--navy);
     display: flex;
     align-items: center;
-    padding: 2rem 0;
+    padding: 0;
     overflow: hidden;
 }
 
-.beach-background {
+.hero-luxury::before {
+    content: '';
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    pointer-events: none;
+    background: linear-gradient(135deg, rgba(27, 42, 74, 0.95) 0%, rgba(27, 42, 74, 0.7) 100%);
+    z-index: 1;
 }
 
-.waves-pattern {
+.hero-bg-image {
     position: absolute;
-    bottom: 0;
+    top: 0;
     left: 0;
     width: 100%;
-    height: 100px;
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120"><path d="M0,96L48,80C96,64,192,32,288,37.3C384,43,480,85,576,112C672,139,768,149,864,128C960,107,1056,53,1152,42.7C1248,32,1344,64,1392,80L1440,96L1440,120L1392,120C1344,120,1248,120,1152,120C1056,120,960,120,864,120C768,120,672,120,576,120C480,120,384,120,288,120C192,120,96,120,48,120L0,120Z" fill="rgba(255,255,255,0.3)"/></svg>') repeat-x;
-    animation: wave 6s ease-in-out infinite;
-}
-
-@keyframes wave {
-    0%, 100% { transform: translateX(0); }
-    50% { transform: translateX(-50px); }
-}
-
-.floating-elements {
-    position: absolute;
-    width: 100%;
     height: 100%;
+    object-fit: cover;
+    opacity: 0.4;
 }
 
-.beach-element {
-    position: absolute;
-    color: rgba(255, 255, 255, 0.2);
-    font-size: 2.5rem;
-    animation: beachFloat 10s ease-in-out infinite;
-    animation-delay: var(--delay);
-}
-
-.beach-element:nth-child(1) { top: 20%; left: 10%; }
-.beach-element:nth-child(2) { top: 15%; right: 15%; }
-.beach-element:nth-child(3) { top: 60%; left: 8%; }
-.beach-element:nth-child(4) { bottom: 25%; right: 12%; }
-.beach-element:nth-child(5) { top: 45%; left: 15%; }
-.beach-element:nth-child(6) { bottom: 35%; right: 8%; }
-.beach-element:nth-child(7) { top: 30%; left: 12%; }
-.beach-element:nth-child(8) { bottom: 15%; right: 20%; }
-
-.palm-tree {
-    color: rgba(34, 139, 34, 0.3) !important;
-    font-size: 3rem !important;
-}
-
-.palm-tree-large {
-    font-size: 4rem !important;
-    color: rgba(34, 139, 34, 0.4);
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-    animation: palmSway 12s ease-in-out infinite !important;
-}
-
-.palm-tree-large:nth-child(7) { top: 10%; right: 5%; }
-.palm-tree-large:nth-child(8) { top: 70%; left: 3%; }
-
-@keyframes beachFloat {
-    0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.2; }
-    33% { transform: translateY(-15px) rotate(5deg); opacity: 0.4; }
-    66% { transform: translateY(10px) rotate(-3deg); opacity: 0.3; }
-}
-
-@keyframes palmSway {
-    0%, 100% { transform: translateY(0) rotate(-2deg); }
-    25% { transform: translateY(-10px) rotate(2deg); }
-    50% { transform: translateY(-5px) rotate(-1deg); }
-    75% { transform: translateY(-15px) rotate(3deg); }
-}
-
-.hero-content-beach {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    align-items: center;
-    gap: 3rem;
+.hero-content-luxury {
     position: relative;
     z-index: 2;
-}
-
-.hero-main {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
-}
-
-/* Logo Showcase */
-.logo-showcase {
-    text-align: center;
-    animation: logoFloat 1.5s ease-out;
-}
-
-.logo-frame {
-    position: relative;
-    width: 280px;
-    height: 280px;
-    margin: 0 auto;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border: 3px solid rgba(255, 255, 255, 0.3);
-    display: flex;
     align-items: center;
     justify-content: center;
-    overflow: hidden;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-}
-
-.logo-main {
-    width: 90%;
-    height: 90%;
-    object-fit: cover;
-    border-radius: 50%;
-    transition: transform 0.5s ease;
-}
-
-.logo-main:hover {
-    transform: scale(1.05);
-}
-
-.logo-glow {
-    position: absolute;
-    top: -5px;
-    left: -5px;
-    right: -5px;
-    bottom: -5px;
-    border-radius: 50%;
-    background: linear-gradient(45deg, #FFD700, #FFA500, #FF6347);
-    opacity: 0;
-    animation: glow 3s ease-in-out infinite;
-}
-
-@keyframes glow {
-    0%, 100% { opacity: 0; transform: scale(1); }
-    50% { opacity: 0.3; transform: scale(1.1); }
-}
-
-/* Hero Text */
-.hero-text-beach {
-    color: white;
-    animation: slideInRight 1s ease-out 0.5s both;
-}
-
-.beach-title {
-    font-family: var(--font-heading);
-    margin-bottom: 1.5rem;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-}
-
-.title-line {
-    display: block;
-    font-size: 3rem;
-    font-weight: 700;
-    line-height: 1;
-    margin-bottom: 0.5rem;
-}
-
-.title-sub {
-    display: block;
-    font-size: 2rem;
-    font-style: italic;
-    opacity: 0.9;
-}
-
-.beach-description {
-    font-size: 1.2rem;
-    line-height: 1.6;
-    margin-bottom: 2rem;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
-}
-
-.beach-features {
-    display: flex;
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-    flex-wrap: wrap;
-}
-
-.feature-beach {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    background: rgba(255, 255, 255, 0.15);
-    padding: 0.8rem 1.2rem;
-    border-radius: 25px;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    transition: all 0.3s ease;
-}
-
-.feature-beach:hover {
-    background: rgba(255, 255, 255, 0.25);
-    transform: translateY(-2px);
-}
-
-.feature-icon-beach {
-    width: 40px;
-    height: 40px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.2rem;
-}
-
-/* Showcase Products */
-.hero-showcase-beach {
-    animation: slideInLeft 1s ease-out 0.8s both;
-}
-
-.products-preview-beach {
-    background: rgba(255, 255, 255, 0.1);
-    padding: 2rem;
-    border-radius: 20px;
-    backdrop-filter: blur(15px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.preview-title-beach {
-    color: white;
-    font-family: var(--font-heading);
-    font-size: 1.8rem;
     text-align: center;
-    margin-bottom: 1.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-}
-
-.preview-grid-beach {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 1rem;
-}
-
-.preview-card-beach {
-    text-align: center;
-    animation: slideUp 0.8s ease-out var(--delay) both;
-}
-
-.card-image-beach {
-    position: relative;
     width: 100%;
-    height: 120px;
-    border-radius: 15px;
-    overflow: hidden;
-    margin-bottom: 0.8rem;
+    padding: 6rem 0;
 }
 
-.card-image-beach img {
+.hero-logo-luxury {
+    width: 140px;
+    height: 140px;
+    border: 2px solid rgba(201, 168, 76, 0.5);
+    border-radius: 50%;
+    overflow: hidden;
+    margin-bottom: 2.5rem;
+    animation: fadeIn 1.5s ease-out;
+}
+
+.hero-logo-luxury img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.3s ease;
 }
 
-.card-placeholder-beach {
-    width: 100%;
-    height: 100%;
-    background: rgba(255, 255, 255, 0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 2rem;
+.hero-title-luxury {
+    font-family: var(--font-heading);
+    font-size: 5rem;
+    font-weight: 300;
+    color: var(--offwhite);
+    letter-spacing: 0.08em;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+    animation: fadeInUp 1s ease-out 0.3s both;
 }
 
-.card-overlay-beach {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0,0,0,0.7);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transition: opacity 0.3s ease;
+.hero-subtitle-luxury {
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: var(--gold);
+    letter-spacing: var(--letter-spacing-wide);
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+    animation: fadeInUp 1s ease-out 0.5s both;
 }
 
-.preview-card-beach:hover .card-overlay-beach {
-    opacity: 1;
-}
-
-.preview-card-beach:hover .card-image-beach img {
-    transform: scale(1.1);
-}
-
-.card-link-beach {
-    color: white;
-    text-decoration: none;
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    background: rgba(32, 178, 170, 0.8);
-    display: flex;
-    align-items: center;
-    gap: 0.3rem;
-    font-weight: 600;
-    transition: all 0.3s ease;
-}
-
-.card-link-beach:hover {
-    background: #20B2AA;
-    transform: scale(1.05);
-}
-
-.card-info-beach h4 {
-    color: white;
+.hero-description-luxury {
+    font-family: var(--font-body);
     font-size: 1rem;
-    margin-bottom: 0.3rem;
-    line-height: 1.2;
+    color: rgba(250, 248, 245, 0.7);
+    max-width: 550px;
+    line-height: 1.8;
+    margin-bottom: 3rem;
+    animation: fadeInUp 1s ease-out 0.7s both;
 }
 
-.card-price-beach {
-    color: #FFD700;
-    font-weight: 600;
-    font-size: 1.1rem;
-}
-
-/* Action Buttons */
-.hero-actions-beach {
-    grid-column: 1 / -1;
+.hero-actions-luxury {
     display: flex;
     gap: 1.5rem;
-    justify-content: center;
-    margin-top: 2rem;
-    animation: fadeInUp 1s ease-out 1.2s both;
+    animation: fadeInUp 1s ease-out 0.9s both;
 }
 
-.btn-beach-primary, .btn-beach-secondary {
-    position: relative;
-    padding: 1.2rem 2.5rem;
-    border-radius: 25px;
-    text-decoration: none;
+.btn-hero-primary {
+    background: var(--gold);
+    color: var(--navy);
+    border: 1px solid var(--gold);
+    padding: 1rem 3rem;
+    font-family: var(--font-body);
+    font-size: 0.75rem;
     font-weight: 600;
-    font-size: 1.1rem;
-    display: flex;
+    letter-spacing: var(--letter-spacing);
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: var(--transition);
+    display: inline-flex;
     align-items: center;
     gap: 0.8rem;
-    transition: all 0.3s ease;
-    overflow: hidden;
 }
 
-.btn-beach-primary {
-    background: white;
-    color: #20B2AA;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-}
-
-.btn-beach-primary:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 15px 40px rgba(0,0,0,0.3);
-}
-
-.wave-effect {
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(32, 178, 170, 0.3), transparent);
-    transition: left 0.5s ease;
-}
-
-.btn-beach-primary:hover .wave-effect {
-    left: 100%;
-}
-
-.btn-beach-secondary {
+.btn-hero-primary:hover {
     background: transparent;
-    color: white;
-    border: 2px solid white;
+    color: var(--gold);
 }
 
-.btn-beach-secondary:hover {
-    background: white;
-    color: #20B2AA;
-    transform: translateY(-3px);
-}
-
-/* ================================
-   BEACH STORY
-   ================================ */
-.beach-story {
-    padding: 5rem 0;
-    background: linear-gradient(135deg, #F0F8FF, #E6F3FF);
-}
-
-.story-content-beach {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 4rem;
-    align-items: center;
-}
-
-.story-title-beach {
-    font-family: var(--font-heading);
-    font-size: 2.5rem;
-    color: #20B2AA;
-    margin-bottom: 1.5rem;
-    display: flex;
+.btn-hero-secondary {
+    background: transparent;
+    color: var(--offwhite);
+    border: 1px solid rgba(250, 248, 245, 0.4);
+    padding: 1rem 3rem;
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: var(--letter-spacing);
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: var(--transition);
+    display: inline-flex;
     align-items: center;
     gap: 0.8rem;
 }
 
-.story-text-beach p {
-    color: #4682B4;
-    line-height: 1.7;
-    margin-bottom: 1.5rem;
-    font-size: 1.1rem;
+.btn-hero-secondary:hover {
+    border-color: var(--gold);
+    color: var(--gold);
 }
 
-.beach-icons {
+.hero-scroll-indicator {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+    color: rgba(250, 248, 245, 0.4);
+    font-size: 0.65rem;
+    letter-spacing: var(--letter-spacing-wide);
+    text-transform: uppercase;
     display: flex;
     flex-direction: column;
-    gap: 2rem;
-}
-
-.beach-icon-item {
-    display: flex;
     align-items: center;
-    gap: 1rem;
-    background: white;
-    padding: 1.5rem;
-    border-radius: 15px;
-    box-shadow: 0 5px 20px rgba(32, 178, 170, 0.1);
-    border-left: 4px solid #20B2AA;
-    transition: all 0.3s ease;
+    gap: 0.5rem;
+    animation: pulse 2s ease-in-out infinite;
 }
 
-.beach-icon-item:hover {
-    transform: translateX(10px);
-    box-shadow: 0 8px 30px rgba(32, 178, 170, 0.2);
-}
-
-.beach-icon-item i {
-    font-size: 2rem;
-    color: #FFD700;
-}
-
-.beach-icon-item span {
-    font-weight: 600;
-    color: #4682B4;
-    font-size: 1.1rem;
+.hero-scroll-indicator i {
+    font-size: 1rem;
 }
 
 /* ================================
-   FEATURED PRODUCTS BEACH
+   NEW ARRIVALS / NOVIDADES
    ================================ */
-.featured-beach {
-    padding: 5rem 0;
-    background: white;
+.new-arrivals {
+    padding: 6rem 0;
+    background: var(--offwhite);
 }
 
-.section-header-beach {
+.section-header-luxury {
     text-align: center;
     margin-bottom: 4rem;
 }
 
-.section-title-beach {
-    font-family: var(--font-heading);
-    font-size: 2.8rem;
-    color: #20B2AA;
+.section-label {
+    font-family: var(--font-body);
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: var(--letter-spacing-wide);
+    text-transform: uppercase;
+    color: var(--gold);
     margin-bottom: 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
+    display: block;
 }
 
-.section-title-beach i {
-    color: #FFD700;
+.section-title-luxury {
+    font-family: var(--font-heading);
+    font-size: 3rem;
+    font-weight: 400;
+    color: var(--navy);
+    line-height: 1.2;
+    margin-bottom: 1rem;
 }
 
-.section-subtitle-beach {
-    color: #4682B4;
-    font-size: 1.2rem;
-    max-width: 600px;
-    margin: 0 auto;
+.section-divider {
+    width: 60px;
+    height: 1px;
+    background: var(--gold);
+    margin: 1.5rem auto 0;
 }
 
-.products-grid-beach {
+.products-grid-luxury {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2.5rem;
-    margin-bottom: 3rem;
-    align-items: stretch;
+    gap: 2rem;
+    margin-bottom: 4rem;
 }
 
-.product-card-beach {
-    background: white;
-    border-radius: 20px;
+.product-card-luxury {
+    background: var(--white);
     overflow: hidden;
-    box-shadow: 0 8px 30px rgba(32, 178, 170, 0.1);
-    transition: all 0.3s ease;
-    border: 1px solid rgba(32, 178, 170, 0.1);
-    display: grid;
-    grid-template-rows: 250px 1fr;
-    height: 100%;
+    transition: var(--transition);
+    border: 1px solid rgba(27, 42, 74, 0.06);
+    display: flex;
+    flex-direction: column;
 }
 
-.product-card-beach:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 20px 50px rgba(32, 178, 170, 0.2);
+.product-card-luxury:hover {
+    box-shadow: 0 20px 60px rgba(27, 42, 74, 0.1);
+    transform: translateY(-4px);
 }
 
-.product-image-beach {
+.product-image-luxury {
     position: relative;
     overflow: hidden;
-    grid-row: 1;
+    height: 320px;
 }
 
-.product-image-beach img {
+.product-image-luxury img {
     width: 100%;
-    height: 250px;
+    height: 100%;
     object-fit: cover;
-    transition: transform 0.3s ease;
+    transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-.no-image-beach {
-    width: 100%;
-    height: 250px;
-    background: linear-gradient(135deg, #87CEEB, #4682B4);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 3rem;
+.product-card-luxury:hover .product-image-luxury img {
+    transform: scale(1.06);
 }
 
-.product-badge-beach {
+.product-badge-luxury {
     position: absolute;
-    top: 15px;
-    right: 15px;
-    background: #FFD700;
-    color: #4682B4;
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 0.3rem;
-    box-shadow: 0 3px 15px rgba(255, 215, 0, 0.3);
+    top: 1rem;
+    left: 1rem;
+    background: var(--navy);
+    color: var(--offwhite);
+    padding: 0.4rem 1rem;
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: var(--letter-spacing);
+    text-transform: uppercase;
 }
 
-.product-hover-beach {
+.promotion-badge-luxury {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: var(--gold);
+    color: var(--navy);
+    padding: 0.4rem 1rem;
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: var(--letter-spacing);
+    text-transform: uppercase;
+}
+
+.product-overlay-luxury {
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(32, 178, 170, 0.8);
+    background: rgba(27, 42, 74, 0.6);
     display: flex;
     align-items: center;
     justify-content: center;
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.4s ease;
 }
 
-.product-card-beach:hover .product-hover-beach {
+.product-card-luxury:hover .product-overlay-luxury {
     opacity: 1;
 }
 
-.product-card-beach:hover .product-image-beach img {
-    transform: scale(1.1);
-}
-
-.btn-view-beach {
-    background: white;
-    color: #20B2AA;
-    padding: 0.8rem 1.5rem;
-    border-radius: 25px;
+.btn-view-luxury {
+    background: var(--offwhite);
+    color: var(--navy);
+    padding: 0.8rem 2rem;
     text-decoration: none;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    transition: all 0.3s ease;
-    transform: translateY(20px);
+    font-weight: 500;
+    font-size: 0.7rem;
+    letter-spacing: var(--letter-spacing);
+    text-transform: uppercase;
+    transition: var(--transition);
+    transform: translateY(10px);
+    border: none;
 }
 
-.product-card-beach:hover .btn-view-beach {
+.product-card-luxury:hover .btn-view-luxury {
     transform: translateY(0);
 }
 
-.btn-view-beach:hover {
-    background: #FFD700;
-    color: white;
+.btn-view-luxury:hover {
+    background: var(--gold);
+    color: var(--navy);
 }
 
-.product-info-beach {
-    padding: 2rem;
-    display: grid;
-    grid-template-rows: auto auto 1fr auto auto;
-    gap: 0.8rem;
-    grid-row: 2;
+.no-image-luxury {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--cream), var(--offwhite));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gold);
+    font-size: 2.5rem;
 }
 
-.product-info-beach h3 {
+.product-info-luxury {
+    padding: 1.8rem;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.product-info-luxury h3 {
     font-family: var(--font-heading);
     font-size: 1.4rem;
-    color: #20B2AA;
+    font-weight: 500;
+    color: var(--navy);
+    margin-bottom: 0.5rem;
     line-height: 1.3;
-    margin: 0;
-    grid-row: 1;
 }
 
-.product-info-beach p {
-    color: #4682B4;
-    line-height: 1.5;
-    font-size: 0.95rem;
-    margin: 0;
-    grid-row: 2;
+.product-info-luxury p {
+    color: var(--gray);
+    line-height: 1.6;
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+    flex: 1;
 }
 
-.product-price-beach {
-    font-size: 1.6rem;
-    font-weight: 700;
-    color: #FFD700;
-    margin: 0;
-    grid-row: 4;
-    align-self: end;
+.product-price-luxury {
+    display: flex;
+    align-items: baseline;
+    gap: 0.8rem;
+    margin-bottom: 1.2rem;
 }
 
-.btn-buy-beach {
-    width: 100%;
-    background: linear-gradient(135deg, #20B2AA, #87CEEB);
-    color: white;
-    text-decoration: none;
-    padding: 1rem 2rem;
-    border-radius: 15px;
+.price-current-luxury {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
     font-weight: 600;
+    color: var(--navy);
+}
+
+.regular-price-luxury {
+    font-size: 0.9rem;
+    color: var(--gray-light);
+    text-decoration: line-through;
+}
+
+.promotional-price-luxury {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--gold-dark);
+}
+
+.btn-buy-luxury {
+    width: 100%;
+    background: var(--navy);
+    color: var(--offwhite);
+    text-decoration: none;
+    padding: 0.9rem;
+    font-weight: 500;
+    font-size: 0.7rem;
+    letter-spacing: var(--letter-spacing);
+    text-transform: uppercase;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    transition: all 0.3s ease;
-    min-height: 50px;
-    margin: 0;
-    grid-row: 5;
+    transition: var(--transition);
+    border: 1px solid var(--navy);
 }
 
-.btn-buy-beach:hover {
-    background: linear-gradient(135deg, #87CEEB, #20B2AA);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(32, 178, 170, 0.3);
+.btn-buy-luxury:hover {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: var(--navy);
 }
 
-.view-all-beach {
+.section-footer-luxury {
     text-align: center;
 }
 
-.btn-view-all-beach {
-    background: linear-gradient(135deg, #4682B4, #20B2AA);
-    color: white;
-    padding: 1.2rem 2.5rem;
-    border-radius: 25px;
+.btn-view-all-luxury {
+    background: transparent;
+    color: var(--navy);
+    border: 1px solid var(--navy);
+    padding: 1rem 3rem;
     text-decoration: none;
-    font-weight: 600;
-    font-size: 1.1rem;
+    font-weight: 500;
+    font-size: 0.75rem;
+    letter-spacing: var(--letter-spacing);
+    text-transform: uppercase;
     display: inline-flex;
     align-items: center;
-    gap: 1rem;
-    transition: all 0.3s ease;
-    box-shadow: 0 8px 30px rgba(70, 130, 180, 0.3);
+    gap: 0.8rem;
+    transition: var(--transition);
 }
 
-.btn-view-all-beach:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 15px 45px rgba(70, 130, 180, 0.4);
+.btn-view-all-luxury:hover {
+    background: var(--navy);
+    color: var(--offwhite);
 }
 
 /* ================================
-   ANNOUNCEMENTS BEACH
+   BRAND STORY / NOSSA HISTORIA
    ================================ */
-.announcements-beach {
-    padding: 4rem 0;
-    background: linear-gradient(135deg, #F0F8FF, #E0F6FF);
+.brand-story {
+    padding: 6rem 0;
+    background: var(--cream);
 }
 
-.announcements-title-beach {
-    text-align: center;
+.brand-story-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+    align-items: center;
+}
+
+.brand-story-text .section-label {
+    text-align: left;
+}
+
+.brand-story-text h2 {
     font-family: var(--font-heading);
     font-size: 2.5rem;
-    color: #20B2AA;
-    margin-bottom: 3rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
+    font-weight: 400;
+    color: var(--navy);
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
 }
 
-.announcements-grid-beach {
+.brand-story-text p {
+    color: var(--gray);
+    line-height: 1.9;
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+}
+
+.brand-story-visual {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.brand-values {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.brand-value-item {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    background: var(--white);
+    border-left: 3px solid var(--gold);
+    transition: var(--transition);
+}
+
+.brand-value-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 5px 20px rgba(27, 42, 74, 0.08);
+}
+
+.brand-value-item i {
+    font-size: 1.5rem;
+    color: var(--gold);
+    width: 30px;
+    text-align: center;
+}
+
+.brand-value-item span {
+    font-weight: 500;
+    color: var(--navy);
+    font-size: 0.9rem;
+    letter-spacing: 0.03em;
+}
+
+/* ================================
+   ANNOUNCEMENTS / NOVIDADES
+   ================================ */
+.announcements-luxury {
+    padding: 4rem 0;
+    background: var(--white);
+    border-top: 1px solid rgba(27, 42, 74, 0.06);
+    border-bottom: 1px solid rgba(27, 42, 74, 0.06);
+}
+
+.announcements-title-luxury {
+    text-align: center;
+    font-family: var(--font-heading);
+    font-size: 2rem;
+    font-weight: 400;
+    color: var(--navy);
+    margin-bottom: 2.5rem;
+}
+
+.announcements-grid-luxury {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
     gap: 2rem;
 }
 
-.announcement-card-beach {
-    background: white;
+.announcement-card-luxury {
     padding: 2rem;
-    border-radius: 20px;
-    box-shadow: 0 8px 30px rgba(32, 178, 170, 0.1);
-    border-left: 5px solid #20B2AA;
-    transition: all 0.3s ease;
+    border: 1px solid rgba(27, 42, 74, 0.08);
+    background: var(--offwhite);
+    transition: var(--transition);
+    border-left: 3px solid var(--gold);
 }
 
-.announcement-card-beach:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 45px rgba(32, 178, 170, 0.15);
+.announcement-card-luxury:hover {
+    box-shadow: 0 10px 30px rgba(27, 42, 74, 0.08);
+    transform: translateY(-3px);
 }
 
-.announcement-header-beach {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 1rem;
-}
-
-.announcement-icon-beach {
-    width: 50px;
-    height: 50px;
-    background: linear-gradient(135deg, #FFD700, #FFA500);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 1.2rem;
-}
-
-.announcement-badge-beach {
-    background: #20B2AA;
-    color: white;
-    padding: 0.3rem 0.8rem;
-    border-radius: 15px;
-    font-size: 0.8rem;
+.announcement-card-luxury .announcement-label {
+    font-size: 0.65rem;
     font-weight: 600;
+    letter-spacing: var(--letter-spacing-wide);
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.8rem;
+    display: block;
 }
 
-.announcement-card-beach h3 {
-    color: #20B2AA;
+.announcement-card-luxury h3 {
     font-family: var(--font-heading);
     font-size: 1.3rem;
-    margin-bottom: 1rem;
+    font-weight: 500;
+    color: var(--navy);
+    margin-bottom: 0.8rem;
 }
 
-.announcement-card-beach p {
-    color: #4682B4;
-    line-height: 1.6;
+.announcement-card-luxury p {
+    color: var(--gray);
+    line-height: 1.7;
+    font-size: 0.9rem;
 }
 
 /* ================================
-   ANIMAÇÕES
+   COLLECTIONS / COLECOES
    ================================ */
-@keyframes logoFloat {
-    from {
-        opacity: 0;
-        transform: scale(0.8) translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-    }
+.collections-luxury {
+    padding: 6rem 0;
+    background: var(--offwhite);
 }
 
-@keyframes slideInRight {
-    from {
-        opacity: 0;
-        transform: translateX(50px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
+.collections-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    margin-top: 3rem;
 }
 
-@keyframes slideInLeft {
-    from {
-        opacity: 0;
-        transform: translateX(-50px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
+.collection-card {
+    text-align: center;
+    padding: 3rem 2rem;
+    border: 1px solid rgba(27, 42, 74, 0.08);
+    background: var(--white);
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
 }
 
-@keyframes slideUp {
+.collection-card:hover {
+    border-color: var(--gold);
+    box-shadow: 0 15px 40px rgba(27, 42, 74, 0.08);
+    transform: translateY(-4px);
+}
+
+.collection-icon {
+    width: 60px;
+    height: 60px;
+    border: 1px solid var(--gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    font-size: 1.3rem;
+    color: var(--gold);
+    transition: var(--transition);
+}
+
+.collection-card:hover .collection-icon {
+    background: var(--gold);
+    color: var(--white);
+}
+
+.collection-card h3 {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: var(--navy);
+    margin-bottom: 0.8rem;
+}
+
+.collection-card p {
+    color: var(--gray);
+    font-size: 0.85rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+.btn-collection {
+    color: var(--navy);
+    text-decoration: none;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: var(--letter-spacing);
+    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: var(--transition);
+    border-bottom: 1px solid transparent;
+    padding-bottom: 0.2rem;
+}
+
+.btn-collection:hover {
+    color: var(--gold);
+    border-bottom-color: var(--gold);
+}
+
+.btn-collection i {
+    transition: transform 0.3s ease;
+    font-size: 0.6rem;
+}
+
+.btn-collection:hover i {
+    transform: translateX(4px);
+}
+
+/* ================================
+   CONTACT CTA
+   ================================ */
+.contact-cta-luxury {
+    padding: 6rem 0;
+    background: var(--navy);
+    position: relative;
+    overflow: hidden;
+}
+
+.cta-content-luxury {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+}
+
+.cta-text-luxury {
+    color: var(--offwhite);
+}
+
+.cta-text-luxury .section-label {
+    color: var(--gold);
+    text-align: left;
+}
+
+.cta-text-luxury h2 {
+    font-family: var(--font-heading);
+    font-size: 2.8rem;
+    font-weight: 400;
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
+}
+
+.cta-text-luxury p {
+    font-size: 1rem;
+    line-height: 1.8;
+    opacity: 0.7;
+}
+
+.cta-actions-luxury {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+.btn-whatsapp-luxury,
+.btn-instagram-luxury {
+    padding: 1.1rem 2rem;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.75rem;
+    letter-spacing: var(--letter-spacing);
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: var(--transition);
+    border: 1px solid rgba(250, 248, 245, 0.2);
+    color: var(--offwhite);
+    background: transparent;
+}
+
+.btn-whatsapp-luxury:hover {
+    background: rgba(37, 211, 102, 0.15);
+    border-color: rgba(37, 211, 102, 0.5);
+    color: #25D366;
+}
+
+.btn-instagram-luxury:hover {
+    background: rgba(225, 48, 108, 0.15);
+    border-color: rgba(225, 48, 108, 0.5);
+    color: #E1306C;
+}
+
+.btn-whatsapp-luxury i,
+.btn-instagram-luxury i {
+    font-size: 1.2rem;
+}
+
+/* ================================
+   ANIMACOES
+   ================================ */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
     from {
         opacity: 0;
         transform: translateY(30px);
@@ -820,22 +753,16 @@
     }
 }
 
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(40px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+@keyframes pulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 0.8; }
 }
 
 /* AOS Animation */
 [data-aos] {
     opacity: 0;
-    transform: translateY(30px);
-    transition: all 0.6s ease;
+    transform: translateY(20px);
+    transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 [data-aos].aos-animate {
@@ -844,234 +771,118 @@
 }
 
 /* ================================
-   RESPONSIVO HOME
+   RESPONSIVE HOME
    ================================ */
 @media (max-width: 768px) {
-    .hero-content-beach {
+    .hero-title-luxury {
+        font-size: 3rem;
+    }
+
+    .hero-content-luxury {
+        padding: 4rem 0;
+    }
+
+    .hero-actions-luxury {
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+    }
+
+    .btn-hero-primary,
+    .btn-hero-secondary {
+        width: 100%;
+        max-width: 300px;
+        justify-content: center;
+    }
+
+    .products-grid-luxury {
+        grid-template-columns: 1fr;
+    }
+
+    .brand-story-content {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+    }
+
+    .collections-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .cta-content-luxury {
         grid-template-columns: 1fr;
         gap: 2rem;
         text-align: center;
     }
-    
-    .logo-frame {
-        width: 220px;
-        height: 220px;
+
+    .cta-text-luxury .section-label {
+        text-align: center;
     }
-    
-    .title-line {
-        font-size: 2.5rem;
-    }
-    
-    .title-sub {
-        font-size: 1.8rem;
-    }
-    
-    .hero-actions-beach {
-        flex-direction: column;
-        align-items: center;
-    }
-    
-    .btn-beach-primary, .btn-beach-secondary {
-        min-width: 250px;
-        justify-content: center;
-    }
-    
-    .story-content-beach {
-        grid-template-columns: 1fr;
-        gap: 3rem;
-    }
-    
-    .beach-features {
-        justify-content: center;
-        flex-wrap: wrap;
-    }
-    
-    .products-grid-beach {
+
+    .announcements-grid-luxury {
         grid-template-columns: 1fr;
     }
-    
-    .announcements-grid-beach {
-        grid-template-columns: 1fr;
+
+    .section-title-luxury {
+        font-size: 2.2rem;
     }
 }
 
 @media (max-width: 480px) {
-    .logo-frame {
-        width: 180px;
-        height: 180px;
+    .hero-title-luxury {
+        font-size: 2.5rem;
     }
-    
-    .title-line {
+
+    .hero-logo-luxury {
+        width: 100px;
+        height: 100px;
+    }
+
+    .section-title-luxury {
         font-size: 2rem;
     }
-    
-    .title-sub {
-        font-size: 1.5rem;
-    }
-    
-    .section-title-beach {
-        font-size: 2.2rem;
-        flex-direction: column;
-        gap: 0.5rem;
+
+    .product-image-luxury {
+        height: 280px;
     }
 
-    .beach-features {
-        flex-direction: column;
-        align-items: center;
+    .collection-card {
+        padding: 2rem 1.5rem;
+    }
+
+    .cta-text-luxury h2 {
+        font-size: 2rem;
     }
 }
-
 
 /* ================================
-   PROMOÇÕES NA PÁGINA PRINCIPAL
+   PRICE STYLES
    ================================ */
-.promotion-badge-home {
-    position: absolute;
-    top: 15px;
-    left: 15px;
-    background: linear-gradient(135deg, #FF6B6B, #FF4757);
-    color: white;
-    padding: 8px 12px;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
-    z-index: 2;
-    animation: promotionPulse 2s infinite;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-@keyframes promotionPulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-}
-
-.price-section-home {
-    margin: 1rem 0;
-}
-
-.price-promotion-home {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.regular-price-home {
-    font-size: 1rem;
-    color: #999;
-    text-decoration: line-through;
-    font-weight: 400;
-}
-
-.promotional-price-home {
-    font-size: 1.8rem;
-    color: #4CAF50;
-    font-weight: 800;
-    line-height: 1;
-}
-
-.savings-badge-home {
-    background: #4CAF50;
-    color: white;
-    padding: 6px 12px;
-    border-radius: 15px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-align: center;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-}
-
-.price-regular-home .price-value-home {
-    font-size: 1.6rem;
-    color: var(--primary-pink);
-    font-weight: 700;
-}
-
-/* Cards com promoção recebem destaque especial */
-.featured-card-beach:has(.promotion-badge-home) {
-    border: 2px solid #4CAF50;
-    box-shadow: 0 10px 30px rgba(76, 175, 80, 0.15);
-}
-
-.featured-card-beach:has(.promotion-badge-home):hover {
-    transform: translateY(-8px);
-    box-shadow: 0 15px 40px rgba(76, 175, 80, 0.2);
-}
-
-.price-section-beach {
+.price-section-luxury {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 0.2rem;
 }
 
-.regular-price-beach {
-    font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.7);
-    text-decoration: line-through;
-}
-
-.promotional-price-beach {
-    color: #FFF;
-    font-weight: 700;
-    font-size: 1.2rem;
-    background-color: #d44b4b;
-    padding: 2px 8px;
-    border-radius: 10px;
-}
-/* --- Estilos de Preço para Destaques do Ateliê (Topo) --- */
-.card-info-beach {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.2rem;
-}
-
-.price-container-beach {
-    display: flex;
-    align-items: baseline;
-    justify-content: center;
-    gap: 0.5rem;
-}
-
-.regular-price-beach {
-    color: rgba(255, 255, 255, 0.7);
-    text-decoration: line-through;
-    font-size: 0.9rem;
-}
-/* --- Estilos de Preço para Seção Principal de Destaques --- */
-.product-price-beach {
-    display: flex;
-    align-items: baseline;
-    justify-content: flex-start;
-    gap: 0.5rem;
-    font-size: 1.6rem;
-    font-weight: 700;
-    color: #FFD700;
-    margin-bottom: 1.5rem;
-}
-
+.regular-price-beach,
 .regular-price-main {
-    font-size: 1rem;
-    color: #aaa;
+    font-size: 0.85rem;
+    color: var(--gray-light);
     text-decoration: line-through;
-    font-weight: 500;
 }
 
+.promotional-price-beach,
 .promotional-price-main {
-    font-size: 1.6rem;
-    font-weight: 700;
-    color: #a02929; /* Verde para destacar a promoção */
+    font-family: var(--font-heading);
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--gold-dark);
 }
 
-/* Garante que o preço normal mantenha o estilo original quando não há promoção */
-.product-price-beach span:only-child {
-    color: #FFD700;
-    font-size: 1.6rem;
-    font-weight: 700;
+.price-current {
+    font-family: var(--font-heading);
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--navy);
 }

@@ -1,1 +1,118 @@
-{% extends "base.html" %} {% block page_css %} <link rel="stylesheet" href="{{ url_for('static', filename='css/products.css') }}"> {% endblock %} {% block title %}Produtos - Prima Arte{% endblock %} {% block content %} <section class="section"> <div class="container"> <div class="section-header"> <h1 class="section-title">Nossos Produtos</h1> <p class="section-subtitle">Artesanato feito à mão com muito amor e dedicação</p> </div> <!-- Filtros --> <div style="text-align: center; margin-bottom: 2rem;"> <div style="display: inline-flex; gap: 1rem; flex-wrap: wrap; justify-content: center;"> <a href="{{ url_for('products') }}" class="filter-btn {% if not current_category %}active{% endif %}"> <i class="fas fa-th-large"></i> Todos </a> <a href="{{ url_for('products', categoria='bolsa') }}" class="filter-btn {% if current_category == 'bolsa' %}active{% endif %}"> <i class="fas fa-cut"></i> Bolsa </a> <a href="{{ url_for('products', categoria='decoracao') }}" class="filter-btn {% if current_category == 'decoracao' %}active{% endif %}"> <i class="fas fa-home"></i> Decoração </a> <a href="{{ url_for('products', categoria='acessorios') }}" class="filter-btn {% if current_category == 'acessorios' %}active{% endif %}"> <i class="fas fa-gem"></i> Acessórios </a> <a href="{{ url_for('products', categoria='personalizados') }}" class="filter-btn {% if current_category == 'personalizados' %}active{% endif %}"> <i class="fas fa-magic"></i> Personalizados </a> </div> </div> {% if products %} <div class="products-grid"> {% for product in products %} <div class="product-card" data-category="{{ product.category }}"> {% if product.images and product.images|length > 0 %} <img src="{{ product.images[0] }}" alt="{{ product.name }}" class="product-image"> {% else %} <div class="product-image no-image"> <i class="fas fa-image"></i> </div> {% endif %} {% if product.promotion_active and product.promotional_price %} <div class="promotion-badge"> <i class="fas fa-fire"></i> {{ product.discount_percent }}% OFF </div> {% elif product.featured %} <div class="featured-badge"> <i class="fas fa-star"></i> Destaque </div> {% endif %} <div class="product-info"> <h3 class="product-title">{{ product.name }}</h3> <p class="product-description">{{ product.description[:100] }}{% if product.description|length > 100 %}...{% endif %}</p> <div class="product-price-section"> {% if product.promotion_active and product.promotional_price %} <span class="regular-price">R$ {{ "%.2f"|format(product.price) }}</span> <div class="promotional-price"> <span class="currency">R$</span> {{ "%.2f"|format(product.promotional_price) }} </div> <div class="savings-badge">{{ product.discount_percent }}% OFF</div> {% else %} <div class="product-price">R$ {{ "%.2f"|format(product.price) }}</div> {% endif %} </div> <div class="product-actions"> <a href="{{ url_for('product_detail', product_slug=product.name|slug) }}" class="btn-product-view"> <i class="fas fa-eye"></i> Ver Detalhes </a> </div> </div> </div> {% endfor %} </div> {% else %} <div class="empty-state"> <i class="fas fa-box-open"></i> <h3> {% if current_category %} Nenhum produto encontrado nesta categoria {% else %} Nenhum produto cadastrado ainda {% endif %} </h3> <p> {% if current_category %} Tente uma categoria diferente ou entre em contato conosco! {% else %} Em breve teremos produtos incríveis aqui! {% endif %} </p> <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 2rem;"> {% if current_category %} <a href="{{ url_for('products') }}" class="btn-primary-large"> <i class="fas fa-th-large"></i> Ver Todos </a> {% endif %} <a href="https://wa.me/5521973108293" target="_blank" class="btn-secondary-large"> <i class="fab fa-whatsapp"></i> Fale Conosco </a> </div> </div> {% endif %} </div> </section> {% endblock %}
+{% extends "base.html" %}
+
+{% block page_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/products.css') }}">
+{% endblock %}
+
+{% block title %}Colecao - Val's{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-label" style="display: block; font-size: 0.7rem; font-weight: 500; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.8rem;">Colecao Exclusiva</span>
+            <h1 class="section-title">Nossa Colecao</h1>
+            <div style="width: 60px; height: 1px; background: var(--gold); margin: 1rem auto 0;"></div>
+            <p class="section-subtitle">Pecas artesanais de luxo, feitas a mao com dedicacao</p>
+        </div>
+
+        <!-- Filtros -->
+        <div style="text-align: center; margin-bottom: 3rem;">
+            <div style="display: inline-flex; gap: 0.8rem; flex-wrap: wrap; justify-content: center;">
+                <a href="{{ url_for('products') }}" class="filter-btn {% if not current_category %}active{% endif %}">
+                    Todos
+                </a>
+                <a href="{{ url_for('products', categoria='bolsa') }}" class="filter-btn {% if current_category == 'bolsa' %}active{% endif %}">
+                    Bolsas
+                </a>
+                <a href="{{ url_for('products', categoria='decoracao') }}" class="filter-btn {% if current_category == 'decoracao' %}active{% endif %}">
+                    Decoracao
+                </a>
+                <a href="{{ url_for('products', categoria='acessorios') }}" class="filter-btn {% if current_category == 'acessorios' %}active{% endif %}">
+                    Acessorios
+                </a>
+                <a href="{{ url_for('products', categoria='personalizados') }}" class="filter-btn {% if current_category == 'personalizados' %}active{% endif %}">
+                    Personalizados
+                </a>
+            </div>
+        </div>
+
+        {% if products %}
+        <div class="products-grid">
+            {% for product in products %}
+            <div class="product-card" data-category="{{ product.category }}">
+                {% if product.images and product.images|length > 0 %}
+                <img src="{{ product.images[0] }}" alt="{{ product.name }}" class="product-image">
+                {% else %}
+                <div class="product-image no-image">
+                    <i class="fas fa-image"></i>
+                </div>
+                {% endif %}
+
+                {% if product.promotion_active and product.promotional_price %}
+                <div class="promotion-badge">
+                    {{ product.discount_percent }}% OFF
+                </div>
+                {% elif product.featured %}
+                <div class="featured-badge">
+                    Destaque
+                </div>
+                {% endif %}
+
+                <div class="product-info">
+                    <h3 class="product-title">{{ product.name }}</h3>
+                    <p class="product-description">{{ product.description[:100] }}{% if product.description|length > 100 %}...{% endif %}</p>
+
+                    <div class="product-price-section">
+                        {% if product.promotion_active and product.promotional_price %}
+                        <span class="regular-price">R$ {{ "%.2f"|format(product.price) }}</span>
+                        <div class="promotional-price">
+                            <span class="currency">R$</span> {{ "%.2f"|format(product.promotional_price) }}
+                        </div>
+                        <div class="savings-badge">{{ product.discount_percent }}% OFF</div>
+                        {% else %}
+                        <div class="product-price">R$ {{ "%.2f"|format(product.price) }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="product-actions">
+                        <a href="{{ url_for('product_detail', product_slug=product.name|slug) }}" class="btn-product-view">
+                            Ver Detalhes
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-shopping-bag"></i>
+            <h3>
+                {% if current_category %}
+                Nenhum produto encontrado nesta categoria
+                {% else %}
+                Nenhum produto cadastrado ainda
+                {% endif %}
+            </h3>
+            <p>
+                {% if current_category %}
+                Explore outras categorias ou entre em contato conosco.
+                {% else %}
+                Em breve teremos pecas exclusivas aqui.
+                {% endif %}
+            </p>
+            <div style="display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; margin-top: 2rem;">
+                {% if current_category %}
+                <a href="{{ url_for('products') }}" class="btn-primary-large">
+                    Ver Todos
+                </a>
+                {% endif %}
+                <a href="https://wa.me/5521973108293" target="_blank" class="btn-secondary-large">
+                    <i class="fab fa-whatsapp"></i> Fale Conosco
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

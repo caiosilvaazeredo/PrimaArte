@@ -5,129 +5,45 @@
 {% endblock %}
 
 {% block content %}
-<!-- Hero Section Beach Theme -->
-<section class="hero-beach">
-    <div class="beach-background">
-        <div class="waves-pattern"></div>
-        <div class="floating-elements">
-            <div class="beach-element" style="--delay: 0s;"><i class="fas fa-umbrella-beach"></i></div>
-            <div class="beach-element" style="--delay: 1s;"><i class="fas fa-sun"></i></div>
-            <div class="beach-element palm-tree" style="--delay: 2s;"><i class="fas fa-tree"></i></div>
-            <div class="beach-element" style="--delay: 3s;"><i class="fas fa-shell"></i></div>
-            <div class="beach-element palm-tree" style="--delay: 4s;"><i class="fas fa-seedling"></i></div>
-            <div class="beach-element" style="--delay: 5s;"><i class="fas fa-starfish"></i></div>
+<!-- Hero Section - Luxury -->
+<section class="hero-luxury">
+    <div class="hero-content-luxury container">
+        <div class="hero-logo-luxury">
+            <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="Val's">
+        </div>
+
+        <h1 class="hero-title-luxury">Val's</h1>
+        <p class="hero-subtitle-luxury">Luxury Handcrafted</p>
+        <p class="hero-description-luxury">
+            Pecas artesanais exclusivas, confeccionadas a mao com materiais nobres e atencao meticulosa a cada detalhe. Da nossa oficina para voce.
+        </p>
+
+        <div class="hero-actions-luxury">
+            <a href="{{ url_for('products') }}" class="btn-hero-primary">
+                <span>Explorar Colecao</span>
+                <i class="fas fa-arrow-right"></i>
+            </a>
+            <a href="https://wa.me/5521973108293?text=Olá! Gostaria de conhecer mais sobre a Val's" target="_blank" class="btn-hero-secondary">
+                <i class="fab fa-whatsapp"></i>
+                <span>Atendimento Exclusivo</span>
+            </a>
         </div>
     </div>
-    
-    <div class="container">
-        <div class="hero-content-beach">
-            <div class="hero-main">
-                <!-- Logo central da Prima Arte -->
-                <div class="logo-showcase">
-                    <div class="logo-frame">
-                        <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="Prima Arte" class="logo-main">
-                        <div class="logo-glow"></div>
-                    </div>
-                </div>
-                
-                <div class="hero-text-beach">
-                    <h1 class="beach-title">
-                        <span class="title-line">Artesanato Único</span>
-                        <span class="title-sub">História Especial</span>
-                    </h1>
-                    <p class="beach-description">
-                        Da Região dos Lagos, onde lagoa, mar e sol se encontram, nasce cada peça cuidadosamente criada à mão. Unimos técnicas artesanais ao charme único da nossa região. Do nosso ateliê para a sua casa, levamos amor em cada costura.
-                    </p>
-                    <div class="beach-features">
-                        <div class="feature-beach">
-                            <div class="feature-icon-beach"><i class="fas fa-heart"></i></div>
-                            <span>Com Amor</span>
-                        </div>
-                        <div class="feature-beach">
-                            <div class="feature-icon-beach"><i class="fas fa-sun"></i></div>
-                            <span>Sol</span>
-                        </div>
-                        <div class="feature-beach">
-                            <div class="feature-icon-beach"><i class="fas fa-star"></i></div>
-                            <span>Charme</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Preview dos produtos em destaque no hero -->
-            {% if featured_products %}
-            <div class="hero-showcase-beach">
-                <div class="products-preview-beach">
-                    <h3 class="preview-title-beach">
-                        <i class="fas fa-sparkles"></i> Destaques do Ateliê
-                    </h3>
-                    <div class="preview-grid-beach">
-                        {% for product in featured_products[:3] %}
-                        <div class="preview-card-beach" style="--delay: {{ loop.index0 * 0.2 }}s;">
-                            <div class="card-image-beach">
-                                {% if product.images and product.images|length > 0 %}
-                                <img src="{{ product.images[0] }}" alt="{{ product.name }}">
-                                {% else %}
-                                <div class="card-placeholder-beach">
-                                    <i class="fas fa-image"></i>
-                                </div>
-                                {% endif %}
-                                <div class="card-overlay-beach">
-                                    <a href="{{ url_for('product_detail', product_slug=product.name|slug) }}" class="card-link-beach">
-                                        <i class="fas fa-eye"></i> Ver
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="card-info-beach">
-                                <h4>{{ product.name }}</h4>
-                                <div class="price-section-beach">
-                                    {% if product.promotion_active and product.promotional_price %}
-                                    <span class="regular-price-beach">R$ {{ "%.2f"|format(product.price) }}</span>
-                                    <span class="promotional-price-beach">R$ {{ "%.2f"|format(product.promotional_price) }}</span>
-                                    {% else %}
-                                    <span class="card-price-beach">R$ {{ "%.2f"|format(product.price) }}</span>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
-                        {% endfor %}
-                    </div>
-                </div>
-            </div>
-            {% endif %}
-        </div>
-        
-        <div class="hero-actions-beach">
-            <a href="{{ url_for('products') }}" class="btn-beach-primary">
-                <i class="fas fa-shopping-bag"></i>
-                <span>Explorar Produtos</span>
-                <div class="wave-effect"></div>
-            </a>
-            <a href="https://wa.me/5521973108293?text=Olá! Gostaria de conhecer mais sobre a Prima Arte" target="_blank" class="btn-beach-secondary">
-                <i class="fab fa-whatsapp"></i>
-                <span>Conversar no WhatsApp</span>
-            </a>
-        </div>
+    <div class="hero-scroll-indicator">
+        <span>Scroll</span>
+        <i class="fas fa-chevron-down"></i>
     </div>
 </section>
 
-<!-- Announcements Section -->
+<!-- Announcements -->
 {% if announcements %}
-<section class="announcements-beach">
+<section class="announcements-luxury">
     <div class="container">
-        <h2 class="announcements-title-beach">
-            <i class="fas fa-bullhorn"></i> Novidades!
-        </h2>
-        <div class="announcements-grid-beach">
+        <h2 class="announcements-title-luxury">Novidades</h2>
+        <div class="announcements-grid-luxury">
             {% for announcement in announcements %}
-            <div class="announcement-card-beach">
-                <div class="announcement-header-beach">
-                    <div class="announcement-icon-beach">
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <span class="announcement-badge-beach">Novidade</span>
-                </div>
+            <div class="announcement-card-luxury">
+                <span class="announcement-label">Novidade</span>
                 <h3>{{ announcement.title }}</h3>
                 <p>{{ announcement.content }}</p>
             </div>
@@ -137,34 +53,36 @@
 </section>
 {% endif %}
 
-<!-- Beach Story Section -->
-<section class="beach-story">
+<!-- Brand Story Section -->
+<section class="brand-story">
     <div class="container">
-        <div class="story-content-beach">
-            <div class="story-text-beach">
-                <h2 class="story-title-beach">
-                    <i class="fas fa-map-marker-alt"></i> Direto da Região dos lagos
+        <div class="brand-story-content">
+            <div class="brand-story-text">
+                <span class="section-label">Nossa Essencia</span>
+                <h2>
+                    <i class="fas fa-anchor" style="color: var(--gold); margin-right: 0.5rem; font-size: 1.8rem;"></i>
+                    A Arte de Criar com as Maos
                 </h2>
                 <p>
-                    Nossa história começou em uma região famosa por suas belas praias e lagoas que encanta com suas águas cristalinas e paisagens exuberantes. Lugar perfeito para nossas inspirações!
+                    Nossa historia comecou na Region dos Lagos, onde lagoa, mar e sol se encontram. Nesse cenario inspirador, cada peca e cuidadosamente criada a mao, unindo tecnicas artesanais ao requinte dos materiais nobres.
                 </p>
                 <p>
-                    Cada produto é uma pequena obra de arte, feitos à mão, carregam a energia do lugar e a paixão pelo artesanato.
+                    Cada produto carrega a energia desse lugar e a paixao pelo artesanato de luxo. Do nosso atelie para voce, levamos dedicacao em cada costura.
                 </p>
             </div>
-            <div class="story-visual-beach">
-                <div class="beach-icons">
-                    <div class="beach-icon-item">
-                        <i class="fas fa-palette"></i>
-                        <span>Moda Casual</span>
+            <div class="brand-story-visual">
+                <div class="brand-values">
+                    <div class="brand-value-item" data-aos="fade-up">
+                        <i class="fas fa-gem"></i>
+                        <span>Materiais Nobres</span>
                     </div>
-                    <div class="beach-icon-item">
+                    <div class="brand-value-item" data-aos="fade-up" data-aos-delay="100">
                         <i class="fas fa-hands"></i>
-                        <span>Feito à Mão</span>
+                        <span>Feito a Mao</span>
                     </div>
-                    <div class="beach-icon-item">
-                        <i class="fas fa-heart"></i>
-                        <span>Com Carinho</span>
+                    <div class="brand-value-item" data-aos="fade-up" data-aos-delay="200">
+                        <i class="fas fa-award"></i>
+                        <span>Exclusividade</span>
                     </div>
                 </div>
             </div>
@@ -172,766 +90,156 @@
     </div>
 </section>
 
-<!-- SEÇÃO PRODUTOS EM DESTAQUE - PRINCIPAL -->
+<!-- New Arrivals / Featured Products -->
 {% if featured_products %}
-<section class="featured-beach">
+<section class="new-arrivals">
     <div class="container">
-        <div class="section-header-beach">
-            <h2 class="section-title-beach">
-                <i class="fas fa-star"></i>
-                Produtos em Destaque
-                <i class="fas fa-star"></i>
-            </h2>
-            <p class="section-subtitle-beach">
-                Peças especiais que carregam a beleza do litoral em cada detalhe
-            </p>
+        <div class="section-header-luxury">
+            <span class="section-label">Selecao Exclusiva</span>
+            <h2 class="section-title-luxury">New Arrivals</h2>
+            <div class="section-divider"></div>
         </div>
-        
-        <div class="products-grid-beach">
+
+        <div class="products-grid-luxury">
             {% for product in featured_products %}
-            <div class="product-card-beach" data-aos="fade-up" data-aos-delay="{{ loop.index0 * 100 }}">
-                <div class="product-image-beach">
+            <div class="product-card-luxury" data-aos="fade-up" data-aos-delay="{{ loop.index0 * 100 }}">
+                <div class="product-image-luxury">
                     {% if product.images and product.images|length > 0 %}
                     <img src="{{ product.images[0] }}" alt="{{ product.name }}">
                     {% else %}
-                    <div class="no-image-beach">
+                    <div class="no-image-luxury">
                         <i class="fas fa-image"></i>
                     </div>
                     {% endif %}
 
                     {% if product.promotion_active and product.promotional_price %}
-                        <div class="promotion-badge-beach">
-                            <i class="fas fa-fire"></i>
-                            {% set discount = ((product.price - product.promotional_price) / product.price * 100) | round %}
-                            {{ discount }}% OFF
-                        </div>
+                    <div class="promotion-badge-luxury">
+                        {% set discount = ((product.price - product.promotional_price) / product.price * 100) | round %}
+                        {{ discount }}% OFF
+                    </div>
                     {% elif product.featured %}
-                        <div class="product-badge-beach">
-                            <i class="fas fa-star"></i>
-                            Destaque
-                        </div>
+                    <div class="product-badge-luxury">
+                        Destaque
+                    </div>
                     {% endif %}
-                    
-                    <div class="product-hover-beach">
-                        <a href="{{ url_for('product_detail', product_slug=product.name|slug) }}" class="btn-view-beach">
-                            <i class="fas fa-eye"></i>
+
+                    <div class="product-overlay-luxury">
+                        <a href="{{ url_for('product_detail', product_slug=product.name|slug) }}" class="btn-view-luxury">
                             Ver Detalhes
                         </a>
                     </div>
                 </div>
-                
-                <div class="product-info-beach">
+
+                <div class="product-info-luxury">
                     <h3>{{ product.name }}</h3>
                     <p>{{ product.description[:80] }}{% if product.description|length > 80 %}...{% endif %}</p>
-                    
-                    <div class="product-price-beach">
+
+                    <div class="product-price-luxury">
                         {% if product.promotion_active and product.promotional_price %}
-                            <span class="regular-price-main">R$ {{ "%.2f"|format(product.price) }}</span>
-                            <span class="promotional-price-main">R$ {{ "%.2f"|format(product.promotional_price) }}</span>
+                        <span class="regular-price-luxury">R$ {{ "%.2f"|format(product.price) }}</span>
+                        <span class="promotional-price-luxury">R$ {{ "%.2f"|format(product.promotional_price) }}</span>
                         {% else %}
-                            <span class="price-current">R$ {{ "%.2f"|format(product.price) }}</span>
+                        <span class="price-current-luxury">R$ {{ "%.2f"|format(product.price) }}</span>
                         {% endif %}
                     </div>
-                    
-                    <a href="{{ url_for('product_detail', product_slug=product.name|slug) }}" class="btn-buy-beach">
-                        <i class="fas fa-shopping-cart"></i>
-                        Comprar Agora
+
+                    <a href="{{ url_for('product_detail', product_slug=product.name|slug) }}" class="btn-buy-luxury">
+                        <span>Comprar</span>
+                        <i class="fas fa-arrow-right"></i>
                     </a>
                 </div>
             </div>
             {% endfor %}
         </div>
-        
-        <div class="section-footer-beach">
-            <a href="{{ url_for('products') }}" class="btn-view-all-beach">
-                <i class="fas fa-th"></i>
-                Ver Todos os Produtos
+
+        <div class="section-footer-luxury">
+            <a href="{{ url_for('products') }}" class="btn-view-all-luxury">
+                <span>Ver Toda a Colecao</span>
+                <i class="fas fa-arrow-right"></i>
             </a>
         </div>
     </div>
 </section>
-{% else %}
-<!-- DEBUG: Mostrar se não há produtos em destaque -->
-<section class="debug-section" style="padding: 2rem 0; background: #f8f9fa; text-align: center;">
-    <div class="container">
-        <h3 style="color: #dc3545;">⚠️ Debug: Nenhum produto em destaque encontrado</h3>
-        <p>Verifique se há produtos marcados com "featured": true no data.json</p>
-    </div>
-</section>
 {% endif %}
 
-<!-- Categories Section Beach Theme -->
-<section class="categories-beach">
+<!-- Collections -->
+<section class="collections-luxury">
     <div class="container">
-        <div class="section-header-beach">
-            <h2 class="section-title-beach">Nosso estilo</h2>
-            <p class="section-subtitle-beach">Explore nossa diversidade de produtos artesanais</p>
+        <div class="section-header-luxury">
+            <span class="section-label">Categorias</span>
+            <h2 class="section-title-luxury">Nossas Colecoes</h2>
+            <div class="section-divider"></div>
         </div>
-        
-        <div class="categories-grid-beach">
-            <div class="category-card-beach" data-aos="fade-up" data-aos-delay="0">
-                <div class="category-icon-beach">
-                    <i class="fas fa-heart"></i>
+
+        <div class="collections-grid">
+            <div class="collection-card" data-aos="fade-up">
+                <div class="collection-icon">
+                    <i class="fas fa-gem"></i>
                 </div>
-                <div class="category-content">
-                    <h3>Com Amor</h3>
-                    <p>Peças feitas com carinho e dedicação especial</p>
-                    <a href="{{ url_for('products', categoria='com-amor') }}" class="btn-category-beach">
-                        <span>Ver Produtos</span>
-                        <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
+                <h3>Acessorios</h3>
+                <p>Pecas exclusivas que complementam seu estilo com sofisticacao</p>
+                <a href="{{ url_for('products', categoria='acessorios') }}" class="btn-collection">
+                    <span>Descobrir</span>
+                    <i class="fas fa-arrow-right"></i>
+                </a>
             </div>
-            
-            <div class="category-card-beach" data-aos="fade-up" data-aos-delay="100">
-                <div class="category-icon-beach">
-                    <i class="fas fa-sun"></i>
+
+            <div class="collection-card" data-aos="fade-up" data-aos-delay="100">
+                <div class="collection-icon">
+                    <i class="fas fa-shopping-bag"></i>
                 </div>
-                <div class="category-content">
-                    <h3>Feito a Mão</h3>
-                    <p>Artesanato de qualidade</p>
-                    <a href="{{ url_for('products', categoria='carioca') }}" class="btn-category-beach">
-                        <span>Ver Produtos</span>
-                        <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
+                <h3>Bolsas</h3>
+                <p>Bolsas artesanais confeccionadas com materiais selecionados</p>
+                <a href="{{ url_for('products', categoria='bolsa') }}" class="btn-collection">
+                    <span>Descobrir</span>
+                    <i class="fas fa-arrow-right"></i>
+                </a>
             </div>
-            
-            <div class="category-card-beach" data-aos="fade-up" data-aos-delay="200">
-                <div class="category-icon-beach">
+
+            <div class="collection-card" data-aos="fade-up" data-aos-delay="200">
+                <div class="collection-icon">
                     <i class="fas fa-star"></i>
                 </div>
-                <div class="category-content">
-                    <h3>Único</h3>
-                    <p>Peças exclusivas e personalizadas para você</p>
-                    <a href="{{ url_for('products', categoria='unico') }}" class="btn-category-beach">
-                        <span>Ver Produtos</span>
-                        <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
+                <h3>Personalizados</h3>
+                <p>Pecas unicas criadas sob medida para voce</p>
+                <a href="{{ url_for('products', categoria='personalizados') }}" class="btn-collection">
+                    <span>Descobrir</span>
+                    <i class="fas fa-arrow-right"></i>
+                </a>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Contact CTA Beach Theme -->
-<section class="contact-cta-beach">
+<!-- Contact CTA -->
+<section class="contact-cta-luxury">
     <div class="container">
-        <div class="cta-content-beach">
-            <div class="cta-text-beach" data-aos="fade-right">
+        <div class="cta-content-luxury">
+            <div class="cta-text-luxury" data-aos="fade-right">
+                <span class="section-label">Atendimento Personalizado</span>
                 <h2>Vamos Conversar?</h2>
-                <p>Entre em contato conosco pelo WhatsApp e descubra como podemos criar algo especial para você!</p>
+                <p>Entre em contato para um atendimento exclusivo. Estamos prontos para ajuda-lo a encontrar a peca perfeita ou criar algo unico para voce.</p>
             </div>
-            <div class="cta-actions-beach" data-aos="fade-left" data-aos-delay="200">
-                <a href="https://wa.me/5521973108293?text=Olá! Gostaria de conhecer mais sobre os produtos da Prima Arte!" 
-                   target="_blank" class="btn-whatsapp-beach">
+            <div class="cta-actions-luxury" data-aos="fade-left" data-aos-delay="200">
+                <a href="https://wa.me/5521973108293?text=Olá! Gostaria de conhecer mais sobre os produtos da Val's!" target="_blank" class="btn-whatsapp-luxury">
                     <i class="fab fa-whatsapp"></i>
-                    <span>Chamar no WhatsApp</span>
-                    <div class="btn-glow"></div>
+                    <span>WhatsApp</span>
                 </a>
-                <a href="https://www.instagram.com/primaarte2025/" target="_blank" class="btn-instagram-beach">
+                <a href="https://www.instagram.com/primaarte2025/" target="_blank" class="btn-instagram-luxury">
                     <i class="fab fa-instagram"></i>
-                    <span>Seguir no Instagram</span>
-                    <div class="btn-glow"></div>
+                    <span>Instagram</span>
                 </a>
             </div>
         </div>
     </div>
 </section>
-
-<!-- CSS Inline para garantir que funcione -->
-<style>
-/* Featured Products Beach */
-.featured-beach {
-    padding: 5rem 0;
-    background: white;
-}
-
-.section-header-beach {
-    text-align: center;
-    margin-bottom: 4rem;
-}
-
-.section-title-beach {
-    font-family: var(--font-heading);
-    font-size: 2.8rem;
-    color: #20B2AA;
-    margin-bottom: 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-}
-
-.section-title-beach i {
-    color: #FFD700;
-}
-
-.section-subtitle-beach {
-    color: #4682B4;
-    font-size: 1.2rem;
-    max-width: 600px;
-    margin: 0 auto;
-}
-
-.products-grid-beach {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2.5rem;
-    margin-bottom: 3rem;
-}
-
-.product-card-beach {
-    background: white;
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow: 0 8px 30px rgba(32, 178, 170, 0.1);
-    transition: all 0.3s ease;
-    border: 1px solid rgba(32, 178, 170, 0.1);
-}
-
-.product-card-beach:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 20px 50px rgba(32, 178, 170, 0.2);
-}
-
-.product-image-beach {
-    position: relative;
-    overflow: hidden;
-}
-
-.product-image-beach img {
-    width: 100%;
-    height: 250px;
-    object-fit: cover;
-    transition: transform 0.3s ease;
-}
-
-.no-image-beach {
-    width: 100%;
-    height: 250px;
-    background: linear-gradient(135deg, #87CEEB, #4682B4);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 3rem;
-}
-
-.promotion-badge-beach {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    background: #FF6347;
-    color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 0.3rem;
-    box-shadow: 0 3px 15px rgba(255, 99, 71, 0.3);
-}
-
-.product-badge-beach {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    background: #FFD700;
-    color: #4682B4;
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 0.3rem;
-    box-shadow: 0 3px 15px rgba(255, 215, 0, 0.3);
-}
-
-.product-hover-beach {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(32, 178, 170, 0.8);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.product-card-beach:hover .product-hover-beach {
-    opacity: 1;
-}
-
-.product-card-beach:hover .product-image-beach img {
-    transform: scale(1.1);
-}
-
-.btn-view-beach {
-    background: white;
-    color: #20B2AA;
-    padding: 0.8rem 1.5rem;
-    border-radius: 25px;
-    text-decoration: none;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    transition: all 0.3s ease;
-    transform: translateY(20px);
-}
-
-.product-card-beach:hover .btn-view-beach {
-    transform: translateY(0);
-}
-
-.btn-view-beach:hover {
-    background: #FFD700;
-    color: white;
-}
-
-.product-info-beach {
-    padding: 2rem;
-}
-
-.product-info-beach h3 {
-    font-family: var(--font-heading);
-    font-size: 1.4rem;
-    color: #20B2AA;
-    margin-bottom: 0.8rem;
-    line-height: 1.3;
-}
-
-.product-info-beach p {
-    color: #4682B4;
-    line-height: 1.5;
-    margin-bottom: 1rem;
-    font-size: 0.95rem;
-}
-
-.product-price-beach {
-    margin-bottom: 1.5rem;
-}
-
-.regular-price-main {
-    font-size: 1.2rem;
-    color: #999;
-    text-decoration: line-through;
-    margin-right: 0.5rem;
-}
-
-.promotional-price-main {
-    font-size: 1.6rem;
-    font-weight: 700;
-    color: #FF6347;
-}
-
-.price-current {
-    font-size: 1.6rem;
-    font-weight: 700;
-    color: #FFD700;
-}
-
-.btn-buy-beach {
-    width: 100%;
-    background: linear-gradient(135deg, #20B2AA, #87CEEB);
-    color: white;
-    text-decoration: none;
-    padding: 1rem 2rem;
-    border-radius: 15px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    transition: all 0.3s ease;
-    min-height: 50px;
-}
-
-.btn-buy-beach:hover {
-    background: linear-gradient(135deg, #87CEEB, #20B2AA);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(32, 178, 170, 0.3);
-}
-
-.section-footer-beach {
-    text-align: center;
-}
-
-.btn-view-all-beach {
-    background: linear-gradient(135deg, #4682B4, #20B2AA);
-    color: white;
-    padding: 1.2rem 2.5rem;
-    border-radius: 25px;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 1.1rem;
-    display: inline-flex;
-    align-items: center;
-    gap: 1rem;
-    transition: all 0.3s ease;
-    box-shadow: 0 8px 30px rgba(70, 130, 180, 0.3);
-}
-
-.btn-view-all-beach:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 15px 45px rgba(70, 130, 180, 0.4);
-}
-
-/* Debug Section */
-.debug-section {
-    border: 2px dashed #dc3545;
-    margin: 2rem 0;
-}
-
-/* Categories Section Optimized */
-.categories-beach {
-    padding: 5rem 0;
-    background: linear-gradient(135deg, #F0F8FF, #E6F3FF);
-}
-
-.categories-grid-beach {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 2rem;
-    margin-top: 3rem;
-}
-
-.category-card-beach {
-    background: white;
-    padding: 2rem;
-    border-radius: 20px;
-    text-align: center;
-    box-shadow: 0 8px 30px rgba(32, 178, 170, 0.1);
-    border: 1px solid rgba(32, 178, 170, 0.1);
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-}
-
-.category-card-beach:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 20px 50px rgba(32, 178, 170, 0.2);
-}
-
-.category-card-beach::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(32, 178, 170, 0.1), transparent);
-    transition: left 0.5s ease;
-}
-
-.category-card-beach:hover::before {
-    left: 100%;
-}
-
-.category-icon-beach {
-    width: 80px;
-    height: 80px;
-    background: linear-gradient(135deg, #20B2AA, #87CEEB);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 1.5rem;
-    font-size: 2rem;
-    color: white;
-    box-shadow: 0 8px 25px rgba(32, 178, 170, 0.3);
-    transition: all 0.3s ease;
-}
-
-.category-card-beach:hover .category-icon-beach {
-    transform: scale(1.1) rotate(5deg);
-    box-shadow: 0 15px 40px rgba(32, 178, 170, 0.4);
-}
-
-.category-content h3 {
-    font-family: var(--font-heading);
-    font-size: 1.8rem;
-    color: #20B2AA;
-    margin-bottom: 1rem;
-    transition: color 0.3s ease;
-}
-
-.category-card-beach:hover .category-content h3 {
-    color: #4682B4;
-}
-
-.category-content p {
-    color: #4682B4;
-    line-height: 1.6;
-    margin-bottom: 2rem;
-    font-size: 1rem;
-}
-
-.btn-category-beach {
-    background: linear-gradient(135deg, #20B2AA, #87CEEB);
-    color: white;
-    padding: 1rem 2rem;
-    border-radius: 25px;
-    text-decoration: none;
-    font-weight: 600;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-}
-
-.btn-category-beach:hover {
-    background: linear-gradient(135deg, #87CEEB, #20B2AA);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(32, 178, 170, 0.3);
-}
-
-.btn-category-beach i {
-    transition: transform 0.3s ease;
-}
-
-.btn-category-beach:hover i {
-    transform: translateX(5px);
-}
-
-/* Contact CTA Section Optimized */
-.contact-cta-beach {
-    padding: 5rem 0;
-    background: linear-gradient(135deg, #20B2AA 0%, #4682B4 50%, #87CEEB 100%);
-    position: relative;
-    overflow: hidden;
-}
-
-.contact-cta-beach::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120"><path d="M0,96L48,80C96,64,192,32,288,37.3C384,43,480,85,576,112C672,139,768,149,864,128C960,107,1056,53,1152,42.7C1248,32,1344,64,1392,80L1440,96L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z" fill="rgba(255,255,255,0.1)"/></svg>') repeat-x;
-    animation: wave 8s ease-in-out infinite;
-}
-
-.cta-content-beach {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 4rem;
-    align-items: center;
-    position: relative;
-    z-index: 2;
-}
-
-.cta-text-beach {
-    color: white;
-}
-
-.cta-text-beach h2 {
-    font-family: var(--font-heading);
-    font-size: 3rem;
-    margin-bottom: 1.5rem;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-}
-
-.cta-text-beach p {
-    font-size: 1.2rem;
-    line-height: 1.6;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
-    opacity: 0.95;
-}
-
-.cta-actions-beach {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
-
-.btn-whatsapp-beach,
-.btn-instagram-beach {
-    padding: 1.2rem 2rem;
-    border-radius: 25px;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 1.1rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-    backdrop-filter: blur(10px);
-    border: 2px solid rgba(255, 255, 255, 0.2);
-}
-
-.btn-whatsapp-beach {
-    background: rgba(37, 211, 102, 0.9);
-    color: white;
-}
-
-.btn-instagram-beach {
-    background: rgba(225, 48, 108, 0.9);
-    color: white;
-}
-
-.btn-glow {
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-    transition: left 0.5s ease;
-}
-
-.btn-whatsapp-beach:hover .btn-glow,
-.btn-instagram-beach:hover .btn-glow {
-    left: 100%;
-}
-
-.btn-whatsapp-beach:hover {
-    background: rgba(37, 211, 102, 1);
-    transform: translateY(-3px) scale(1.05);
-    box-shadow: 0 15px 40px rgba(37, 211, 102, 0.4);
-}
-
-.btn-instagram-beach:hover {
-    background: rgba(225, 48, 108, 1);
-    transform: translateY(-3px) scale(1.05);
-    box-shadow: 0 15px 40px rgba(225, 48, 108, 0.4);
-}
-
-.btn-whatsapp-beach i,
-.btn-instagram-beach i {
-    font-size: 1.5rem;
-    transition: transform 0.3s ease;
-}
-
-.btn-whatsapp-beach:hover i,
-.btn-instagram-beach:hover i {
-    transform: scale(1.2) rotate(5deg);
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .products-grid-beach {
-        grid-template-columns: 1fr;
-        gap: 2rem;
-    }
-    
-    .section-title-beach {
-        font-size: 2.2rem;
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-    
-    .categories-grid-beach {
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-        margin-top: 2rem;
-    }
-    
-    .category-card-beach {
-        padding: 1.5rem;
-    }
-    
-    .category-icon-beach {
-        width: 60px;
-        height: 60px;
-        font-size: 1.5rem;
-        margin-bottom: 1rem;
-    }
-    
-    .category-content h3 {
-        font-size: 1.5rem;
-    }
-    
-    .category-content p {
-        font-size: 0.9rem;
-        margin-bottom: 1.5rem;
-    }
-    
-    .btn-category-beach {
-        padding: 0.8rem 1.5rem;
-        font-size: 0.9rem;
-    }
-    
-    .cta-content-beach {
-        grid-template-columns: 1fr;
-        gap: 2rem;
-        text-align: center;
-    }
-    
-    .cta-text-beach h2 {
-        font-size: 2.2rem;
-    }
-    
-    .cta-text-beach p {
-        font-size: 1rem;
-    }
-    
-    .cta-actions-beach {
-        gap: 1rem;
-    }
-    
-    .btn-whatsapp-beach,
-    .btn-instagram-beach {
-        padding: 1rem 1.5rem;
-        font-size: 1rem;
-        justify-content: center;
-    }
-}
-
-@media (max-width: 480px) {
-    .categories-beach {
-        padding: 3rem 0;
-    }
-    
-    .contact-cta-beach {
-        padding: 3rem 0;
-    }
-    
-    .category-card-beach {
-        padding: 1.2rem;
-    }
-    
-    .category-icon-beach {
-        width: 50px;
-        height: 50px;
-        font-size: 1.3rem;
-    }
-    
-    .category-content h3 {
-        font-size: 1.3rem;
-    }
-    
-    .cta-text-beach h2 {
-        font-size: 1.8rem;
-    }
-    
-    .btn-whatsapp-beach,
-    .btn-instagram-beach {
-        padding: 0.8rem 1.2rem;
-        font-size: 0.9rem;
-    }
-}
-</style>
 
 <script>
-// Simple AOS-like animation
 function animateOnScroll() {
     const elements = document.querySelectorAll('[data-aos]');
     elements.forEach(element => {
         const elementTop = element.getBoundingClientRect().top;
         const elementVisible = 150;
-        
         if (elementTop < window.innerHeight - elementVisible) {
             element.classList.add('aos-animate');
         }

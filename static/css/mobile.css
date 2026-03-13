@@ -1,4 +1,4 @@
-/* Prima Arte - Mobile Optimizations */
+/* Val's - Mobile Optimizations */
 
 /* Mobile Header Layout */
 .mobile-header-left {
@@ -7,7 +7,7 @@
     gap: 1rem;
 }
 
-/* Mobile Menu Styles - mais compacto */
+/* Mobile Menu Styles */
 .mobile-menu-toggle {
     display: none;
     flex-direction: column;
@@ -20,16 +20,15 @@
 }
 
 .hamburger-line {
-    width: 20px;
-    height: 2px;
-    background: var(--dark-brown);
-    margin: 2px 0;
-    transition: all 0.3s ease;
-    border-radius: 1px;
+    width: 22px;
+    height: 1.5px;
+    background: var(--navy);
+    margin: 3px 0;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .mobile-menu-toggle.active .hamburger-line:nth-child(1) {
-    transform: rotate(45deg) translate(4px, 4px);
+    transform: rotate(45deg) translate(5px, 5px);
 }
 
 .mobile-menu-toggle.active .hamburger-line:nth-child(2) {
@@ -37,7 +36,7 @@
 }
 
 .mobile-menu-toggle.active .hamburger-line:nth-child(3) {
-    transform: rotate(-45deg) translate(4px, -4px);
+    transform: rotate(-45deg) translate(5px, -5px);
 }
 
 .mobile-nav {
@@ -46,12 +45,13 @@
     top: 100%;
     left: 0;
     width: 100%;
-    background: white;
+    background: var(--offwhite);
     z-index: 1000;
-    box-shadow: 0 5px 25px rgba(0,0,0,0.1);
+    border-top: 1px solid rgba(201, 168, 76, 0.2);
+    border-bottom: 1px solid rgba(201, 168, 76, 0.2);
     opacity: 0;
-    transform: translateY(-20px);
-    transition: all 0.3s ease;
+    transform: translateY(-10px);
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .mobile-nav.active {
@@ -67,7 +67,7 @@
 }
 
 .mobile-nav ul li {
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid rgba(27, 42, 74, 0.06);
 }
 
 .mobile-nav ul li:last-child {
@@ -76,17 +76,18 @@
 
 .mobile-nav a {
     display: block;
-    padding: 0.8rem 1.5rem;
-    color: var(--dark-brown);
+    padding: 1rem 1.5rem;
+    color: var(--navy);
     text-decoration: none;
     font-weight: 500;
-    font-size: 0.9rem;
-    transition: all 0.3s ease;
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    transition: var(--transition);
 }
 
 .mobile-nav a:hover {
-    background: var(--primary-beige);
-    color: var(--primary-pink);
+    background: rgba(201, 168, 76, 0.08);
+    color: var(--gold);
 }
 
 .mobile-cart-link {
@@ -94,16 +95,16 @@
 }
 
 .mobile-cart-link .cart-count {
-    background: var(--primary-pink);
-    color: white;
+    background: var(--gold);
+    color: var(--white);
     border-radius: 50%;
     width: 18px;
     height: 18px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.65rem;
-    font-weight: bold;
+    font-size: 0.6rem;
+    font-weight: 600;
     margin-left: 0.5rem;
 }
 
@@ -125,132 +126,108 @@ body.menu-open {
     .mobile-menu-toggle {
         display: flex;
     }
-    
+
     .desktop-nav {
         display: none;
     }
-    
+
     .desktop-actions {
         display: none;
     }
-    
+
     .header {
-        padding: 0.5rem 0;
+        padding: 0.3rem 0;
     }
-    
+
     .header-content {
         position: relative;
         justify-content: space-between;
     }
-    
-    /* Logo menor para mobile */
+
     .logo-text h1 {
         font-size: 1.3rem;
         margin: 0;
         line-height: 1.1;
     }
-    
-    .logo-text .handmade {
-        font-size: 0.8rem;
+
+    .logo-text .tagline {
+        font-size: 0.5rem;
         line-height: 1;
     }
-    
+
     .logo-circle {
         width: 40px;
         height: 40px;
-        margin-right: 8px;
+        margin-right: 10px;
     }
-    
+
     .logo a {
         padding: 0.2rem 0;
     }
-    
-    /* Container mais compacto */
+
     .container {
-        padding: 0 12px;
+        padding: 0 15px;
     }
-    
-    /* Otimizações para botões sem emoji */
-    .btn-beach-primary,
-    .btn-beach-secondary {
-        font-size: 0.9rem;
-        padding: 0.7rem 1.2rem;
-        min-width: auto;
+
+    .hero-content-luxury {
+        padding: 2rem 0;
     }
-    
-    /* Cards de categoria sem emojis */
-    .category-card {
-        text-align: center;
-        padding: 1.2rem 0.8rem;
-    }
-    
-    .category-card h3 {
-        font-size: 1.1rem;
-        margin-top: 0.4rem;
-    }
-    
-    /* Melhorias gerais para mobile */
-    .hero-content-beach {
-        padding: 1.5rem 0;
-    }
-    
+
     .products-grid {
         grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-        gap: 1.2rem;
+        gap: 1.5rem;
     }
 }
 
 @media (max-width: 480px) {
     .header {
-        padding: 0.3rem 0;
+        padding: 0.2rem 0;
     }
-    
+
     .logo-text h1 {
         font-size: 1.1rem;
     }
-    
-    .logo-text .handmade {
-        font-size: 0.75rem;
+
+    .logo-text .tagline {
+        font-size: 0.45rem;
     }
-    
+
     .logo-circle {
         width: 35px;
         height: 35px;
-        margin-right: 6px;
+        margin-right: 8px;
     }
-    
+
     .mobile-nav a {
-        padding: 0.7rem 1.2rem;
-        font-size: 0.85rem;
+        padding: 0.8rem 1.2rem;
+        font-size: 0.75rem;
     }
-    
+
     .container {
-        padding: 0 10px;
+        padding: 0 12px;
     }
-    
+
     .products-grid {
         grid-template-columns: 1fr;
         gap: 1rem;
     }
-    
-    /* Menu hamburger ainda menor */
+
     .hamburger-line {
-        width: 18px;
-        height: 2px;
+        width: 20px;
     }
-    
+
     .mobile-menu-toggle {
         padding: 0.2rem;
     }
 }
 
-/* Animações suaves */
+/* Smooth animations */
 @media (prefers-reduced-motion: no-preference) {
     .mobile-nav {
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
-    
+
     .hamburger-line {
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
 }

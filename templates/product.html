@@ -3,7 +3,7 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/product-detail.css') }}">
 {% endblock %}
 
-{% block title %}{{ product.name }} - Prima Arte{% endblock %}
+{% block title %}{{ product.name }} - Val's{% endblock %}
 
 {% block content %}
 <section class="section">
@@ -17,23 +17,22 @@
                         </a>
                         <div class="zoom-indicator">
                             <i class="fas fa-search-plus"></i>
-                            <span>Clique para ampliar</span>
+                            <span>Ampliar</span>
                         </div>
                     </div>
-                    
-                    <!-- Links ocultos para todas as imagens da galeria -->
+
                     <div style="display:none;" id="hiddenGalleryLinks">
                         {% for image in product.images %}
                             <a href="{{ image }}" data-fancybox="product-gallery" data-caption="{{ product.name }} - Foto {{ loop.index }}"></a>
                         {% endfor %}
                     </div>
-                    
+
                     {% if product.images|length > 1 %}
                         <div class="image-thumbnails">
                             {% for image in product.images %}
-                                <img src="{{ image }}" 
-                                     alt="{{ product.name }}" 
-                                     onclick="changeMainImage('{{ image }}', {{ loop.index0 }}, this)" 
+                                <img src="{{ image }}"
+                                     alt="{{ product.name }}"
+                                     onclick="changeMainImage('{{ image }}', {{ loop.index0 }}, this)"
                                      class="thumbnail {% if loop.first %}active{% endif %}"
                                      data-index="{{ loop.index0 }}">
                             {% endfor %}
@@ -42,55 +41,50 @@
                 {% else %}
                     <div class="no-image-product">
                         <i class="fas fa-image"></i>
-                        <p>Sem imagem disponível</p>
+                        <p>Sem imagem disponivel</p>
                     </div>
                 {% endif %}
             </div>
-            
+
             <div class="product-info">
                 <h1 class="product-title">{{ product.name }}</h1>
-                
+
                 <div class="product-price-container">
                     {% if product.promotion_active and product.promotional_price %}
                         <div class="promotion-badge">
-                            <i class="fas fa-fire"></i>
                             {% set discount = ((product.price - product.promotional_price) / product.price * 100) | round %}
-                            {{ discount }}% OFF - Oferta Especial!
+                            {{ discount }}% OFF
                         </div>
                         <div class="price-display">
                             <span class="regular-price">De: R$ {{ "%.2f"|format(product.price) }}</span>
                             <span class="promotional-price">
                                 Por: R$ {{ "%.2f"|format(product.promotional_price) }}
-                                <i class="fas fa-tag" style="color: #4CAF50; font-size: 0.8em;"></i>
                             </span>
                             {% set savings = product.price - product.promotional_price %}
                             <div class="savings-amount">
-                                Você economiza R$ {{ "%.2f"|format(savings) }}!
+                                Economia de R$ {{ "%.2f"|format(savings) }}
                             </div>
                         </div>
                     {% else %}
                         <div class="regular-price-only">R$ {{ "%.2f"|format(product.price) }}</div>
                     {% endif %}
                 </div>
-                
+
                 <div class="product-category">
-                    <i class="fas fa-tag"></i>
                     <span>{{ product.category|title }}</span>
                 </div>
-                
+
                 <div class="product-description">
-                    <h3><i class="fas fa-info-circle"></i> Descrição</h3>
+                    <h3>Descricao</h3>
                     <p>{{ product.description }}</p>
                 </div>
-                
+
                 <form action="{{ url_for('add_to_cart') }}" method="POST" class="purchase-form">
                     <input type="hidden" name="product_id" value="{{ product.id }}">
                     <input type="hidden" name="current_price" value="{% if product.promotion_active and product.promotional_price %}{{ product.promotional_price }}{% else %}{{ product.price }}{% endif %}">
-                    
+
                     <div class="form-group">
-                        <label for="quantity">
-                            <i class="fas fa-sort-numeric-up"></i> Quantidade:
-                        </label>
+                        <label for="quantity">Quantidade</label>
                         <div class="quantity-selector">
                             <button type="button" onclick="decreaseQuantity()" class="qty-btn">
                                 <i class="fas fa-minus"></i>
@@ -101,38 +95,35 @@
                             </button>
                         </div>
                     </div>
-                    
+
                     <div class="form-group">
-                        <label for="description">
-                            <i class="fas fa-comment-alt"></i> Observações (opcional):
-                        </label>
-                        <textarea name="description" id="description" placeholder="Personalizações, cores específicas, tamanhos, etc."></textarea>
+                        <label for="description">Observacoes (opcional)</label>
+                        <textarea name="description" id="description" placeholder="Personalizacoes, cores, tamanhos..."></textarea>
                     </div>
-                    
+
                     <div class="purchase-actions">
                         <button type="submit" class="btn-add-cart">
-                            <i class="fas fa-shopping-cart"></i>
-                            <span>Adicionar ao Carrinho</span>
+                            <span>Adicionar a Sacola</span>
                         </button>
                         <a href="https://wa.me/5521973108293?text=Olá! Tenho interesse no produto: {{ product.name }}" target="_blank" class="btn-whatsapp">
                             <i class="fab fa-whatsapp"></i>
-                            <span>Falar no WhatsApp</span>
+                            <span>WhatsApp</span>
                         </a>
                     </div>
                 </form>
-                
+
                 <div class="product-guarantees">
                     <div class="guarantee-item">
-                        <i class="fas fa-heart"></i>
-                        <span>Feito à mão com amor</span>
+                        <i class="fas fa-gem"></i>
+                        <span>Materiais nobres</span>
                     </div>
                     <div class="guarantee-item">
-                        <i class="fas fa-star"></i>
-                        <span>Qualidade premium</span>
+                        <i class="fas fa-hands"></i>
+                        <span>Feito a mao</span>
                     </div>
                     <div class="guarantee-item">
                         <i class="fas fa-shipping-fast"></i>
-                        <span>Entrega rápida</span>
+                        <span>Entrega cuidadosa</span>
                     </div>
                 </div>
             </div>
@@ -146,23 +137,18 @@ let fancyboxInstance = null;
 function changeMainImage(newImageSrc, imageIndex, clickedThumbnail) {
     const mainImage = document.getElementById('mainImage');
     const mainImageLink = document.getElementById('mainImageLink');
-    
+
     if (mainImage && mainImageLink) {
-        // Atualiza a imagem principal
         mainImage.src = newImageSrc;
         mainImageLink.href = newImageSrc;
-        
-        // Atualiza o atributo data-caption
         mainImageLink.setAttribute('data-caption', '{{ product.name }} - Foto ' + (imageIndex + 1));
     }
-    
-    // Atualiza a classe 'active' nas miniaturas
+
     document.querySelectorAll('.thumbnail').forEach(thumb => {
         thumb.classList.remove('active');
     });
     clickedThumbnail.classList.add('active');
-    
-    // Reinicializa o Fancybox para a nova imagem
+
     if (fancyboxInstance) {
         Fancybox.destroy();
     }
@@ -170,80 +156,44 @@ function changeMainImage(newImageSrc, imageIndex, clickedThumbnail) {
 }
 
 function initializeFancybox() {
-    // Inicializa a biblioteca Fancybox
     fancyboxInstance = Fancybox.bind("[data-fancybox='product-gallery']", {
-        // Opções customizadas
         buttons: ["zoom", "slideShow", "thumbs", "close"],
         loop: true,
         animationEffect: "fade",
         animationDuration: 300,
-        thumbs: {
-            autoStart: false,
-        },
+        thumbs: { autoStart: false },
         zoom: true,
         wheel: "zoom",
-        // Configurações de zoom
-        Image: {
-            zoom: true,
-            click: "zoom",
-            wheel: "zoom"
-        },
-        // Configurações para melhor experiência móvel
-        touch: {
-            vertical: true,
-            momentum: true
-        }
+        Image: { zoom: true, click: "zoom", wheel: "zoom" },
+        touch: { vertical: true, momentum: true }
     });
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Inicializa o Fancybox
     initializeFancybox();
-    
-    // Funções de quantidade
+
     window.increaseQuantity = function() {
         const qty = document.getElementById('quantity');
         if (qty && parseInt(qty.value) < 10) {
             qty.value = parseInt(qty.value) + 1;
         }
     }
-    
+
     window.decreaseQuantity = function() {
         const qty = document.getElementById('quantity');
         if (qty && parseInt(qty.value) > 1) {
             qty.value = parseInt(qty.value) - 1;
         }
     }
-    
-    // Adiciona evento de clique na imagem principal como alternativa
+
     const mainImage = document.getElementById('mainImage');
     if (mainImage) {
         mainImage.style.cursor = 'zoom-in';
-        
-        // Evento adicional para garantir que o zoom funcione
-        mainImage.addEventListener('click', function(e) {
-            if (e.target.closest('a[data-fancybox]')) {
-                return; // Deixa o Fancybox lidar com isso
-            }
-            
-            // Fallback: abre manualmente o Fancybox
-            const link = document.getElementById('mainImageLink');
-            if (link) {
-                Fancybox.show([{
-                    src: link.href,
-                    caption: link.getAttribute('data-caption') || '{{ product.name }}'
-                }]);
-            }
-        });
     }
 });
 
-// Função para verificar se o Fancybox está carregado
 function checkFancyboxLoaded() {
     if (typeof Fancybox === 'undefined') {
-        console.warn('Fancybox não está carregado. Verifique se a biblioteca está incluída.');
-        
-        // Fallback simples para zoom
         const mainImageLink = document.getElementById('mainImageLink');
         if (mainImageLink) {
             mainImageLink.addEventListener('click', function(e) {
@@ -254,7 +204,6 @@ function checkFancyboxLoaded() {
     }
 }
 
-// Verifica se o Fancybox está disponível
 setTimeout(checkFancyboxLoaded, 1000);
 </script>
 
