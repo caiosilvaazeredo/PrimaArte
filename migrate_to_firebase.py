@@ -19,8 +19,24 @@ if not os.path.exists('data.json'):
     print("Arquivo data.json nao encontrado.")
     exit(1)
 
+# Validate credentials file
+try:
+    with open(FIREBASE_CRED, 'r', encoding='utf-8-sig') as f:
+        cred_data = json.load(f)
+    if cred_data.get('type') != 'service_account':
+        print(f"ERRO: O arquivo '{FIREBASE_CRED}' nao contem um certificado valido.")
+        print(f"  Campo 'type' encontrado: '{cred_data.get('type', '(ausente)')}'")
+        print(f"  Esperado: 'service_account'")
+        print(f"\nBaixe novamente pelo Firebase Console:")
+        print(f"  Configuracoes > Contas de servico > Gerar nova chave privada")
+        exit(1)
+except json.JSONDecodeError as e:
+    print(f"ERRO: O arquivo '{FIREBASE_CRED}' nao e um JSON valido: {e}")
+    print(f"Verifique se o conteudo foi colado corretamente.")
+    exit(1)
+
 # Initialize Firebase
-cred = credentials.Certificate(FIREBASE_CRED)
+cred = credentials.Certificate(cred_data)
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
