@@ -35,6 +35,28 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# ================================
+# FIREBASE FIRESTORE
+# ================================
+import firebase_admin
+from firebase_admin import credentials, firestore as firebase_firestore
+
+FIREBASE_CRED_FILE = os.environ.get('FIREBASE_CREDENTIALS', 'firebase-credentials.json')
+USE_FIREBASE = False
+db = None
+
+if os.path.exists(FIREBASE_CRED_FILE):
+    try:
+        cred = credentials.Certificate(FIREBASE_CRED_FILE)
+        firebase_admin.initialize_app(cred)
+        db = firebase_firestore.client()
+        USE_FIREBASE = True
+        print(f"[Firebase] Conectado ao Firestore com sucesso!")
+    except Exception as e:
+        print(f"[Firebase] Erro ao conectar: {e}. Usando JSON como fallback.")
+else:
+    print(f"[Firebase] Arquivo {FIREBASE_CRED_FILE} nao encontrado. Usando JSON como fallback.")
+
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'vals-luxury-secret-key-2025')
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max upload
@@ -127,16 +149,56 @@ app.jinja_env.globals['generate_captcha'] = generate_captcha
 
 
 # ================================
-# DATA LAYER
+# DATA LAYER (Firebase Firestore + JSON fallback)
 # ================================
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+
+# --- Firebase Firestore helpers ---
+def _fb_get_collection(collection_name):
+    """Get all documents from a Firestore collection."""
+    docs = db.collection(collection_name).stream()
+    items = []
+    for doc in docs:
+        item = doc.to_dict()
+        item['id'] = doc.id
+        items.append(item)
+    return items
+
+def _fb_get_doc(collection_name, doc_id):
+    """Get a single document from Firestore."""
+    doc = db.collection(collection_name).document(doc_id).get()
+    if doc.exists:
+        item = doc.to_dict()
+        item['id'] = doc.id
+        return item
+    return None
+
+def _fb_save_doc(collection_name, doc_id, data_dict):
+    """Save a document to Firestore."""
+    db.collection(collection_name).document(doc_id).set(data_dict)
+
+def _fb_delete_doc(collection_name, doc_id):
+    """Delete a document from Firestore."""
+    db.collection(collection_name).document(doc_id).delete()
+
+
 def load_data():
+    """Load all data. Uses Firebase if available, JSON otherwise."""
+    if USE_FIREBASE:
+        return {
+            'products': _fb_get_collection('products'),
+            'announcements': _fb_get_collection('announcements'),
+            'customers': _fb_get_collection('customers'),
+            'orders': _fb_get_collection('orders'),
+            'admin_password': os.environ.get('ADMIN_PASSWORD', 'primaarte2025')
+        }
+
+    # JSON fallback
     if os.path.exists(DATA_FILE):
         with open(DATA_FILE, 'r', encoding='utf-8') as f:
             data = json.load(f)
-            # Ensure all required keys exist
             data.setdefault('products', [])
             data.setdefault('announcements', [])
             data.setdefault('customers', [])
@@ -152,8 +214,45 @@ def load_data():
     }
 
 def save_data(data):
+    """Save all data. Uses Firebase if available, JSON otherwise."""
+    if USE_FIREBASE:
+        # Firebase saves happen per-document, this is only for JSON fallback
+        # For Firebase, use save_item() instead
+        return
     with open(DATA_FILE, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
+
+def save_item(collection_name, item_id, item_data):
+    """Save a single item to the correct storage."""
+    if USE_FIREBASE:
+        save_dict = {k: v for k, v in item_data.items() if k != 'id'}
+        _fb_save_doc(collection_name, item_id, save_dict)
+    else:
+        data = load_data()
+        items = data.get(collection_name, [])
+        existing_index = next((i for i, x in enumerate(items) if x.get('id') == item_id), None)
+        if existing_index is not None:
+            items[existing_index] = item_data
+        else:
+            items.append(item_data)
+        data[collection_name] = items
+        save_data(data)
+
+def delete_item(collection_name, item_id):
+    """Delete a single item from the correct storage."""
+    if USE_FIREBASE:
+        _fb_delete_doc(collection_name, item_id)
+    else:
+        data = load_data()
+        data[collection_name] = [x for x in data.get(collection_name, []) if x.get('id') != item_id]
+        save_data(data)
+
+def get_item(collection_name, item_id):
+    """Get a single item from the correct storage."""
+    if USE_FIREBASE:
+        return _fb_get_doc(collection_name, item_id)
+    data = load_data()
+    return next((x for x in data.get(collection_name, []) if x.get('id') == item_id), None)
 
 
 # ================================
@@ -204,8 +303,7 @@ def verify_password(password, hashed):
     return bcrypt.checkpw(password.encode('utf-8'), hashed.encode('utf-8'))
 
 def get_customer(customer_id):
-    data = load_data()
-    return next((c for c in data['customers'] if c['id'] == customer_id), None)
+    return get_item('customers', customer_id)
 
 def generate_order_number():
     return f"VLS-{datetime.now().strftime('%Y%m%d')}-{random.randint(1000, 9999)}"
@@ -619,9 +717,7 @@ def checkout_process():
             order['payment_error'] = pay_result.get('errors', [])
 
     # Save order
-    data['orders'] = data.get('orders', [])
-    data['orders'].append(order)
-    save_data(data)
+    save_item('orders', order['id'], order)
 
     # Clear cart
     session['cart'] = []
@@ -745,7 +841,7 @@ def asaas_webhook():
         elif new_status in ('REFUNDED', 'DELETED'):
             order['status'] = 'cancelled'
 
-        save_data(data)
+        save_item('orders', order['id'], order)
 
     return jsonify({'ok': True}), 200
 
@@ -808,8 +904,7 @@ def customer_register():
         'created_at': datetime.now().isoformat()
     }
 
-    data['customers'].append(customer)
-    save_data(data)
+    save_item('customers', customer['id'], customer)
 
     session['customer_id'] = customer['id']
     flash('Cadastro realizado com sucesso! Configure a autenticacao de 2 fatores para maior seguranca.', 'success')
@@ -922,7 +1017,7 @@ def customer_profile_update():
             return redirect(url_for('customer_profile'))
         customer['password'] = hash_password(new_password)
 
-    save_data(data)
+    save_item('customers', customer['id'], customer)
     flash('Perfil atualizado com sucesso!', 'success')
     return redirect(url_for('customer_profile'))
 
@@ -957,12 +1052,8 @@ def customer_2fa_setup():
     totp = pyotp.TOTP(customer['totp_secret'])
 
     if totp.verify(token, valid_window=1):
-        data = load_data()
-        for c in data['customers']:
-            if c['id'] == customer['id']:
-                c['totp_enabled'] = True
-                break
-        save_data(data)
+        customer['totp_enabled'] = True
+        save_item('customers', customer['id'], customer)
         flash('Autenticacao de 2 fatores ativada com sucesso!', 'success')
         return redirect(url_for('customer_profile'))
     else:
@@ -1088,7 +1179,7 @@ def admin_update_order_status(order_id):
     if order:
         order['status'] = request.form.get('status', order['status'])
         order['updated_at'] = datetime.now().isoformat()
-        save_data(data)
+        save_item('orders', order['id'], order)
         flash('Status do pedido atualizado!', 'success')
 
     return redirect(url_for('admin_order_detail', order_id=order_id))
@@ -1310,15 +1401,7 @@ def admin_save_product():
         'updated_at': datetime.now().isoformat()
     }
 
-    existing_index = next(
-        (i for i, p in enumerate(data['products']) if p['id'] == product['id']), None
-    )
-    if existing_index is not None:
-        data['products'][existing_index] = product
-    else:
-        data['products'].append(product)
-
-    save_data(data)
+    save_item('products', product['id'], product)
 
     if promotion_active and promotional_price:
         discount_percent = calculate_discount_percentage(regular_price, promotional_price)
@@ -1341,8 +1424,7 @@ def admin_product_delete(product_id):
                 if os.path.exists(image_path):
                     os.remove(image_path)
 
-    data['products'] = [p for p in data['products'] if p['id'] != product_id]
-    save_data(data)
+    delete_item('products', product_id)
 
     flash('Produto excluido com sucesso!', 'success')
     return redirect(url_for('admin_products'))
@@ -1412,16 +1494,7 @@ def admin_save_announcement():
         'updated_at': datetime.now().isoformat()
     }
 
-    existing_index = next(
-        (i for i, a in enumerate(data['announcements']) if a['id'] == announcement['id']),
-        None
-    )
-    if existing_index is not None:
-        data['announcements'][existing_index] = announcement
-    else:
-        data['announcements'].append(announcement)
-
-    save_data(data)
+    save_item('announcements', announcement['id'], announcement)
     flash(f'Anuncio "{announcement_title}" salvo com sucesso!', 'success')
     return redirect(url_for('admin_announcements'))
 
@@ -1439,10 +1512,7 @@ def admin_delete_announcement(announcement_id):
             if os.path.exists(image_path):
                 os.remove(image_path)
 
-    data['announcements'] = [
-        a for a in data['announcements'] if a['id'] != announcement_id
-    ]
-    save_data(data)
+    delete_item('announcements', announcement_id)
 
     flash('Anuncio excluido com sucesso!', 'success')
     return redirect(url_for('admin_announcements'))
@@ -1498,7 +1568,7 @@ def api_payment_status(order_id):
                 if new_status in ('CONFIRMED', 'RECEIVED'):
                     order['status'] = 'paid'
                 order['updated_at'] = datetime.now().isoformat()
-                save_data(data)
+                save_item('orders', order['id'], order)
 
     return jsonify({
         'status': order.get('status'),

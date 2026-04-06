@@ -122,6 +122,20 @@
                         <li><a href="{{ url_for('index') }}">Inicio</a></li>
                         <li><a href="{{ url_for('products') }}">Colecao</a></li>
                         <li><a href="{{ url_for('about') }}">Nossa Historia</a></li>
+                        {% if current_customer %}
+                        <li><a href="{{ url_for('customer_profile') }}">Minha Conta</a></li>
+                        {% else %}
+                        <li><a href="{{ url_for('customer_login') }}">Entrar / Cadastrar</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>CONTA</h4>
+                    <ul class="footer-links">
+                        <li><a href="{{ url_for('customer_login') }}">Login</a></li>
+                        <li><a href="{{ url_for('customer_register') }}">Cadastro</a></li>
+                        <li><a href="{{ url_for('cart') }}">Sacola</a></li>
+                        <li><a href="{{ url_for('admin_login') }}">Administracao</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">
