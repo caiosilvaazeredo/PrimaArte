@@ -35,6 +35,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+import email_service
+
 # ================================
 # FIREBASE FIRESTORE
 # ================================
@@ -719,6 +721,10 @@ def checkout_process():
     # Save order
     save_item('orders', order['id'], order)
 
+    # Send order confirmation email
+    if customer_email:
+        email_service.send_order_confirmation_email(app, order)
+
     # Clear cart
     session['cart'] = []
 
@@ -843,6 +849,10 @@ def asaas_webhook():
 
         save_item('orders', order['id'], order)
 
+        # Send payment status email
+        if order.get('customer_email'):
+            email_service.send_payment_status_email(app, order)
+
     return jsonify({'ok': True}), 200
 
 
@@ -906,6 +916,9 @@ def customer_register():
 
     save_item('customers', customer['id'], customer)
 
+    # Send welcome email
+    email_service.send_welcome_email(app, name, email)
+
     session['customer_id'] = customer['id']
     flash('Cadastro realizado com sucesso! Configure a autenticacao de 2 fatores para maior seguranca.', 'success')
     return redirect(url_for('customer_profile'))
@@ -946,6 +959,74 @@ def customer_login():
 
     next_url = request.args.get('next', url_for('customer_profile'))
     return redirect(next_url)
+
+
+# --- Password Recovery ---
+_password_reset_tokens = {}  # {token: {'customer_id': ..., 'expires': datetime}}
+
+@app.route('/esqueci-senha', methods=['GET', 'POST'])
+def forgot_password():
+    if request.method == 'GET':
+        captcha_question = generate_captcha()
+        return render_template('customer/forgot_password.html', captcha_question=captcha_question)
+
+    if not check_rate_limit(f"forgot_{request.remote_addr}", 3, 300):
+        flash('Muitas tentativas. Aguarde 5 minutos.', 'error')
+        return redirect(url_for('forgot_password'))
+
+    if not verify_captcha(request.form.get('captcha')):
+        flash('Resposta do captcha incorreta.', 'error')
+        return redirect(url_for('forgot_password'))
+
+    email = request.form.get('email', '').strip().lower()
+    data = load_data()
+    customer = next((c for c in data['customers'] if c['email'] == email), None)
+
+    # Always show success message (prevent email enumeration)
+    if customer:
+        token = email_service.generate_password_reset_token()
+        _password_reset_tokens[token] = {
+            'customer_id': customer['id'],
+            'expires': datetime.now() + timedelta(hours=1)
+        }
+        reset_url = url_for('reset_password', token=token, _external=True)
+        email_service.send_password_reset_email(app, email, customer['name'], reset_url)
+
+    flash('Se o email estiver cadastrado, voce recebera um link para redefinir sua senha.', 'info')
+    return redirect(url_for('customer_login'))
+
+
+@app.route('/redefinir-senha/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    token_data = _password_reset_tokens.get(token)
+    if not token_data or datetime.now() > token_data['expires']:
+        flash('Link expirado ou invalido. Solicite um novo.', 'error')
+        return redirect(url_for('forgot_password'))
+
+    if request.method == 'GET':
+        return render_template('customer/reset_password.html', token=token)
+
+    password = request.form.get('password', '')
+    confirm_password = request.form.get('confirm_password', '')
+
+    if len(password) < 8:
+        flash('A senha deve ter pelo menos 8 caracteres.', 'error')
+        return redirect(url_for('reset_password', token=token))
+
+    if password != confirm_password:
+        flash('As senhas nao conferem.', 'error')
+        return redirect(url_for('reset_password', token=token))
+
+    customer = get_customer(token_data['customer_id'])
+    if customer:
+        customer['password'] = hash_password(password)
+        save_item('customers', customer['id'], customer)
+        del _password_reset_tokens[token]
+        flash('Senha redefinida com sucesso! Faca login.', 'success')
+    else:
+        flash('Erro ao redefinir senha.', 'error')
+
+    return redirect(url_for('customer_login'))
 
 
 @app.route('/2fa/verificar', methods=['GET', 'POST'])
@@ -1177,9 +1258,15 @@ def admin_update_order_status(order_id):
     order = next((o for o in data.get('orders', []) if o['id'] == order_id), None)
 
     if order:
-        order['status'] = request.form.get('status', order['status'])
+        new_status = request.form.get('status', order['status'])
+        order['status'] = new_status
         order['updated_at'] = datetime.now().isoformat()
         save_item('orders', order['id'], order)
+
+        # Send order status email
+        if order.get('customer_email'):
+            email_service.send_order_status_email(app, order)
+
         flash('Status do pedido atualizado!', 'success')
 
     return redirect(url_for('admin_order_detail', order_id=order_id))
