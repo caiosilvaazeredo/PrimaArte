@@ -1,9 +1,9 @@
-/* Val's - Luxury Home Page Styles */
+/* Val's - Riviera Botanica Home Page */
 
 /* ================================
-   HERO SECTION - LUXURY
+   HERO SECTION - RIVIERA
    ================================ */
-.hero-luxury {
+.hero-riviera {
     position: relative;
     min-height: 100vh;
     background: var(--navy);
@@ -13,28 +13,22 @@
     overflow: hidden;
 }
 
-.hero-luxury::before {
-    content: '';
+.hero-riviera-overlay {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, rgba(27, 42, 74, 0.95) 0%, rgba(27, 42, 74, 0.7) 100%);
+    background: linear-gradient(
+        135deg,
+        rgba(27, 42, 74, 0.97) 0%,
+        rgba(27, 42, 74, 0.85) 50%,
+        rgba(27, 42, 74, 0.92) 100%
+    );
     z-index: 1;
 }
 
-.hero-bg-image {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    opacity: 0.4;
-}
-
-.hero-content-luxury {
+.hero-riviera-content {
     position: relative;
     z-index: 2;
     display: flex;
@@ -46,55 +40,65 @@
     padding: 6rem 0;
 }
 
-.hero-logo-luxury {
-    width: 140px;
-    height: 140px;
-    border: 2px solid rgba(201, 168, 76, 0.5);
+.hero-riviera-badge {
+    width: 80px;
+    height: 80px;
+    border: 1px solid rgba(201, 168, 76, 0.4);
     border-radius: 50%;
-    overflow: hidden;
-    margin-bottom: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2rem;
     animation: fadeIn 1.5s ease-out;
 }
 
-.hero-logo-luxury img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+.hero-riviera-badge i {
+    font-size: 1.8rem;
+    color: var(--gold);
 }
 
-.hero-title-luxury {
+.hero-riviera-label {
+    font-family: var(--font-body);
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--gold);
+    letter-spacing: var(--letter-spacing-wide);
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    display: block;
+    animation: fadeInUp 1s ease-out 0.2s both;
+}
+
+.hero-riviera-title {
     font-family: var(--font-heading);
     font-size: 5rem;
     font-weight: 300;
     color: var(--offwhite);
-    letter-spacing: 0.08em;
+    letter-spacing: 0.05em;
     line-height: 1.1;
-    margin-bottom: 1rem;
-    animation: fadeInUp 1s ease-out 0.3s both;
+    margin-bottom: 0;
+    animation: fadeInUp 1s ease-out 0.4s both;
 }
 
-.hero-subtitle-luxury {
-    font-family: var(--font-body);
-    font-size: 0.8rem;
-    font-weight: 400;
-    color: var(--gold);
-    letter-spacing: var(--letter-spacing-wide);
-    text-transform: uppercase;
-    margin-bottom: 2rem;
-    animation: fadeInUp 1s ease-out 0.5s both;
+.hero-riviera-divider {
+    width: 80px;
+    height: 1px;
+    background: var(--gold);
+    margin: 2rem auto;
+    animation: fadeIn 1s ease-out 0.6s both;
 }
 
-.hero-description-luxury {
+.hero-riviera-description {
     font-family: var(--font-body);
     font-size: 1rem;
-    color: rgba(250, 248, 245, 0.7);
-    max-width: 550px;
-    line-height: 1.8;
+    color: rgba(250, 248, 245, 0.65);
+    max-width: 560px;
+    line-height: 1.9;
     margin-bottom: 3rem;
     animation: fadeInUp 1s ease-out 0.7s both;
 }
 
-.hero-actions-luxury {
+.hero-riviera-actions {
     display: flex;
     gap: 1.5rem;
     animation: fadeInUp 1s ease-out 0.9s both;
@@ -166,9 +170,187 @@
 }
 
 /* ================================
-   NEW ARRIVALS / NOVIDADES
+   ANNOUNCEMENTS
    ================================ */
-.new-arrivals {
+.announcements-luxury {
+    padding: 4rem 0;
+    background: var(--white);
+    border-top: 1px solid rgba(27, 42, 74, 0.06);
+    border-bottom: 1px solid rgba(27, 42, 74, 0.06);
+}
+
+.announcements-title-luxury {
+    text-align: center;
+    font-family: var(--font-heading);
+    font-size: 2rem;
+    font-weight: 400;
+    color: var(--navy);
+    margin-bottom: 2.5rem;
+}
+
+.announcements-grid-luxury {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+}
+
+.announcement-card-luxury {
+    padding: 2rem;
+    border: 1px solid rgba(27, 42, 74, 0.08);
+    background: var(--offwhite);
+    transition: var(--transition);
+    border-left: 3px solid var(--gold);
+}
+
+.announcement-card-luxury:hover {
+    box-shadow: 0 10px 30px rgba(27, 42, 74, 0.08);
+    transform: translateY(-3px);
+}
+
+.announcement-card-luxury .announcement-label {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: var(--letter-spacing-wide);
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.8rem;
+    display: block;
+}
+
+.announcement-card-luxury h3 {
+    font-family: var(--font-heading);
+    font-size: 1.3rem;
+    font-weight: 500;
+    color: var(--navy);
+    margin-bottom: 0.8rem;
+}
+
+.announcement-card-luxury p {
+    color: var(--gray);
+    line-height: 1.7;
+    font-size: 0.9rem;
+}
+
+/* ================================
+   BORN FROM THE OCEAN
+   ================================ */
+.origin-section {
+    padding: 6rem 0;
+    background: var(--cream);
+}
+
+.origin-content {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 5rem;
+    align-items: center;
+}
+
+.origin-text .section-label {
+    text-align: left;
+}
+
+.origin-text h2 {
+    font-family: var(--font-heading);
+    font-size: 2.5rem;
+    font-weight: 400;
+    color: var(--navy);
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
+}
+
+.origin-text p {
+    color: var(--gray);
+    line-height: 1.9;
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+}
+
+.origin-signature {
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.origin-sig-line {
+    width: 40px;
+    height: 1px;
+    background: var(--gold);
+    margin-bottom: 0.5rem;
+}
+
+.origin-signature span {
+    font-family: var(--font-heading);
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: var(--navy);
+    font-style: italic;
+}
+
+.origin-sig-sub {
+    font-family: var(--font-body) !important;
+    font-size: 0.75rem !important;
+    font-weight: 400 !important;
+    font-style: normal !important;
+    color: var(--gray) !important;
+    letter-spacing: 0.05em;
+}
+
+.origin-visual {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.origin-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.origin-stat {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.8rem;
+    background: var(--white);
+    border-left: 3px solid var(--gold);
+    transition: var(--transition);
+}
+
+.origin-stat:hover {
+    transform: translateX(5px);
+    box-shadow: 0 5px 20px rgba(27, 42, 74, 0.08);
+}
+
+.origin-stat i {
+    font-size: 1.5rem;
+    color: var(--gold);
+    width: 30px;
+    text-align: center;
+}
+
+.origin-stat-number {
+    font-family: var(--font-heading);
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--navy);
+    display: block;
+}
+
+.origin-stat-label {
+    font-size: 0.75rem;
+    color: var(--gray);
+    letter-spacing: 0.05em;
+    display: block;
+    margin-top: 0.2rem;
+}
+
+/* ================================
+   RIVIERA COLLECTION / PRODUCTS
+   ================================ */
+.riviera-collection {
     padding: 6rem 0;
     background: var(--offwhite);
 }
@@ -196,6 +378,14 @@
     color: var(--navy);
     line-height: 1.2;
     margin-bottom: 1rem;
+}
+
+.section-subtitle-riviera {
+    color: var(--gray);
+    font-size: 0.9rem;
+    max-width: 500px;
+    margin: 0 auto;
+    line-height: 1.6;
 }
 
 .section-divider {
@@ -422,145 +612,201 @@
 }
 
 /* ================================
-   BRAND STORY / NOSSA HISTORIA
+   CRAFTSMANSHIP SECTION
    ================================ */
-.brand-story {
+.craftsmanship-section {
     padding: 6rem 0;
-    background: var(--cream);
+    background: var(--navy);
+    color: var(--offwhite);
 }
 
-.brand-story-content {
+.craftsmanship-content {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 5rem;
     align-items: center;
 }
 
-.brand-story-text .section-label {
-    text-align: left;
-}
-
-.brand-story-text h2 {
-    font-family: var(--font-heading);
-    font-size: 2.5rem;
-    font-weight: 400;
-    color: var(--navy);
-    margin-bottom: 1.5rem;
-    line-height: 1.2;
-}
-
-.brand-story-text p {
-    color: var(--gray);
-    line-height: 1.9;
-    margin-bottom: 1.5rem;
-    font-size: 0.95rem;
-}
-
-.brand-story-visual {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-}
-
-.brand-values {
+.craft-process {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
 }
 
-.brand-value-item {
+.craft-step {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 1.5rem;
     padding: 1.5rem;
-    background: var(--white);
-    border-left: 3px solid var(--gold);
+    background: rgba(250, 248, 245, 0.04);
+    border: 1px solid rgba(250, 248, 245, 0.08);
     transition: var(--transition);
 }
 
-.brand-value-item:hover {
+.craft-step:hover {
+    background: rgba(250, 248, 245, 0.08);
+    border-color: rgba(201, 168, 76, 0.3);
     transform: translateX(5px);
-    box-shadow: 0 5px 20px rgba(27, 42, 74, 0.08);
 }
 
-.brand-value-item i {
-    font-size: 1.5rem;
-    color: var(--gold);
-    width: 30px;
-    text-align: center;
-}
-
-.brand-value-item span {
-    font-weight: 500;
-    color: var(--navy);
-    font-size: 0.9rem;
-    letter-spacing: 0.03em;
-}
-
-/* ================================
-   ANNOUNCEMENTS / NOVIDADES
-   ================================ */
-.announcements-luxury {
-    padding: 4rem 0;
-    background: var(--white);
-    border-top: 1px solid rgba(27, 42, 74, 0.06);
-    border-bottom: 1px solid rgba(27, 42, 74, 0.06);
-}
-
-.announcements-title-luxury {
-    text-align: center;
+.craft-step-number {
     font-family: var(--font-heading);
-    font-size: 2rem;
-    font-weight: 400;
-    color: var(--navy);
-    margin-bottom: 2.5rem;
+    font-size: 1.8rem;
+    font-weight: 300;
+    color: var(--gold);
+    min-width: 40px;
+    line-height: 1;
 }
 
-.announcements-grid-luxury {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 2rem;
+.craft-step-info h4 {
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--offwhite);
+    margin-bottom: 0.4rem;
 }
 
-.announcement-card-luxury {
-    padding: 2rem;
-    border: 1px solid rgba(27, 42, 74, 0.08);
-    background: var(--offwhite);
-    transition: var(--transition);
-    border-left: 3px solid var(--gold);
+.craft-step-info p {
+    font-size: 0.85rem;
+    color: rgba(250, 248, 245, 0.6);
+    line-height: 1.6;
+    margin: 0;
 }
 
-.announcement-card-luxury:hover {
-    box-shadow: 0 10px 30px rgba(27, 42, 74, 0.08);
-    transform: translateY(-3px);
+.craftsmanship-text .section-label {
+    text-align: left;
+    color: var(--gold);
 }
 
-.announcement-card-luxury .announcement-label {
-    font-size: 0.65rem;
+.craftsmanship-text h2 {
+    font-family: var(--font-heading);
+    font-size: 2.8rem;
+    font-weight: 300;
+    color: var(--offwhite);
+    margin-bottom: 1.5rem;
+    line-height: 1.15;
+}
+
+.craftsmanship-text p {
+    font-size: 0.95rem;
+    line-height: 1.9;
+    color: rgba(250, 248, 245, 0.7);
+    margin-bottom: 1.5rem;
+}
+
+.btn-craft-link {
+    color: var(--gold);
+    text-decoration: none;
+    font-size: 0.75rem;
     font-weight: 600;
-    letter-spacing: var(--letter-spacing-wide);
+    letter-spacing: var(--letter-spacing);
     text-transform: uppercase;
-    color: var(--gold);
-    margin-bottom: 0.8rem;
-    display: block;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+    transition: var(--transition);
+    border-bottom: 1px solid transparent;
+    padding-bottom: 0.3rem;
+    margin-top: 1rem;
 }
 
-.announcement-card-luxury h3 {
-    font-family: var(--font-heading);
-    font-size: 1.3rem;
-    font-weight: 500;
-    color: var(--navy);
-    margin-bottom: 0.8rem;
+.btn-craft-link:hover {
+    border-bottom-color: var(--gold);
 }
 
-.announcement-card-luxury p {
-    color: var(--gray);
-    line-height: 1.7;
-    font-size: 0.9rem;
+.btn-craft-link i {
+    transition: transform 0.3s ease;
+    font-size: 0.65rem;
+}
+
+.btn-craft-link:hover i {
+    transform: translateX(4px);
 }
 
 /* ================================
-   COLLECTIONS / COLECOES
+   THREE PILLARS
+   ================================ */
+.pillars-section {
+    padding: 6rem 0;
+    background: var(--cream);
+}
+
+.pillars-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.pillar-card {
+    text-align: center;
+    padding: 3rem 2rem;
+    background: var(--white);
+    border: 1px solid rgba(27, 42, 74, 0.06);
+    transition: var(--transition);
+    position: relative;
+}
+
+.pillar-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 50px rgba(27, 42, 74, 0.1);
+}
+
+.pillar-featured {
+    border-top: 3px solid var(--gold);
+}
+
+.pillar-icon {
+    width: 70px;
+    height: 70px;
+    border: 1px solid var(--gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    font-size: 1.4rem;
+    color: var(--gold);
+    transition: var(--transition);
+}
+
+.pillar-card:hover .pillar-icon {
+    background: var(--gold);
+    color: var(--white);
+}
+
+.pillar-number {
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    color: var(--gold);
+    letter-spacing: 0.1em;
+    margin-bottom: 0.8rem;
+}
+
+.pillar-card h3 {
+    font-family: var(--font-heading);
+    font-size: 1.6rem;
+    font-weight: 500;
+    color: var(--navy);
+    margin-bottom: 1rem;
+}
+
+.pillar-card p {
+    color: var(--gray);
+    font-size: 0.9rem;
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+}
+
+.pillar-line {
+    width: 40px;
+    height: 1px;
+    background: var(--gold);
+    margin: 0 auto;
+    opacity: 0.5;
+}
+
+/* ================================
+   COLLECTIONS
    ================================ */
 .collections-luxury {
     padding: 6rem 0;
@@ -735,7 +981,7 @@
 }
 
 /* ================================
-   ANIMACOES
+   ANIMATIONS
    ================================ */
 @keyframes fadeIn {
     from { opacity: 0; }
@@ -758,7 +1004,6 @@
     50% { opacity: 0.8; }
 }
 
-/* AOS Animation */
 [data-aos] {
     opacity: 0;
     transform: translateY(20px);
@@ -774,15 +1019,15 @@
    RESPONSIVE HOME
    ================================ */
 @media (max-width: 768px) {
-    .hero-title-luxury {
+    .hero-riviera-title {
         font-size: 3rem;
     }
 
-    .hero-content-luxury {
+    .hero-riviera-content {
         padding: 4rem 0;
     }
 
-    .hero-actions-luxury {
+    .hero-riviera-actions {
         flex-direction: column;
         align-items: center;
         width: 100%;
@@ -795,13 +1040,27 @@
         justify-content: center;
     }
 
+    .origin-content {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+    }
+
     .products-grid-luxury {
         grid-template-columns: 1fr;
     }
 
-    .brand-story-content {
+    .craftsmanship-content {
         grid-template-columns: 1fr;
         gap: 3rem;
+    }
+
+    .craftsmanship-text {
+        order: -1;
+    }
+
+    .pillars-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
     }
 
     .collections-grid {
@@ -829,13 +1088,17 @@
 }
 
 @media (max-width: 480px) {
-    .hero-title-luxury {
+    .hero-riviera-title {
         font-size: 2.5rem;
     }
 
-    .hero-logo-luxury {
-        width: 100px;
-        height: 100px;
+    .hero-riviera-badge {
+        width: 60px;
+        height: 60px;
+    }
+
+    .hero-riviera-badge i {
+        font-size: 1.3rem;
     }
 
     .section-title-luxury {
@@ -850,7 +1113,19 @@
         padding: 2rem 1.5rem;
     }
 
+    .pillar-card {
+        padding: 2rem 1.5rem;
+    }
+
     .cta-text-luxury h2 {
+        font-size: 2rem;
+    }
+
+    .craftsmanship-text h2 {
+        font-size: 2rem;
+    }
+
+    .origin-text h2 {
         font-size: 2rem;
     }
 }

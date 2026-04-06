@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block page_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/customer.css') }}">
+{% endblock %}
+
+{% block title %}Pedido {{ order.order_number }} - Val's{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <div class="container">
+        <span class="page-hero-label">Pedido</span>
+        <h1>{{ order.order_number }}</h1>
+    </div>
+</section>
+
+<section class="profile-section">
+    <div class="container">
+        <div class="order-detail-grid">
+            <div class="order-detail-main">
+                <div class="profile-card">
+                    <h2>Itens do Pedido</h2>
+                    <div class="order-items-list">
+                        {% for item in order.items %}
+                        <div class="order-detail-item">
+                            <span class="item-name">{{ item.name }}</span>
+                            <span class="item-qty">x{{ item.quantity }}</span>
+                            <span class="item-price">R$ {{ "%.2f"|format(item.price) }}</span>
+                            <span class="item-subtotal">R$ {{ "%.2f"|format(item.subtotal) }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="order-total-section">
+                        <strong>Total: R$ {{ "%.2f"|format(order.total) }}</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="order-detail-sidebar">
+                <div class="profile-card">
+                    <h2>Status</h2>
+                    <div class="status-display status-{{ order.status }}">
+                        {% if order.status == 'pending' %}Pendente
+                        {% elif order.status == 'paid' %}Pago
+                        {% elif order.status == 'shipped' %}Enviado
+                        {% elif order.status == 'delivered' %}Entregue
+                        {% elif order.status == 'cancelled' %}Cancelado
+                        {% else %}{{ order.status }}{% endif %}
+                    </div>
+                    <div class="order-meta">
+                        <p><strong>Pagamento:</strong>
+                            {% if order.payment_method == 'PIX' %}PIX
+                            {% elif order.payment_method == 'CREDIT_CARD' %}Cartao de Credito
+                            {% elif order.payment_method == 'BOLETO' %}Boleto
+                            {% endif %}
+                        </p>
+                        <p><strong>Data:</strong> {{ order.created_at[:10] }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <a href="{{ url_for('customer_orders') }}" class="btn-back">
+            <i class="fas fa-arrow-left"></i> Voltar aos Pedidos
+        </a>
+    </div>
+</section>
+{% endblock %}

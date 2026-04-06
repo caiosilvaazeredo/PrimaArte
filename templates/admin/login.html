@@ -1,1 +1,50 @@
-<!DOCTYPE html> <html lang="pt-BR"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>Admin - Prima Arte</title> <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"> <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"> <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"> <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}"></head> <body class="admin-login-body"> <div class="admin-login-container"> <div class="admin-login-card"> <div class="admin-logo"> <div class="logo-circle"> <i class="fas fa-lock"></i> </div> <h1>PRIMA ARTE</h1> <p>Área Administrativa</p> </div> {% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} {% for category, message in messages %} <div class="flash flash-{{ category }}">{{ message }}</div> {% endfor %} {% endif %} {% endwith %} <form action="{{ url_for('admin_authenticate') }}" method="post"> <div class="form-group"> <label><i class="fas fa-key"></i> Senha de Acesso:</label> <input type="password" name="password" required placeholder="Digite a senha..."> </div> <button type="submit" class="btn btn-primary btn-large"> <i class="fas fa-sign-in-alt"></i> Acessar Painel </button> </form> <div class="admin-login-footer"> <a href="{{ url_for('index') }}"> <i class="fas fa-arrow-left"></i> Voltar ao Site </a> </div> </div> </div> </body> </html>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Val's</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+</head>
+<body class="admin-login-body">
+    <div class="admin-login-container">
+        <div class="admin-login-card">
+            <div class="admin-logo">
+                <div class="logo-circle">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <h1>VAL'S</h1>
+                <p>Area Administrativa</p>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <div class="flash flash-{{ category }}">{{ message }}</div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+
+            <form action="{{ url_for('admin_authenticate') }}" method="post">
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                <div class="form-group">
+                    <label><i class="fas fa-key"></i> Senha de Acesso:</label>
+                    <input type="password" name="password" required placeholder="Digite a senha...">
+                </div>
+                <button type="submit" class="btn btn-primary btn-large">
+                    <i class="fas fa-sign-in-alt"></i> Acessar Painel
+                </button>
+            </form>
+
+            <div class="admin-login-footer">
+                <a href="{{ url_for('index') }}">
+                    <i class="fas fa-arrow-left"></i> Voltar ao Site
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

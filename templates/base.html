@@ -55,14 +55,28 @@
                         <li><a href="{{ url_for('products') }}">Colecao</a></li>
                         <li><a href="{{ url_for('about') }}">Nossa Historia</a></li>
                         <li><a href="https://www.instagram.com/primaarte2025/" target="_blank">Instagram</a></li>
-                        <li><a href="{{ url_for('cart') }}" class="mobile-cart-link"><i class="fas fa-shopping-bag"></i> Sacola <span class="cart-count">{{ session.get('cart_count', 0) }}</span></a></li>
+                        {% if current_customer %}
+                        <li><a href="{{ url_for('customer_profile') }}"><i class="fas fa-user"></i> Minha Conta</a></li>
+                        {% else %}
+                        <li><a href="{{ url_for('customer_login') }}"><i class="fas fa-user"></i> Entrar</a></li>
+                        {% endif %}
+                        <li><a href="{{ url_for('cart') }}" class="mobile-cart-link"><i class="fas fa-shopping-bag"></i> Sacola <span class="cart-count">{{ cart_count }}</span></a></li>
                     </ul>
                 </nav>
 
                 <div class="header-actions desktop-actions">
+                    {% if current_customer %}
+                    <a href="{{ url_for('customer_profile') }}" class="account-btn" title="Minha Conta">
+                        <i class="fas fa-user"></i>
+                    </a>
+                    {% else %}
+                    <a href="{{ url_for('customer_login') }}" class="account-btn" title="Entrar">
+                        <i class="fas fa-user"></i>
+                    </a>
+                    {% endif %}
                     <a href="{{ url_for('cart') }}" class="cart-btn">
                         <i class="fas fa-shopping-bag"></i>
-                        <span class="cart-count">{{ session.get('cart_count', 0) }}</span>
+                        <span class="cart-count">{{ cart_count }}</span>
                     </a>
                 </div>
             </div>
@@ -123,6 +137,25 @@
             </div>
         </div>
     </footer>
+
+    <!-- Firebase Analytics -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-analytics.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCfzGcUNoQYzlPoXCSMjDhNIy4ThyT_reM",
+            authDomain: "loja-val.firebaseapp.com",
+            projectId: "loja-val",
+            storageBucket: "loja-val.firebasestorage.app",
+            messagingSenderId: "1031310711904",
+            appId: "1:1031310711904:web:90d693e6a5264b252e7705",
+            measurementId: "G-G8GZ6MG6DW"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+    </script>
 
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block page_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/customer.css') }}">
+{% endblock %}
+
+{% block title %}Configurar 2FA - Val's{% endblock %}
+
+{% block content %}
+<section class="auth-section">
+    <div class="container">
+        <div class="auth-card auth-card-wide">
+            <div class="auth-header">
+                <div class="auth-badge"><i class="fas fa-shield-alt"></i></div>
+                <h1>Autenticacao de 2 Fatores</h1>
+                <p>Escaneie o QR Code com seu aplicativo autenticador (Google Authenticator, Authy, etc.)</p>
+            </div>
+
+            <div class="setup-2fa-content">
+                <div class="qr-container">
+                    <img src="data:image/png;base64,{{ qr_code }}" alt="QR Code 2FA">
+                </div>
+
+                <div class="secret-key">
+                    <p>Ou digite a chave manualmente:</p>
+                    <code>{{ secret }}</code>
+                </div>
+
+                <form action="{{ url_for('customer_2fa_setup') }}" method="post" class="auth-form">
+                    <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+
+                    <div class="form-group">
+                        <label>Digite o codigo gerado pelo app para confirmar</label>
+                        <input type="text" name="token" required maxlength="6" pattern="[0-9]{6}"
+                               placeholder="000000" class="input-2fa" autocomplete="off">
+                    </div>
+
+                    <button type="submit" class="btn-auth">
+                        <span>Ativar 2FA</span>
+                        <i class="fas fa-check"></i>
+                    </button>
+                </form>
+            </div>
+
+            <div class="auth-footer">
+                <a href="{{ url_for('customer_profile') }}">Voltar ao perfil</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

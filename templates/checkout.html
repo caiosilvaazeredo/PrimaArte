@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+
+{% block page_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/customer.css') }}">
+{% endblock %}
+
+{% block title %}Checkout - Val's{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <div class="container">
+        <span class="page-hero-label">Finalizar Compra</span>
+        <h1>Checkout</h1>
+    </div>
+</section>
+
+<section class="checkout-section">
+    <div class="container">
+        <form action="{{ url_for('checkout_process') }}" method="post" id="checkout-form">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+
+            <div class="checkout-grid">
+                <!-- Left: Customer & Payment -->
+                <div class="checkout-main">
+                    <!-- Customer Info -->
+                    <div class="checkout-card">
+                        <h2><i class="fas fa-user"></i> Dados Pessoais</h2>
+                        <div class="form-row form-row-2">
+                            <div class="form-group">
+                                <label>Nome Completo *</label>
+                                <input type="text" name="name" required
+                                       value="{{ customer.name if customer else '' }}">
+                            </div>
+                            <div class="form-group">
+                                <label>Email *</label>
+                                <input type="email" name="email" required
+                                       value="{{ customer.email if customer else '' }}">
+                            </div>
+                        </div>
+                        <div class="form-row form-row-2">
+                            <div class="form-group">
+                                <label>CPF *</label>
+                                <input type="text" name="cpf" required
+                                       value="{{ customer.cpf if customer else '' }}"
+                                       placeholder="000.000.000-00">
+                            </div>
+                            <div class="form-group">
+                                <label>Telefone</label>
+                                <input type="text" name="phone"
+                                       value="{{ customer.phone if customer else '' }}"
+                                       placeholder="(21) 99999-9999">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Method -->
+                    <div class="checkout-card">
+                        <h2><i class="fas fa-credit-card"></i> Forma de Pagamento</h2>
+                        <div class="payment-methods">
+                            <label class="payment-option">
+                                <input type="radio" name="payment_method" value="PIX" checked>
+                                <div class="payment-option-content">
+                                    <i class="fas fa-qrcode"></i>
+                                    <span>PIX</span>
+                                    <small>Aprovacao imediata</small>
+                                </div>
+                            </label>
+                            <label class="payment-option">
+                                <input type="radio" name="payment_method" value="CREDIT_CARD">
+                                <div class="payment-option-content">
+                                    <i class="fas fa-credit-card"></i>
+                                    <span>Cartao de Credito</span>
+                                    <small>Ate 12x</small>
+                                </div>
+                            </label>
+                            <label class="payment-option">
+                                <input type="radio" name="payment_method" value="BOLETO">
+                                <div class="payment-option-content">
+                                    <i class="fas fa-barcode"></i>
+                                    <span>Boleto</span>
+                                    <small>Vencimento em 3 dias</small>
+                                </div>
+                            </label>
+                        </div>
+
+                        <!-- Credit Card Fields -->
+                        <div id="credit-card-fields" style="display: none;">
+                            <div class="form-row form-row-2">
+                                <div class="form-group">
+                                    <label>Nome no Cartao</label>
+                                    <input type="text" name="card_holder_name" placeholder="Nome impresso no cartao">
+                                </div>
+                                <div class="form-group">
+                                    <label>Numero do Cartao</label>
+                                    <input type="text" name="card_number" placeholder="0000 0000 0000 0000" maxlength="19">
+                                </div>
+                            </div>
+                            <div class="form-row form-row-3">
+                                <div class="form-group">
+                                    <label>Mes</label>
+                                    <input type="text" name="card_expiry_month" placeholder="MM" maxlength="2">
+                                </div>
+                                <div class="form-group">
+                                    <label>Ano</label>
+                                    <input type="text" name="card_expiry_year" placeholder="AAAA" maxlength="4">
+                                </div>
+                                <div class="form-group">
+                                    <label>CVV</label>
+                                    <input type="text" name="card_cvv" placeholder="000" maxlength="4">
+                                </div>
+                            </div>
+                            <div class="form-row form-row-2">
+                                <div class="form-group">
+                                    <label>CEP</label>
+                                    <input type="text" name="postal_code" placeholder="00000-000">
+                                </div>
+                                <div class="form-group">
+                                    <label>Numero do Endereco</label>
+                                    <input type="text" name="address_number" placeholder="123">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Parcelas</label>
+                                <select name="installments">
+                                    <option value="1">1x de R$ {{ "%.2f"|format(total) }}</option>
+                                    {% for i in range(2, 13) %}
+                                    <option value="{{ i }}">{{ i }}x de R$ {{ "%.2f"|format(total / i) }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Order Summary -->
+                <div class="checkout-sidebar">
+                    <div class="checkout-card checkout-summary">
+                        <h2>Resumo do Pedido</h2>
+                        <div class="summary-items">
+                            {% for item in cart_items %}
+                            <div class="summary-item">
+                                <span>{{ item.name }} x{{ item.quantity }}</span>
+                                <span>R$ {{ "%.2f"|format(item.total) }}</span>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div class="summary-divider"></div>
+                        <div class="summary-total">
+                            <span>Total</span>
+                            <span>R$ {{ "%.2f"|format(total) }}</span>
+                        </div>
+                        <button type="submit" class="btn-checkout">
+                            <i class="fas fa-lock"></i>
+                            <span>Finalizar Pagamento</span>
+                        </button>
+                        <p class="checkout-secure">
+                            <i class="fas fa-shield-alt"></i>
+                            Pagamento seguro via Asaas
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+
+<script>
+document.querySelectorAll('input[name="payment_method"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        const ccFields = document.getElementById('credit-card-fields');
+        ccFields.style.display = this.value === 'CREDIT_CARD' ? 'block' : 'none';
+    });
+});
+</script>
+{% endblock %}

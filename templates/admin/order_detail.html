@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block page_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+{% endblock %}
+
+{% block title %}Pedido {{ order.order_number }} - Admin Val's{% endblock %}
+
+{% block content %}
+<div class="admin-nav">
+    <div class="container">
+        <h1><i class="fas fa-shopping-cart"></i> Pedido {{ order.order_number }}</h1>
+        <div class="nav-links">
+            <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('admin_orders') }}">Pedidos</a>
+            <a href="{{ url_for('admin_logout') }}">Sair</a>
+        </div>
+    </div>
+</div>
+
+<section class="section">
+    <div class="container">
+        <div class="order-admin-grid">
+            <!-- Order Details -->
+            <div>
+                <div class="admin-card">
+                    <h2>Itens do Pedido</h2>
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Produto</th>
+                                <th>Qtd</th>
+                                <th>Preco Unit.</th>
+                                <th>Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in order.items %}
+                            <tr>
+                                <td>{{ item.name }}</td>
+                                <td>{{ item.quantity }}</td>
+                                <td>R$ {{ "%.2f"|format(item.price) }}</td>
+                                <td>R$ {{ "%.2f"|format(item.subtotal) }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="3"><strong>Total</strong></td>
+                                <td><strong>R$ {{ "%.2f"|format(order.total) }}</strong></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <div class="admin-card">
+                    <h2>Dados do Cliente</h2>
+                    <div class="info-grid">
+                        <div><strong>Nome:</strong> {{ order.customer_name }}</div>
+                        <div><strong>Email:</strong> {{ order.customer_email }}</div>
+                        <div><strong>CPF:</strong> {{ order.customer_cpf or 'N/A' }}</div>
+                        <div><strong>Telefone:</strong> {{ order.customer_phone or 'N/A' }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div>
+                <div class="admin-card">
+                    <h2>Status & Pagamento</h2>
+                    <div class="status-display-admin status-{{ order.status }}">
+                        {% if order.status == 'pending' %}Pendente
+                        {% elif order.status == 'paid' %}Pago
+                        {% elif order.status == 'shipped' %}Enviado
+                        {% elif order.status == 'delivered' %}Entregue
+                        {% elif order.status == 'cancelled' %}Cancelado
+                        {% else %}{{ order.status }}{% endif %}
+                    </div>
+
+                    <div class="info-list">
+                        <p><strong>Pagamento:</strong>
+                            {% if order.payment_method == 'PIX' %}PIX
+                            {% elif order.payment_method == 'CREDIT_CARD' %}Cartao de Credito
+                            {% elif order.payment_method == 'BOLETO' %}Boleto
+                            {% endif %}
+                        </p>
+                        <p><strong>Status Pagamento:</strong> {{ order.payment_status }}</p>
+                        <p><strong>Criado em:</strong> {{ order.created_at[:16].replace('T', ' ') }}</p>
+                        <p><strong>Atualizado:</strong> {{ order.updated_at[:16].replace('T', ' ') }}</p>
+                        {% if order.asaas_payment_id %}
+                        <p><strong>ID Asaas:</strong> {{ order.asaas_payment_id }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Update Status -->
+                    <form action="{{ url_for('admin_update_order_status', order_id=order.id) }}" method="post" style="margin-top: 1.5rem;">
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                        <div class="form-group">
+                            <label>Atualizar Status:</label>
+                            <select name="status">
+                                <option value="pending" {% if order.status == 'pending' %}selected{% endif %}>Pendente</option>
+                                <option value="paid" {% if order.status == 'paid' %}selected{% endif %}>Pago</option>
+                                <option value="shipped" {% if order.status == 'shipped' %}selected{% endif %}>Enviado</option>
+                                <option value="delivered" {% if order.status == 'delivered' %}selected{% endif %}>Entregue</option>
+                                <option value="cancelled" {% if order.status == 'cancelled' %}selected{% endif %}>Cancelado</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn-admin-primary" style="width: 100%;">Salvar Status</button>
+                    </form>
+                </div>
+
+                <div class="admin-card">
+                    <h2>Acoes</h2>
+                    <a href="{{ url_for('admin_generate_invoice', order_id=order.id) }}" class="btn-admin-primary" style="width: 100%; margin-bottom: 0.5rem; display: block; text-align: center;">
+                        <i class="fas fa-file-pdf"></i> Gerar Nota Fiscal
+                    </a>
+                    <a href="{{ url_for('admin_orders') }}" class="btn-admin-secondary" style="width: 100%; display: block; text-align: center;">
+                        <i class="fas fa-arrow-left"></i> Voltar
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

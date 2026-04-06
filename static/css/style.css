@@ -141,6 +141,33 @@ body {
     width: 100%;
 }
 
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.account-btn {
+    background: transparent;
+    color: var(--navy);
+    padding: 0.6rem;
+    border: 1px solid rgba(27, 42, 74, 0.2);
+    text-decoration: none;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    font-size: 0.85rem;
+}
+
+.account-btn:hover {
+    background: var(--navy);
+    color: var(--offwhite);
+    border-color: var(--navy);
+}
+
 .cart-btn {
     position: relative;
     background: transparent;

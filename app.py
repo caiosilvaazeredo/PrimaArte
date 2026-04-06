@@ -1,56 +1,165 @@
 # -*- coding: utf-8 -*-
 """
-🎨 PRIMA ARTE - APLICAÇÃO PRINCIPAL
-==================================
-Site de artesanato feito à mão
-Desenvolvido para Valéria & Flávia
+VAL'S - LUXURY HANDCRAFTED
+===========================
+Colecao Riviera Botanica
+Aplicacao principal com pagamentos Asaas, area do cliente e seguranca
 """
 
-from flask import Flask, render_template, request, jsonify, session, redirect, url_for, flash
+from flask import (Flask, render_template, request, jsonify, session,
+                   redirect, url_for, flash, abort, make_response, g)
 import json
 import os
+import re
+import unicodedata
 import urllib.parse
-from datetime import datetime
+import hmac
+import hashlib
+import math
+import random
+import string
+from datetime import datetime, timedelta
 import uuid
 from werkzeug.utils import secure_filename
 from functools import wraps
 
+import bcrypt
+import pyotp
+import qrcode
+import qrcode.image.svg
+import requests as http_requests
+from io import BytesIO
+import base64
+
+from dotenv import load_dotenv
+
+load_dotenv()
+
 app = Flask(__name__)
-app.secret_key = 'prima-arte-secret-key-2025'
+app.secret_key = os.environ.get('SECRET_KEY', 'vals-luxury-secret-key-2025')
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max upload
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=2)
 
-# Configurações
-WHATSAPP_NUMBER = '+5521973108293'
-INSTAGRAM_URL = 'htt    ps://www.instagram.com/primaarte2025/'
+# ================================
+# CONFIGURACOES
+# ================================
+WHATSAPP_NUMBER = os.environ.get('WHATSAPP_NUMBER', '+5521973108293')
+INSTAGRAM_URL = os.environ.get('INSTAGRAM_URL', 'https://www.instagram.com/primaarte2025/')
 UPLOAD_FOLDER = 'static/uploads'
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 
-# Criar pasta de uploads se não existir
+ASAAS_API_KEY = os.environ.get('ASAAS_API_KEY', '')
+ASAAS_ENV = os.environ.get('ASAAS_ENVIRONMENT', 'sandbox')
+ASAAS_BASE_URL = (
+    'https://api.asaas.com/v3' if ASAAS_ENV == 'production'
+    else 'https://sandbox.asaas.com/api/v3'
+)
+
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# Base de dados simples em JSON
 DATA_FILE = 'data.json'
 
+# ================================
+# RATE LIMITING (simple in-memory)
+# ================================
+_rate_limit_store = {}
+
+def check_rate_limit(key, max_requests=5, window_seconds=60):
+    """Simple rate limiter. Returns True if allowed, False if rate limited."""
+    now = datetime.now()
+    if key not in _rate_limit_store:
+        _rate_limit_store[key] = []
+
+    # Clean old entries
+    _rate_limit_store[key] = [
+        t for t in _rate_limit_store[key]
+        if (now - t).total_seconds() < window_seconds
+    ]
+
+    if len(_rate_limit_store[key]) >= max_requests:
+        return False
+
+    _rate_limit_store[key].append(now)
+    return True
+
+
+# ================================
+# CSRF PROTECTION
+# ================================
+def generate_csrf_token():
+    if '_csrf_token' not in session:
+        session['_csrf_token'] = secrets_token()
+    return session['_csrf_token']
+
+def secrets_token():
+    return ''.join(random.SystemRandom().choices(
+        string.ascii_letters + string.digits, k=64
+    ))
+
+app.jinja_env.globals['csrf_token'] = generate_csrf_token
+
+@app.before_request
+def csrf_protect():
+    if request.method == 'POST':
+        # Skip CSRF for API webhooks
+        if request.path.startswith('/api/webhook'):
+            return
+        token = session.get('_csrf_token')
+        form_token = request.form.get('_csrf_token') or request.headers.get('X-CSRF-Token')
+        if not token or token != form_token:
+            abort(403)
+
+
+# ================================
+# CAPTCHA (math-based)
+# ================================
+def generate_captcha():
+    a = random.randint(2, 15)
+    b = random.randint(1, 10)
+    session['captcha_answer'] = str(a + b)
+    return f"{a} + {b}"
+
+def verify_captcha(answer):
+    expected = session.pop('captcha_answer', None)
+    return expected and str(answer).strip() == expected
+
+app.jinja_env.globals['generate_captcha'] = generate_captcha
+
+
+# ================================
+# DATA LAYER
+# ================================
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def load_data():
-    """Carrega dados do arquivo JSON"""
     if os.path.exists(DATA_FILE):
         with open(DATA_FILE, 'r', encoding='utf-8') as f:
-            return json.load(f)
+            data = json.load(f)
+            # Ensure all required keys exist
+            data.setdefault('products', [])
+            data.setdefault('announcements', [])
+            data.setdefault('customers', [])
+            data.setdefault('orders', [])
+            data.setdefault('admin_password', 'primaarte2025')
+            return data
     return {
         'products': [],
         'announcements': [],
+        'customers': [],
+        'orders': [],
         'admin_password': 'primaarte2025'
     }
 
 def save_data(data):
-    """Salva dados no arquivo JSON"""
     with open(DATA_FILE, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
 
+
+# ================================
+# AUTH DECORATORS
+# ================================
 def admin_required(f):
-    """Decorator para proteger rotas admin"""
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not session.get('admin'):
@@ -58,141 +167,240 @@ def admin_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-def create_slug(text):
-    """Cria slug amigável para URL"""
-    import re
-    import unicodedata
-    
-    # Remove acentos
-    text = unicodedata.normalize('NFD', text)
-    text = ''.join(c for c in text if unicodedata.category(c) != 'Mn')
-    
-    # Converte para minúsculas e substitui espaços e caracteres especiais por hífen
-    text = re.sub(r'[^\w\s-]', '', text.lower())
-    text = re.sub(r'[-\s]+', '-', text)
-    text = text.strip('-')
-    
-    return text
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get('customer_id'):
+            flash('Faca login para acessar esta pagina.', 'info')
+            return redirect(url_for('customer_login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
 
 # ================================
-# FUNÇÕES AUXILIARES PARA PREÇOS
+# HELPERS
 # ================================
+def create_slug(text):
+    text = unicodedata.normalize('NFD', text)
+    text = ''.join(c for c in text if unicodedata.category(c) != 'Mn')
+    text = re.sub(r'[^\w\s-]', '', text.lower())
+    text = re.sub(r'[-\s]+', '-', text)
+    return text.strip('-')
+
 def get_product_current_price(product):
-    """Retorna o preço atual do produto (promocional se ativo, senão regular)"""
     if product.get('promotion_active') and product.get('promotional_price'):
         return product['promotional_price']
     return product['price']
 
 def calculate_discount_percentage(regular_price, promotional_price):
-    """Calcula a porcentagem de desconto"""
     if not promotional_price or promotional_price >= regular_price:
         return 0
     return round(((regular_price - promotional_price) / regular_price) * 100)
 
+def hash_password(password):
+    return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+
+def verify_password(password, hashed):
+    return bcrypt.checkpw(password.encode('utf-8'), hashed.encode('utf-8'))
+
+def get_customer(customer_id):
+    data = load_data()
+    return next((c for c in data['customers'] if c['id'] == customer_id), None)
+
+def generate_order_number():
+    return f"VLS-{datetime.now().strftime('%Y%m%d')}-{random.randint(1000, 9999)}"
+
+
 # ================================
-# FILTROS E FUNÇÕES GLOBAIS PARA TEMPLATES
+# TEMPLATE FILTERS & GLOBALS
 # ================================
 @app.template_filter('slug')
 def slug_filter(text):
-    """Filtro para criar slugs"""
     return create_slug(text)
 
 @app.template_filter('calculate_discount')
 def calculate_discount_filter(regular_price, promotional_price):
-    """Calcula desconto para usar nos templates"""
     return calculate_discount_percentage(regular_price, promotional_price)
 
 @app.template_global()
 def get_current_price(product):
-    """Retorna preço atual do produto para templates"""
     return get_product_current_price(product)
 
 @app.template_global()
 def product_url(product):
-    """Gera URL amigável para produto"""
     return url_for('product_detail', product_slug=create_slug(product['name']))
 
-# ================================
-# ROTAS PRINCIPAIS
-# ================================
+@app.context_processor
+def inject_globals():
+    customer = None
+    if session.get('customer_id'):
+        customer = get_customer(session['customer_id'])
+    return {
+        'current_customer': customer,
+        'cart_count': len(session.get('cart', []))
+    }
 
+
+# ================================
+# ASAAS PAYMENT API
+# ================================
+class AsaasAPI:
+    """Wrapper for the Asaas payment gateway API."""
+
+    def __init__(self):
+        self.base_url = ASAAS_BASE_URL
+        self.headers = {
+            'Content-Type': 'application/json',
+            'access_token': ASAAS_API_KEY
+        }
+
+    def _request(self, method, endpoint, data=None):
+        url = f"{self.base_url}/{endpoint}"
+        try:
+            resp = http_requests.request(
+                method, url, headers=self.headers, json=data, timeout=30
+            )
+            return resp.json(), resp.status_code
+        except Exception as e:
+            return {'error': str(e)}, 500
+
+    def create_customer(self, name, email, cpf_cnpj, phone=None):
+        """Create or find customer in Asaas."""
+        payload = {
+            'name': name,
+            'email': email,
+            'cpfCnpj': cpf_cnpj,
+        }
+        if phone:
+            payload['phone'] = phone
+        return self._request('POST', 'customers', payload)
+
+    def create_payment(self, customer_id, value, billing_type, description,
+                       due_date=None, installment_count=None):
+        """
+        Create a payment.
+        billing_type: BOLETO, CREDIT_CARD, PIX
+        """
+        if not due_date:
+            due_date = (datetime.now() + timedelta(days=3)).strftime('%Y-%m-%d')
+
+        payload = {
+            'customer': customer_id,
+            'billingType': billing_type,
+            'value': value,
+            'dueDate': due_date,
+            'description': description,
+        }
+
+        if billing_type == 'CREDIT_CARD' and installment_count and installment_count > 1:
+            payload['installmentCount'] = installment_count
+            payload['installmentValue'] = round(value / installment_count, 2)
+
+        return self._request('POST', 'payments', payload)
+
+    def get_payment(self, payment_id):
+        return self._request('GET', f'payments/{payment_id}')
+
+    def get_pix_qrcode(self, payment_id):
+        return self._request('GET', f'payments/{payment_id}/pixQrCode')
+
+    def get_boleto_url(self, payment_id):
+        return self._request('GET', f'payments/{payment_id}/identificationField')
+
+    def pay_with_credit_card(self, payment_id, card_data, holder_info):
+        """Process credit card payment."""
+        payload = {
+            'creditCard': card_data,
+            'creditCardHolderInfo': holder_info
+        }
+        return self._request('POST', f'payments/{payment_id}/payWithCreditCard', payload)
+
+
+asaas = AsaasAPI()
+
+
+# ================================
+# MAIN ROUTES
+# ================================
 @app.route('/')
 def index():
-    """Página inicial"""
     data = load_data()
     featured_products = [p for p in data['products'] if p.get('featured', False)][:6]
-    
-    # Adiciona preço atual e desconto para cada produto em destaque
+
     for product in featured_products:
         product['current_price'] = get_product_current_price(product)
         if product.get('promotion_active') and product.get('promotional_price'):
-            product['discount_percent'] = calculate_discount_percentage(product['price'], product['promotional_price'])
-    
+            product['discount_percent'] = calculate_discount_percentage(
+                product['price'], product['promotional_price']
+            )
+
     announcements = [a for a in data['announcements'] if a.get('active', True)][:3]
-    return render_template('index.html', 
-                         featured_products=featured_products,
-                         announcements=announcements)
+    return render_template('index.html',
+                           featured_products=featured_products,
+                           announcements=announcements)
 
 @app.route('/produtos')
 def products():
-    """Página de produtos"""
     data = load_data()
     category = request.args.get('categoria', '')
-    products = data['products']
-    
+    products_list = data['products']
+
     if category:
-        products = [p for p in products if p.get('category', '').lower() == category.lower()]
-    
-    # Adiciona preço atual e desconto para cada produto
-    for product in products:
+        products_list = [
+            p for p in products_list
+            if p.get('category', '').lower() == category.lower()
+        ]
+
+    for product in products_list:
         product['current_price'] = get_product_current_price(product)
         if product.get('promotion_active') and product.get('promotional_price'):
-            product['discount_percent'] = calculate_discount_percentage(product['price'], product['promotional_price'])
-    
-    return render_template('products.html', 
-                         products=products, 
-                         current_category=category)
+            product['discount_percent'] = calculate_discount_percentage(
+                product['price'], product['promotional_price']
+            )
+
+    return render_template('products.html',
+                           products=products_list,
+                           current_category=category)
 
 @app.route('/produto/<product_slug>')
 def product_detail(product_slug):
-    """Detalhes do produto com slug amigável ou ID"""
     data = load_data()
-    
-    # Primeiro tenta encontrar por slug, depois por ID para compatibilidade
+
     product = None
     for p in data['products']:
-        product_slug_generated = create_slug(p['name'])
-        if product_slug_generated == product_slug or p['id'] == product_slug:
+        if create_slug(p['name']) == product_slug or p['id'] == product_slug:
             product = p
             break
-    
+
     if not product:
-        flash('Produto não encontrado!', 'error')
+        flash('Produto nao encontrado!', 'error')
         return redirect(url_for('products'))
-    
-    # Adiciona informações de preço
+
     product['current_price'] = get_product_current_price(product)
     if product.get('promotion_active') and product.get('promotional_price'):
-        product['discount_percent'] = calculate_discount_percentage(product['price'], product['promotional_price'])
+        product['discount_percent'] = calculate_discount_percentage(
+            product['price'], product['promotional_price']
+        )
         product['savings'] = product['price'] - product['promotional_price']
-    
+
     return render_template('product.html', product=product)
 
 @app.route('/sobre')
 def about():
-    """Página sobre a Prima Arte"""
     return render_template('about.html')
 
+
+# ================================
+# CART
+# ================================
 @app.route('/carrinho')
 def cart():
-    """Página do carrinho"""
     cart_items = session.get('cart', [])
     data = load_data()
-    
-    # Busca detalhes dos produtos no carrinho
+
     detailed_cart = []
     total = 0
-    
+
     for item in cart_items:
         product = next((p for p in data['products'] if p['id'] == item['product_id']), None)
         if product:
@@ -211,23 +419,21 @@ def cart():
                 'description': item.get('description', '')
             })
             total += item_total
-    
+
     return render_template('cart.html', cart_items=detailed_cart, total=total)
 
 @app.route('/adicionar-carrinho', methods=['POST'])
 def add_to_cart():
-    """Adiciona produto ao carrinho"""
     product_id = request.form.get('product_id')
     quantity = int(request.form.get('quantity', 1))
     description = request.form.get('description', '')
-    
+
     if 'cart' not in session:
         session['cart'] = []
-    
-    # Verifica se produto já está no carrinho
+
     cart = session['cart']
     existing_item = next((item for item in cart if item['product_id'] == product_id), None)
-    
+
     if existing_item:
         existing_item['quantity'] += quantity
     else:
@@ -236,81 +442,578 @@ def add_to_cart():
             'quantity': quantity,
             'description': description
         })
-    
+
     session['cart'] = cart
     flash('Produto adicionado ao carrinho!', 'success')
     return redirect(url_for('cart'))
 
 @app.route('/remover-carrinho/<product_id>')
 def remove_from_cart(product_id):
-    """Remove produto do carrinho"""
     if 'cart' in session:
         session['cart'] = [item for item in session['cart'] if item['product_id'] != product_id]
         flash('Produto removido do carrinho!', 'info')
     return redirect(url_for('cart'))
 
-@app.route('/finalizar-pedido')
-def checkout():
-    """Redireciona para WhatsApp com detalhes do pedido"""
+
+# ================================
+# CHECKOUT & PAYMENT
+# ================================
+@app.route('/checkout', methods=['GET'])
+def checkout_page():
+    """Show checkout page with payment options."""
     cart_items = session.get('cart', [])
     if not cart_items:
-        flash('Seu carrinho está vazio!', 'error')
+        flash('Seu carrinho esta vazio!', 'error')
         return redirect(url_for('cart'))
-    
+
     data = load_data()
-    
-    # Monta mensagem para WhatsApp com formatação melhorada
-    message = "*NOVO PEDIDO - PRIMA ARTE*\n"
-    message += "═" * 35 + "\n\n"
-    
+    detailed_cart = []
+    total = 0
+
+    for item in cart_items:
+        product = next((p for p in data['products'] if p['id'] == item['product_id']), None)
+        if product:
+            current_price = get_product_current_price(product)
+            item_total = current_price * item['quantity']
+            detailed_cart.append({
+                'id': item['product_id'],
+                'name': product['name'],
+                'price': current_price,
+                'quantity': item['quantity'],
+                'total': item_total,
+                'images': product.get('images', [])
+            })
+            total += item_total
+
+    customer = None
+    if session.get('customer_id'):
+        customer = get_customer(session['customer_id'])
+
+    return render_template('checkout.html',
+                           cart_items=detailed_cart,
+                           total=total,
+                           customer=customer)
+
+@app.route('/checkout/process', methods=['POST'])
+def checkout_process():
+    """Process payment through Asaas."""
+    cart_items = session.get('cart', [])
+    if not cart_items:
+        flash('Seu carrinho esta vazio!', 'error')
+        return redirect(url_for('cart'))
+
+    if not check_rate_limit(f"checkout_{request.remote_addr}", 3, 60):
+        flash('Muitas tentativas. Aguarde um momento.', 'error')
+        return redirect(url_for('checkout_page'))
+
+    data = load_data()
+    payment_method = request.form.get('payment_method', 'PIX')
+
+    # Calculate total
+    total = 0
+    order_items = []
+    for item in cart_items:
+        product = next((p for p in data['products'] if p['id'] == item['product_id']), None)
+        if product:
+            price = get_product_current_price(product)
+            total += price * item['quantity']
+            order_items.append({
+                'product_id': item['product_id'],
+                'name': product['name'],
+                'price': price,
+                'quantity': item['quantity'],
+                'subtotal': price * item['quantity']
+            })
+
+    # Customer info
+    customer_name = request.form.get('name', '')
+    customer_email = request.form.get('email', '')
+    customer_cpf = request.form.get('cpf', '')
+    customer_phone = request.form.get('phone', '')
+
+    # Create or find Asaas customer
+    asaas_customer_id = None
+    if ASAAS_API_KEY and ASAAS_API_KEY != 'sua_chave_api_aqui':
+        result, status = asaas.create_customer(
+            customer_name, customer_email, customer_cpf, customer_phone
+        )
+        if status in (200, 201):
+            asaas_customer_id = result.get('id')
+        elif result.get('errors'):
+            # Try to find existing customer
+            for error in result.get('errors', []):
+                if 'ja cadastrado' in str(error.get('description', '')).lower():
+                    # Search by CPF
+                    search_result, _ = asaas._request(
+                        'GET', f'customers?cpfCnpj={customer_cpf}'
+                    )
+                    customers_list = search_result.get('data', [])
+                    if customers_list:
+                        asaas_customer_id = customers_list[0]['id']
+
+    # Map payment method
+    billing_type_map = {
+        'PIX': 'PIX',
+        'CREDIT_CARD': 'CREDIT_CARD',
+        'BOLETO': 'BOLETO'
+    }
+    billing_type = billing_type_map.get(payment_method, 'PIX')
+
+    # Create order
+    order_number = generate_order_number()
+    order = {
+        'id': str(uuid.uuid4()),
+        'order_number': order_number,
+        'customer_id': session.get('customer_id'),
+        'customer_name': customer_name,
+        'customer_email': customer_email,
+        'customer_cpf': customer_cpf,
+        'customer_phone': customer_phone,
+        'items': order_items,
+        'total': total,
+        'payment_method': payment_method,
+        'payment_status': 'PENDING',
+        'asaas_customer_id': asaas_customer_id,
+        'asaas_payment_id': None,
+        'status': 'pending',
+        'created_at': datetime.now().isoformat(),
+        'updated_at': datetime.now().isoformat()
+    }
+
+    # Create Asaas payment
+    if asaas_customer_id:
+        installments = int(request.form.get('installments', 1))
+        pay_result, pay_status = asaas.create_payment(
+            asaas_customer_id, total, billing_type,
+            f"Pedido {order_number} - Val's",
+            installment_count=installments if billing_type == 'CREDIT_CARD' else None
+        )
+
+        if pay_status in (200, 201):
+            order['asaas_payment_id'] = pay_result.get('id')
+            order['payment_status'] = pay_result.get('status', 'PENDING')
+
+            # Handle credit card immediate payment
+            if billing_type == 'CREDIT_CARD':
+                card_data = {
+                    'holderName': request.form.get('card_holder_name', ''),
+                    'number': request.form.get('card_number', '').replace(' ', ''),
+                    'expiryMonth': request.form.get('card_expiry_month', ''),
+                    'expiryYear': request.form.get('card_expiry_year', ''),
+                    'ccv': request.form.get('card_cvv', '')
+                }
+                holder_info = {
+                    'name': customer_name,
+                    'email': customer_email,
+                    'cpfCnpj': customer_cpf,
+                    'phone': customer_phone,
+                    'postalCode': request.form.get('postal_code', ''),
+                    'addressNumber': request.form.get('address_number', '')
+                }
+                cc_result, cc_status = asaas.pay_with_credit_card(
+                    pay_result['id'], card_data, holder_info
+                )
+                if cc_status in (200, 201):
+                    order['payment_status'] = cc_result.get('status', 'CONFIRMED')
+        else:
+            order['payment_error'] = pay_result.get('errors', [])
+
+    # Save order
+    data['orders'] = data.get('orders', [])
+    data['orders'].append(order)
+    save_data(data)
+
+    # Clear cart
+    session['cart'] = []
+
+    return redirect(url_for('order_confirmation', order_id=order['id']))
+
+
+@app.route('/pedido/<order_id>')
+def order_confirmation(order_id):
+    """Order confirmation page with payment details."""
+    data = load_data()
+    order = next((o for o in data.get('orders', []) if o['id'] == order_id), None)
+
+    if not order:
+        flash('Pedido nao encontrado.', 'error')
+        return redirect(url_for('index'))
+
+    # Get PIX QR Code if applicable
+    pix_data = None
+    boleto_data = None
+
+    if order.get('asaas_payment_id'):
+        if order['payment_method'] == 'PIX':
+            result, status = asaas.get_pix_qrcode(order['asaas_payment_id'])
+            if status == 200:
+                pix_data = result
+        elif order['payment_method'] == 'BOLETO':
+            result, status = asaas.get_boleto_url(order['asaas_payment_id'])
+            if status == 200:
+                boleto_data = result
+
+    return render_template('order_confirmation.html',
+                           order=order,
+                           pix_data=pix_data,
+                           boleto_data=boleto_data)
+
+
+@app.route('/finalizar-pedido')
+def checkout_whatsapp():
+    """Legacy WhatsApp checkout."""
+    cart_items = session.get('cart', [])
+    if not cart_items:
+        flash('Seu carrinho esta vazio!', 'error')
+        return redirect(url_for('cart'))
+
+    data = load_data()
+
+    message = "*NOVO PEDIDO - VAL'S*\n"
+    message += "=" * 35 + "\n\n"
+
     total = 0
     item_count = 1
-    
+
     for item in cart_items:
         product = next((p for p in data['products'] if p['id'] == item['product_id']), None)
         if product:
             current_price = get_product_current_price(product)
             item_total = current_price * item['quantity']
             total += item_total
-            
+
             message += f"*Item {item_count}:* {product['name']}\n"
-            message += f"   • Quantidade: {item['quantity']} unidade(s)\n"
-            message += f"   • Preço unitário: R$ {current_price:.2f}\n"
-            
+            message += f"   Qtd: {item['quantity']} | Unit: R$ {current_price:.2f}\n"
             if item.get('description'):
-                message += f"   • Observações: {item['description']}\n"
-            
-            message += f"   • Subtotal: *R$ {item_total:.2f}*\n"
-            message += "─" * 30 + "\n"
+                message += f"   Obs: {item['description']}\n"
+            message += f"   Subtotal: *R$ {item_total:.2f}*\n"
+            message += "-" * 30 + "\n"
             item_count += 1
-    
-    message += f"\n *VALOR TOTAL: R$ {total:.2f}*\n"
-    message += "═" * 35 + "\n\n"
-    message += " Olá! Gostaria de finalizar este pedido!\n\n"
-    
-    # URL do WhatsApp com encoding correto
-    whatsapp_url = f"https://wa.me/{WHATSAPP_NUMBER.replace('+', '').replace(' ', '')}?text={urllib.parse.quote(message)}"
-    
-    # Limpa carrinho após enviar
+
+    message += f"\n*TOTAL: R$ {total:.2f}*\n"
+    message += "=" * 35 + "\n\n"
+    message += "Ola! Gostaria de finalizar este pedido!\n"
+
+    whatsapp_url = (
+        f"https://wa.me/{WHATSAPP_NUMBER.replace('+', '').replace(' ', '')}"
+        f"?text={urllib.parse.quote(message)}"
+    )
+
     session['cart'] = []
-    
     return redirect(whatsapp_url)
 
-# ================================
-# ÁREA ADMINISTRATIVA
-# ================================
 
+# ================================
+# ASAAS WEBHOOK
+# ================================
+@app.route('/api/webhook/asaas', methods=['POST'])
+def asaas_webhook():
+    """Handle Asaas payment status updates."""
+    payload = request.get_json(silent=True)
+    if not payload:
+        return jsonify({'error': 'Invalid payload'}), 400
+
+    event = payload.get('event')
+    payment = payload.get('payment', {})
+    payment_id = payment.get('id')
+
+    if not payment_id:
+        return jsonify({'ok': True}), 200
+
+    data = load_data()
+    order = next(
+        (o for o in data.get('orders', []) if o.get('asaas_payment_id') == payment_id),
+        None
+    )
+
+    if order:
+        status_map = {
+            'PAYMENT_CONFIRMED': 'CONFIRMED',
+            'PAYMENT_RECEIVED': 'RECEIVED',
+            'PAYMENT_OVERDUE': 'OVERDUE',
+            'PAYMENT_REFUNDED': 'REFUNDED',
+            'PAYMENT_DELETED': 'DELETED',
+        }
+        new_status = status_map.get(event, order['payment_status'])
+        order['payment_status'] = new_status
+        order['updated_at'] = datetime.now().isoformat()
+
+        if new_status in ('CONFIRMED', 'RECEIVED'):
+            order['status'] = 'paid'
+        elif new_status == 'OVERDUE':
+            order['status'] = 'overdue'
+        elif new_status in ('REFUNDED', 'DELETED'):
+            order['status'] = 'cancelled'
+
+        save_data(data)
+
+    return jsonify({'ok': True}), 200
+
+
+# ================================
+# CUSTOMER AREA
+# ================================
+@app.route('/cadastro', methods=['GET', 'POST'])
+def customer_register():
+    if request.method == 'GET':
+        captcha_question = generate_captcha()
+        return render_template('customer/register.html', captcha_question=captcha_question)
+
+    if not check_rate_limit(f"register_{request.remote_addr}", 5, 300):
+        flash('Muitas tentativas de cadastro. Aguarde 5 minutos.', 'error')
+        return redirect(url_for('customer_register'))
+
+    # Verify captcha
+    if not verify_captcha(request.form.get('captcha')):
+        flash('Resposta do captcha incorreta.', 'error')
+        return redirect(url_for('customer_register'))
+
+    name = request.form.get('name', '').strip()
+    email = request.form.get('email', '').strip().lower()
+    password = request.form.get('password', '')
+    confirm_password = request.form.get('confirm_password', '')
+    cpf = request.form.get('cpf', '').strip()
+    phone = request.form.get('phone', '').strip()
+
+    # Validation
+    if not all([name, email, password]):
+        flash('Preencha todos os campos obrigatorios.', 'error')
+        return redirect(url_for('customer_register'))
+
+    if len(password) < 8:
+        flash('A senha deve ter pelo menos 8 caracteres.', 'error')
+        return redirect(url_for('customer_register'))
+
+    if password != confirm_password:
+        flash('As senhas nao conferem.', 'error')
+        return redirect(url_for('customer_register'))
+
+    data = load_data()
+
+    # Check duplicate email
+    if any(c['email'] == email for c in data['customers']):
+        flash('Este email ja esta cadastrado.', 'error')
+        return redirect(url_for('customer_register'))
+
+    # Create customer
+    customer = {
+        'id': str(uuid.uuid4()),
+        'name': name,
+        'email': email,
+        'password': hash_password(password),
+        'cpf': cpf,
+        'phone': phone,
+        'totp_secret': pyotp.random_base32(),
+        'totp_enabled': False,
+        'created_at': datetime.now().isoformat()
+    }
+
+    data['customers'].append(customer)
+    save_data(data)
+
+    session['customer_id'] = customer['id']
+    flash('Cadastro realizado com sucesso! Configure a autenticacao de 2 fatores para maior seguranca.', 'success')
+    return redirect(url_for('customer_profile'))
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def customer_login():
+    if request.method == 'GET':
+        captcha_question = generate_captcha()
+        return render_template('customer/login.html', captcha_question=captcha_question)
+
+    if not check_rate_limit(f"login_{request.remote_addr}", 5, 300):
+        flash('Muitas tentativas de login. Aguarde 5 minutos.', 'error')
+        return redirect(url_for('customer_login'))
+
+    if not verify_captcha(request.form.get('captcha')):
+        flash('Resposta do captcha incorreta.', 'error')
+        return redirect(url_for('customer_login'))
+
+    email = request.form.get('email', '').strip().lower()
+    password = request.form.get('password', '')
+
+    data = load_data()
+    customer = next((c for c in data['customers'] if c['email'] == email), None)
+
+    if not customer or not verify_password(password, customer['password']):
+        flash('Email ou senha incorretos.', 'error')
+        return redirect(url_for('customer_login'))
+
+    # Check 2FA
+    if customer.get('totp_enabled'):
+        session['pending_2fa_customer'] = customer['id']
+        return redirect(url_for('customer_2fa_verify'))
+
+    session['customer_id'] = customer['id']
+    session.permanent = True
+    flash(f'Bem-vinda, {customer["name"]}!', 'success')
+
+    next_url = request.args.get('next', url_for('customer_profile'))
+    return redirect(next_url)
+
+
+@app.route('/2fa/verificar', methods=['GET', 'POST'])
+def customer_2fa_verify():
+    if not session.get('pending_2fa_customer'):
+        return redirect(url_for('customer_login'))
+
+    if request.method == 'GET':
+        return render_template('customer/2fa_verify.html')
+
+    token = request.form.get('token', '').strip()
+    customer_id = session.get('pending_2fa_customer')
+    customer = get_customer(customer_id)
+
+    if not customer:
+        return redirect(url_for('customer_login'))
+
+    totp = pyotp.TOTP(customer['totp_secret'])
+    if totp.verify(token, valid_window=1):
+        session.pop('pending_2fa_customer', None)
+        session['customer_id'] = customer['id']
+        session.permanent = True
+        flash(f'Bem-vinda, {customer["name"]}!', 'success')
+        return redirect(url_for('customer_profile'))
+    else:
+        flash('Codigo invalido. Tente novamente.', 'error')
+        return redirect(url_for('customer_2fa_verify'))
+
+
+@app.route('/logout')
+def customer_logout():
+    session.pop('customer_id', None)
+    flash('Voce saiu da sua conta.', 'info')
+    return redirect(url_for('index'))
+
+
+@app.route('/minha-conta')
+@login_required
+def customer_profile():
+    customer = get_customer(session['customer_id'])
+    data = load_data()
+    orders = [
+        o for o in data.get('orders', [])
+        if o.get('customer_id') == session['customer_id']
+    ]
+    orders.sort(key=lambda x: x.get('created_at', ''), reverse=True)
+    return render_template('customer/profile.html', customer=customer, orders=orders)
+
+
+@app.route('/minha-conta/editar', methods=['POST'])
+@login_required
+def customer_profile_update():
+    data = load_data()
+    customer = next(
+        (c for c in data['customers'] if c['id'] == session['customer_id']), None
+    )
+    if not customer:
+        return redirect(url_for('customer_login'))
+
+    customer['name'] = request.form.get('name', customer['name']).strip()
+    customer['phone'] = request.form.get('phone', customer['phone']).strip()
+    customer['cpf'] = request.form.get('cpf', customer['cpf']).strip()
+
+    # Password change
+    new_password = request.form.get('new_password', '')
+    if new_password:
+        if len(new_password) < 8:
+            flash('A nova senha deve ter pelo menos 8 caracteres.', 'error')
+            return redirect(url_for('customer_profile'))
+        customer['password'] = hash_password(new_password)
+
+    save_data(data)
+    flash('Perfil atualizado com sucesso!', 'success')
+    return redirect(url_for('customer_profile'))
+
+
+@app.route('/minha-conta/2fa/configurar', methods=['GET', 'POST'])
+@login_required
+def customer_2fa_setup():
+    customer = get_customer(session['customer_id'])
+
+    if request.method == 'GET':
+        totp = pyotp.TOTP(customer['totp_secret'])
+        provisioning_uri = totp.provisioning_uri(
+            name=customer['email'],
+            issuer_name="Val's Luxury"
+        )
+        # Generate QR code
+        qr = qrcode.QRCode(version=1, box_size=6, border=2)
+        qr.add_data(provisioning_uri)
+        qr.make(fit=True)
+        img = qr.make_image(fill_color='#1B2A4A', back_color='#FAF8F5')
+        buffer = BytesIO()
+        img.save(buffer, format='PNG')
+        qr_base64 = base64.b64encode(buffer.getvalue()).decode()
+
+        return render_template('customer/2fa_setup.html',
+                               customer=customer,
+                               qr_code=qr_base64,
+                               secret=customer['totp_secret'])
+
+    # Verify setup
+    token = request.form.get('token', '').strip()
+    totp = pyotp.TOTP(customer['totp_secret'])
+
+    if totp.verify(token, valid_window=1):
+        data = load_data()
+        for c in data['customers']:
+            if c['id'] == customer['id']:
+                c['totp_enabled'] = True
+                break
+        save_data(data)
+        flash('Autenticacao de 2 fatores ativada com sucesso!', 'success')
+        return redirect(url_for('customer_profile'))
+    else:
+        flash('Codigo invalido. Tente novamente.', 'error')
+        return redirect(url_for('customer_2fa_setup'))
+
+
+@app.route('/minha-conta/pedidos')
+@login_required
+def customer_orders():
+    data = load_data()
+    orders = [
+        o for o in data.get('orders', [])
+        if o.get('customer_id') == session['customer_id']
+    ]
+    orders.sort(key=lambda x: x.get('created_at', ''), reverse=True)
+    return render_template('customer/orders.html', orders=orders)
+
+
+@app.route('/minha-conta/pedido/<order_id>')
+@login_required
+def customer_order_detail(order_id):
+    data = load_data()
+    order = next(
+        (o for o in data.get('orders', [])
+         if o['id'] == order_id and o.get('customer_id') == session['customer_id']),
+        None
+    )
+    if not order:
+        flash('Pedido nao encontrado.', 'error')
+        return redirect(url_for('customer_orders'))
+
+    return render_template('customer/order_detail.html', order=order)
+
+
+# ================================
+# ADMIN AREA
+# ================================
 @app.route('/admin')
 def admin_login():
-    """Página de login do admin"""
     return render_template('admin/login.html')
 
 @app.route('/admin/login', methods=['POST'])
 def admin_authenticate():
-    """Autentica admin"""
+    if not check_rate_limit(f"admin_login_{request.remote_addr}", 3, 300):
+        flash('Muitas tentativas. Aguarde 5 minutos.', 'error')
+        return redirect(url_for('admin_login'))
+
     password = request.form.get('password')
     data = load_data()
-    
+
     if password == data.get('admin_password', 'primaarte2025'):
         session['admin'] = True
         return redirect(url_for('admin_dashboard'))
@@ -321,74 +1024,275 @@ def admin_authenticate():
 @app.route('/admin/dashboard')
 @admin_required
 def admin_dashboard():
-    """Dashboard administrativo"""
     data = load_data()
+    orders = data.get('orders', [])
+
+    # Revenue calculations
+    total_revenue = sum(
+        o['total'] for o in orders
+        if o.get('payment_status') in ('CONFIRMED', 'RECEIVED')
+    )
+    pending_orders = [o for o in orders if o.get('status') == 'pending']
+    paid_orders = [o for o in orders if o.get('status') == 'paid']
+
     stats = {
         'total_products': len(data['products']),
         'total_announcements': len(data['announcements']),
-        'active_announcements': len([a for a in data['announcements'] if a.get('active', True)])
+        'active_announcements': len([a for a in data['announcements'] if a.get('active', True)]),
+        'total_orders': len(orders),
+        'pending_orders': len(pending_orders),
+        'paid_orders': len(paid_orders),
+        'total_revenue': total_revenue,
+        'total_customers': len(data.get('customers', []))
     }
-    
-    return render_template('admin/dashboard.html', stats=stats)
 
+    recent_orders = sorted(
+        orders, key=lambda x: x.get('created_at', ''), reverse=True
+    )[:10]
+
+    return render_template('admin/dashboard.html',
+                           stats=stats,
+                           recent_orders=recent_orders)
+
+@app.route('/admin/pedidos')
+@admin_required
+def admin_orders():
+    data = load_data()
+    status_filter = request.args.get('status', '')
+    orders = data.get('orders', [])
+
+    if status_filter:
+        orders = [o for o in orders if o.get('status') == status_filter]
+
+    orders.sort(key=lambda x: x.get('created_at', ''), reverse=True)
+    return render_template('admin/orders.html', orders=orders, current_status=status_filter)
+
+@app.route('/admin/pedido/<order_id>')
+@admin_required
+def admin_order_detail(order_id):
+    data = load_data()
+    order = next((o for o in data.get('orders', []) if o['id'] == order_id), None)
+
+    if not order:
+        flash('Pedido nao encontrado.', 'error')
+        return redirect(url_for('admin_orders'))
+
+    return render_template('admin/order_detail.html', order=order)
+
+@app.route('/admin/pedido/<order_id>/status', methods=['POST'])
+@admin_required
+def admin_update_order_status(order_id):
+    data = load_data()
+    order = next((o for o in data.get('orders', []) if o['id'] == order_id), None)
+
+    if order:
+        order['status'] = request.form.get('status', order['status'])
+        order['updated_at'] = datetime.now().isoformat()
+        save_data(data)
+        flash('Status do pedido atualizado!', 'success')
+
+    return redirect(url_for('admin_order_detail', order_id=order_id))
+
+
+# ================================
+# INVOICE GENERATION
+# ================================
+@app.route('/admin/pedido/<order_id>/nota-fiscal')
+@admin_required
+def admin_generate_invoice(order_id):
+    """Generate a PDF invoice for an order."""
+    data = load_data()
+    order = next((o for o in data.get('orders', []) if o['id'] == order_id), None)
+
+    if not order:
+        flash('Pedido nao encontrado.', 'error')
+        return redirect(url_for('admin_orders'))
+
+    try:
+        from reportlab.lib.pagesizes import A4
+        from reportlab.lib.units import mm
+        from reportlab.lib.colors import HexColor
+        from reportlab.pdfgen import canvas as pdf_canvas
+
+        buffer = BytesIO()
+        c = pdf_canvas.Canvas(buffer, pagesize=A4)
+        width, height = A4
+
+        # Colors
+        navy = HexColor('#1B2A4A')
+        gold = HexColor('#C9A84C')
+        gray = HexColor('#8A8A8A')
+
+        # Header
+        c.setFillColor(navy)
+        c.rect(0, height - 80, width, 80, fill=True)
+        c.setFillColor(HexColor('#FAF8F5'))
+        c.setFont('Helvetica-Bold', 24)
+        c.drawString(30, height - 50, "VAL'S")
+        c.setFont('Helvetica', 8)
+        c.drawString(30, height - 65, "LUXURY HANDCRAFTED")
+
+        c.setFont('Helvetica-Bold', 14)
+        c.drawRightString(width - 30, height - 45, "NOTA FISCAL")
+        c.setFont('Helvetica', 9)
+        c.drawRightString(width - 30, height - 60, f"Pedido: {order.get('order_number', '')}")
+
+        y = height - 110
+
+        # Customer info
+        c.setFillColor(navy)
+        c.setFont('Helvetica-Bold', 10)
+        c.drawString(30, y, "DADOS DO CLIENTE")
+        y -= 5
+        c.setStrokeColor(gold)
+        c.setLineWidth(1)
+        c.line(30, y, width - 30, y)
+        y -= 18
+
+        c.setFont('Helvetica', 9)
+        c.setFillColor(HexColor('#333333'))
+        c.drawString(30, y, f"Nome: {order.get('customer_name', 'N/A')}")
+        y -= 15
+        c.drawString(30, y, f"Email: {order.get('customer_email', 'N/A')}")
+        c.drawString(300, y, f"CPF: {order.get('customer_cpf', 'N/A')}")
+        y -= 15
+        c.drawString(30, y, f"Telefone: {order.get('customer_phone', 'N/A')}")
+        c.drawString(300, y, f"Data: {order.get('created_at', '')[:10]}")
+        y -= 30
+
+        # Items table header
+        c.setFillColor(navy)
+        c.setFont('Helvetica-Bold', 10)
+        c.drawString(30, y, "ITENS DO PEDIDO")
+        y -= 5
+        c.setStrokeColor(gold)
+        c.line(30, y, width - 30, y)
+        y -= 20
+
+        c.setFillColor(navy)
+        c.setFont('Helvetica-Bold', 8)
+        c.drawString(30, y, "PRODUTO")
+        c.drawString(300, y, "QTD")
+        c.drawString(370, y, "PRECO UNIT.")
+        c.drawRightString(width - 30, y, "SUBTOTAL")
+        y -= 5
+        c.setStrokeColor(gray)
+        c.setLineWidth(0.5)
+        c.line(30, y, width - 30, y)
+        y -= 15
+
+        c.setFont('Helvetica', 9)
+        c.setFillColor(HexColor('#333333'))
+        for item in order.get('items', []):
+            c.drawString(30, y, item.get('name', ''))
+            c.drawString(310, y, str(item.get('quantity', 1)))
+            c.drawString(370, y, f"R$ {item.get('price', 0):.2f}")
+            c.drawRightString(width - 30, y, f"R$ {item.get('subtotal', 0):.2f}")
+            y -= 18
+
+        # Total
+        y -= 10
+        c.setStrokeColor(navy)
+        c.setLineWidth(1)
+        c.line(300, y, width - 30, y)
+        y -= 20
+        c.setFillColor(navy)
+        c.setFont('Helvetica-Bold', 12)
+        c.drawString(300, y, "TOTAL:")
+        c.drawRightString(width - 30, y, f"R$ {order.get('total', 0):.2f}")
+
+        y -= 15
+        c.setFont('Helvetica', 8)
+        c.setFillColor(gray)
+        payment_labels = {
+            'PIX': 'PIX', 'CREDIT_CARD': 'Cartao de Credito', 'BOLETO': 'Boleto'
+        }
+        c.drawString(300, y, f"Pagamento: {payment_labels.get(order.get('payment_method', ''), 'N/A')}")
+
+        status_labels = {
+            'pending': 'Pendente', 'paid': 'Pago',
+            'shipped': 'Enviado', 'delivered': 'Entregue',
+            'cancelled': 'Cancelado', 'overdue': 'Vencido'
+        }
+        y -= 15
+        c.drawString(300, y, f"Status: {status_labels.get(order.get('status', ''), 'N/A')}")
+
+        # Footer
+        c.setFillColor(navy)
+        c.rect(0, 0, width, 40, fill=True)
+        c.setFillColor(HexColor('#FAF8F5'))
+        c.setFont('Helvetica', 7)
+        c.drawCentredString(width / 2, 20, "Val's - Luxury Handcrafted | Colecao Riviera Botanica")
+        c.drawCentredString(width / 2, 10, f"Documento gerado em {datetime.now().strftime('%d/%m/%Y %H:%M')}")
+
+        c.showPage()
+        c.save()
+
+        buffer.seek(0)
+        response = make_response(buffer.getvalue())
+        response.headers['Content-Type'] = 'application/pdf'
+        response.headers['Content-Disposition'] = (
+            f'attachment; filename=NF_{order.get("order_number", order_id)}.pdf'
+        )
+        return response
+
+    except ImportError:
+        flash('Biblioteca reportlab nao instalada. Execute: pip install reportlab', 'error')
+        return redirect(url_for('admin_order_detail', order_id=order_id))
+
+
+# ================================
+# ADMIN - PRODUCTS (existing)
+# ================================
 @app.route('/admin/produtos')
 @admin_required
 def admin_products():
-    """Gerenciar produtos"""
     data = load_data()
     return render_template('admin/products.html', products=data['products'])
 
 @app.route('/admin/produto/novo')
 @admin_required
 def admin_product_new():
-    """Formulário para novo produto"""
     return render_template('admin/product_form.html', product=None)
 
 @app.route('/admin/produto/editar/<product_id>')
 @admin_required
 def admin_product_edit(product_id):
-    """Formulário para editar produto"""
     data = load_data()
     product = next((p for p in data['products'] if p['id'] == product_id), None)
     if not product:
-        flash('Produto não encontrado!', 'error')
+        flash('Produto nao encontrado!', 'error')
         return redirect(url_for('admin_products'))
     return render_template('admin/product_form.html', product=product)
 
 @app.route('/admin/produto/salvar', methods=['POST'])
 @admin_required
 def admin_save_product():
-    """Salva produto com múltiplas imagens e preços promocionais"""
     data = load_data()
-    
-    # Pega dados do formulário
+
     product_id = request.form.get('id') or str(uuid.uuid4())
     product_name = request.form.get('name')
-    
-    # Preços
+
     regular_price = float(request.form.get('price', 0))
     promotional_price = request.form.get('promotional_price')
     promotional_price = float(promotional_price) if promotional_price and promotional_price.strip() else None
     promotion_active = request.form.get('promotion_active') == 'on'
-    
-    # Processa upload de múltiplas imagens
+
     uploaded_images = []
     if 'images' in request.files:
         files = request.files.getlist('images')
         for file in files:
             if file and file.filename != '' and allowed_file(file.filename):
                 filename = secure_filename(file.filename)
-                # Adiciona timestamp para evitar conflitos
                 filename = f"{int(datetime.now().timestamp())}_{filename}"
                 file_path = os.path.join(UPLOAD_FOLDER, filename)
                 file.save(file_path)
                 uploaded_images.append(f"/static/uploads/{filename}")
-    
-    # Se está editando, mantém imagens existentes se não houver novas
+
     existing_product = next((p for p in data['products'] if p['id'] == product_id), None)
     if existing_product and not uploaded_images:
         uploaded_images = existing_product.get('images', [])
-    
+
     product = {
         'id': product_id,
         'name': product_name,
@@ -399,172 +1303,224 @@ def admin_save_product():
         'category': request.form.get('category'),
         'images': uploaded_images,
         'featured': request.form.get('featured') == 'on',
-        'created_at': existing_product.get('created_at', datetime.now().isoformat()) if existing_product else datetime.now().isoformat(),
+        'created_at': (
+            existing_product.get('created_at', datetime.now().isoformat())
+            if existing_product else datetime.now().isoformat()
+        ),
         'updated_at': datetime.now().isoformat()
     }
-    
-    # Atualiza ou adiciona produto
-    existing_index = next((i for i, p in enumerate(data['products']) if p['id'] == product['id']), None)
+
+    existing_index = next(
+        (i for i, p in enumerate(data['products']) if p['id'] == product['id']), None
+    )
     if existing_index is not None:
         data['products'][existing_index] = product
     else:
         data['products'].append(product)
-    
+
     save_data(data)
-    
-    # Mensagem com informação sobre promoção
+
     if promotion_active and promotional_price:
         discount_percent = calculate_discount_percentage(regular_price, promotional_price)
         flash(f'Produto "{product_name}" salvo com {discount_percent}% de desconto!', 'success')
     else:
         flash(f'Produto "{product_name}" salvo com sucesso!', 'success')
-    
+
     return redirect(url_for('admin_products'))
 
 @app.route('/admin/produto/excluir/<product_id>')
 @admin_required
 def admin_product_delete(product_id):
-    """Excluir produto"""
     data = load_data()
-    
-    # Remove produto e suas imagens
+
     product = next((p for p in data['products'] if p['id'] == product_id), None)
     if product and product.get('images'):
         for image_url in product['images']:
             if image_url.startswith('/static/uploads/'):
-                image_path = image_url[1:]  # Remove /
+                image_path = image_url[1:]
                 if os.path.exists(image_path):
                     os.remove(image_path)
-    
+
     data['products'] = [p for p in data['products'] if p['id'] != product_id]
     save_data(data)
-    
-    flash('Produto excluído com sucesso!', 'success')
+
+    flash('Produto excluido com sucesso!', 'success')
     return redirect(url_for('admin_products'))
 
+
+# ================================
+# ADMIN - ANNOUNCEMENTS (existing)
+# ================================
 @app.route('/admin/anuncios')
 @admin_required
 def admin_announcements():
-    """Gerenciar anúncios"""
     data = load_data()
-    return render_template('admin/announcements.html', announcements=data.get('announcements', []))
+    return render_template('admin/announcements.html',
+                           announcements=data.get('announcements', []))
 
 @app.route('/admin/anuncio/novo')
 @admin_required
 def admin_new_announcement():
-    """Novo anúncio"""
     return render_template('admin/announcement_form.html', announcement=None)
 
 @app.route('/admin/anuncio/editar/<announcement_id>')
 @admin_required
 def admin_edit_announcement(announcement_id):
-    """Editar anúncio"""
     data = load_data()
-    announcement = next((a for a in data['announcements'] if a['id'] == announcement_id), None)
-    
+    announcement = next(
+        (a for a in data['announcements'] if a['id'] == announcement_id), None
+    )
     if not announcement:
-        flash('Anúncio não encontrado!', 'error')
+        flash('Anuncio nao encontrado!', 'error')
         return redirect(url_for('admin_announcements'))
-    
     return render_template('admin/announcement_form.html', announcement=announcement)
 
 @app.route('/admin/anuncio/salvar', methods=['POST'])
 @admin_required
 def admin_save_announcement():
-    """Salva anúncio com imagem"""
     data = load_data()
-    
-    # Pega dados do formulário
+
     announcement_id = request.form.get('id') or str(uuid.uuid4())
     announcement_title = request.form.get('title')
-    
-    # Processa upload de imagem
+
     uploaded_image = ''
     if 'image' in request.files:
         file = request.files['image']
         if file and file.filename != '' and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            # Adiciona timestamp para evitar conflitos
             filename = f"{int(datetime.now().timestamp())}_{filename}"
             file_path = os.path.join(UPLOAD_FOLDER, filename)
             file.save(file_path)
             uploaded_image = f"/static/uploads/{filename}"
-    
-    # Se está editando, mantém imagem existente se não houver nova
-    existing_announcement = next((a for a in data['announcements'] if a['id'] == announcement_id), None)
+
+    existing_announcement = next(
+        (a for a in data['announcements'] if a['id'] == announcement_id), None
+    )
     if existing_announcement and not uploaded_image:
         uploaded_image = existing_announcement.get('image', '')
-    
+
     announcement = {
         'id': announcement_id,
         'title': announcement_title,
         'content': request.form.get('content'),
         'image': uploaded_image,
         'active': request.form.get('active') == 'on',
-        'created_at': existing_announcement.get('created_at', datetime.now().isoformat()) if existing_announcement else datetime.now().isoformat(),
+        'created_at': (
+            existing_announcement.get('created_at', datetime.now().isoformat())
+            if existing_announcement else datetime.now().isoformat()
+        ),
         'updated_at': datetime.now().isoformat()
     }
-    
-    # Atualiza ou adiciona anúncio
-    existing_index = next((i for i, a in enumerate(data['announcements']) if a['id'] == announcement['id']), None)
+
+    existing_index = next(
+        (i for i, a in enumerate(data['announcements']) if a['id'] == announcement['id']),
+        None
+    )
     if existing_index is not None:
         data['announcements'][existing_index] = announcement
     else:
         data['announcements'].append(announcement)
-    
+
     save_data(data)
-    flash(f'Anúncio "{announcement_title}" salvo com sucesso!', 'success')
+    flash(f'Anuncio "{announcement_title}" salvo com sucesso!', 'success')
     return redirect(url_for('admin_announcements'))
 
 @app.route('/admin/anuncio/excluir/<announcement_id>')
 @admin_required
 def admin_delete_announcement(announcement_id):
-    """Excluir anúncio"""
     data = load_data()
-    
-    # Remove anúncio e sua imagem
-    announcement = next((a for a in data['announcements'] if a['id'] == announcement_id), None)
+
+    announcement = next(
+        (a for a in data['announcements'] if a['id'] == announcement_id), None
+    )
     if announcement and announcement.get('image'):
         if announcement['image'].startswith('/static/uploads/'):
-            image_path = announcement['image'][1:]  # Remove /
+            image_path = announcement['image'][1:]
             if os.path.exists(image_path):
                 os.remove(image_path)
-    
-    data['announcements'] = [a for a in data['announcements'] if a['id'] != announcement_id]
+
+    data['announcements'] = [
+        a for a in data['announcements'] if a['id'] != announcement_id
+    ]
     save_data(data)
-    
-    flash('Anúncio excluído com sucesso!', 'success')
+
+    flash('Anuncio excluido com sucesso!', 'success')
     return redirect(url_for('admin_announcements'))
+
+@app.route('/admin/clientes')
+@admin_required
+def admin_customers():
+    data = load_data()
+    return render_template('admin/customers.html', customers=data.get('customers', []))
 
 @app.route('/admin/logout')
 def admin_logout():
-    """Logout do admin"""
     session.pop('admin', None)
     return redirect(url_for('index'))
+
 
 # ================================
 # API ENDPOINTS
 # ================================
-
 @app.route('/api/upload', methods=['POST'])
 def upload_file():
-    """Upload de arquivos"""
     if 'file' not in request.files:
         return jsonify({'error': 'Nenhum arquivo enviado'}), 400
-    
+
     file = request.files['file']
     if file.filename == '':
         return jsonify({'error': 'Nenhum arquivo selecionado'}), 400
-    
+
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
-        # Adiciona timestamp para evitar conflitos
         filename = f"{int(datetime.now().timestamp())}_{filename}"
         file_path = os.path.join(UPLOAD_FOLDER, filename)
         file.save(file_path)
         return jsonify({'url': f"/static/uploads/{filename}"})
-    
-    return jsonify({'error': 'Tipo de arquivo não permitido'}), 400
+
+    return jsonify({'error': 'Tipo de arquivo nao permitido'}), 400
+
+@app.route('/api/payment-status/<order_id>')
+def api_payment_status(order_id):
+    """Check payment status for polling."""
+    data = load_data()
+    order = next((o for o in data.get('orders', []) if o['id'] == order_id), None)
+    if not order:
+        return jsonify({'error': 'Order not found'}), 404
+
+    # Optionally refresh from Asaas
+    if order.get('asaas_payment_id') and order.get('payment_status') == 'PENDING':
+        result, status = asaas.get_payment(order['asaas_payment_id'])
+        if status == 200:
+            new_status = result.get('status')
+            if new_status != order.get('payment_status'):
+                order['payment_status'] = new_status
+                if new_status in ('CONFIRMED', 'RECEIVED'):
+                    order['status'] = 'paid'
+                order['updated_at'] = datetime.now().isoformat()
+                save_data(data)
+
+    return jsonify({
+        'status': order.get('status'),
+        'payment_status': order.get('payment_status')
+    })
+
+
+# ================================
+# ERROR HANDLERS
+# ================================
+@app.errorhandler(403)
+def forbidden(e):
+    return render_template('errors/403.html'), 403
+
+@app.errorhandler(404)
+def not_found(e):
+    return render_template('errors/404.html'), 404
+
+@app.errorhandler(500)
+def server_error(e):
+    return render_template('errors/500.html'), 500
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block page_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+{% endblock %}
+
+{% block title %}Clientes - Admin Val's{% endblock %}
+
+{% block content %}
+<div class="admin-nav">
+    <div class="container">
+        <h1><i class="fas fa-users"></i> Clientes</h1>
+        <div class="nav-links">
+            <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('admin_products') }}">Produtos</a>
+            <a href="{{ url_for('admin_orders') }}">Pedidos</a>
+            <a href="{{ url_for('admin_announcements') }}">Anuncios</a>
+            <a href="{{ url_for('admin_customers') }}" class="active">Clientes</a>
+            <a href="{{ url_for('admin_logout') }}">Sair</a>
+        </div>
+    </div>
+</div>
+
+<section class="section">
+    <div class="container">
+        {% if customers %}
+        <div class="admin-table-container">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Email</th>
+                        <th>CPF</th>
+                        <th>Telefone</th>
+                        <th>2FA</th>
+                        <th>Cadastro</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for customer in customers %}
+                    <tr>
+                        <td><strong>{{ customer.name }}</strong></td>
+                        <td>{{ customer.email }}</td>
+                        <td>{{ customer.cpf or 'N/A' }}</td>
+                        <td>{{ customer.phone or 'N/A' }}</td>
+                        <td>
+                            {% if customer.totp_enabled %}
+                            <span class="status-badge status-paid">Ativo</span>
+                            {% else %}
+                            <span class="status-badge status-pending">Inativo</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ customer.created_at[:10] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state-admin">
+            <i class="fas fa-users"></i>
+            <p>Nenhum cliente cadastrado ainda.</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block page_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/customer.css') }}">
+{% endblock %}
+
+{% block title %}Verificacao 2FA - Val's{% endblock %}
+
+{% block content %}
+<section class="auth-section">
+    <div class="container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="auth-badge"><i class="fas fa-shield-alt"></i></div>
+                <h1>Verificacao de Seguranca</h1>
+                <p>Digite o codigo do seu aplicativo autenticador</p>
+            </div>
+
+            <form action="{{ url_for('customer_2fa_verify') }}" method="post" class="auth-form">
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+
+                <div class="form-group">
+                    <label>Codigo de 6 digitos</label>
+                    <input type="text" name="token" required maxlength="6" pattern="[0-9]{6}"
+                           placeholder="000000" class="input-2fa" autocomplete="off">
+                </div>
+
+                <button type="submit" class="btn-auth">
+                    <span>Verificar</span>
+                    <i class="fas fa-check"></i>
+                </button>
+
+                <div class="auth-footer">
+                    <p><a href="{{ url_for('customer_login') }}">Voltar ao login</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}500 - Erro Interno{% endblock %}
+{% block content %}
+<section style="min-height: 60vh; display: flex; align-items: center; justify-content: center; text-align: center; padding: 4rem 0;">
+    <div>
+        <h1 style="font-family: var(--font-heading); font-size: 4rem; color: var(--navy);">500</h1>
+        <p style="color: var(--gray); margin-bottom: 2rem;">Erro interno do servidor.</p>
+        <a href="{{ url_for('index') }}" class="btn-primary-large">Voltar ao Inicio</a>
+    </div>
+</section>
+{% endblock %}

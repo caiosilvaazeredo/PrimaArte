@@ -1,22 +1,38 @@
-/* Val's - Luxury About Page */
+/* Val's - Riviera Botanica About Page */
 
 /* ================================
    HERO SECTION
    ================================ */
-.hero-section {
+.about-hero {
     background: var(--navy);
     color: var(--offwhite);
-    padding: 5rem 0 4rem;
+    padding: 6rem 0 5rem;
     text-align: center;
     position: relative;
 }
 
-.hero-content {
+.about-hero-content {
     position: relative;
     z-index: 1;
 }
 
-.hero-label {
+.about-hero-badge {
+    width: 60px;
+    height: 60px;
+    border: 1px solid rgba(201, 168, 76, 0.4);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+}
+
+.about-hero-badge i {
+    font-size: 1.3rem;
+    color: var(--gold);
+}
+
+.about-hero-label {
     font-family: var(--font-body);
     font-size: 0.7rem;
     font-weight: 500;
@@ -27,53 +43,53 @@
     margin-bottom: 1rem;
 }
 
-.hero-title {
+.about-hero-title {
     font-family: var(--font-heading);
     font-size: 3.5rem;
-    font-weight: 400;
-    margin-bottom: 1rem;
+    font-weight: 300;
+    margin-bottom: 0;
     color: var(--offwhite);
+    letter-spacing: 0.05em;
 }
 
-.hero-divider {
-    width: 60px;
+.about-hero-divider {
+    width: 80px;
     height: 1px;
     background: var(--gold);
     margin: 1.5rem auto;
 }
 
-.hero-subtitle {
+.about-hero-subtitle {
     font-size: 1rem;
-    opacity: 0.7;
+    opacity: 0.65;
     max-width: 500px;
     margin: 0 auto;
     line-height: 1.7;
 }
 
 /* ================================
-   ABOUT SECTION
+   ORIGIN STORY
    ================================ */
-.about-section {
+.about-origin {
     padding: 5rem 0;
     background: var(--offwhite);
 }
 
-.about-content {
+.about-origin-content {
     display: grid;
     grid-template-columns: 1fr 1.5fr;
     gap: 4rem;
     align-items: start;
-    margin-bottom: 5rem;
 }
 
-.about-image {
+.about-origin-image {
     position: relative;
     overflow: hidden;
     border: 1px solid rgba(27, 42, 74, 0.06);
     transition: var(--transition);
 }
 
-.about-image:hover {
+.about-origin-image:hover {
     box-shadow: 0 20px 50px rgba(27, 42, 74, 0.1);
 }
 
@@ -83,7 +99,7 @@
     display: block;
 }
 
-.image-overlay {
+.about-origin-overlay {
     position: absolute;
     bottom: 0;
     left: 0;
@@ -94,27 +110,27 @@
     text-align: center;
 }
 
-.image-overlay h3 {
+.about-origin-overlay h3 {
     font-family: var(--font-heading);
     font-size: 1.5rem;
     font-weight: 400;
     margin-bottom: 0.3rem;
 }
 
-.image-overlay p {
+.about-origin-overlay p {
     margin: 0;
     opacity: 0.7;
     font-size: 0.85rem;
     letter-spacing: 0.05em;
 }
 
-.about-text {
+.about-origin-text {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
 }
 
-.story-section {
+.origin-chapter {
     background: var(--white);
     padding: 2rem;
     border: 1px solid rgba(27, 42, 74, 0.06);
@@ -125,12 +141,12 @@
     align-items: flex-start;
 }
 
-.story-section:hover {
+.origin-chapter:hover {
     transform: translateX(5px);
     box-shadow: 0 5px 20px rgba(27, 42, 74, 0.06);
 }
 
-.story-icon {
+.chapter-icon {
     width: 40px;
     height: 40px;
     min-width: 40px;
@@ -143,7 +159,18 @@
     margin-top: 0.2rem;
 }
 
-.story-section h2 {
+.chapter-number {
+    font-family: var(--font-body);
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: var(--letter-spacing-wide);
+    text-transform: uppercase;
+    color: var(--gold);
+    display: block;
+    margin-bottom: 0.4rem;
+}
+
+.chapter-content h2 {
     font-family: var(--font-heading);
     color: var(--navy);
     font-size: 1.4rem;
@@ -151,7 +178,7 @@
     margin-bottom: 0.8rem;
 }
 
-.story-section p {
+.chapter-content p {
     line-height: 1.7;
     color: var(--gray);
     margin: 0;
@@ -159,10 +186,96 @@
 }
 
 /* ================================
+   THE CONCEPT
+   ================================ */
+.about-concept {
+    padding: 5rem 0;
+    background: var(--navy);
+    color: var(--offwhite);
+}
+
+.concept-content {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 5rem;
+    align-items: center;
+}
+
+.concept-text .section-label-about {
+    color: var(--gold);
+}
+
+.concept-text h2 {
+    font-family: var(--font-heading);
+    font-size: 2.5rem;
+    font-weight: 300;
+    color: var(--offwhite);
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
+}
+
+.concept-text p {
+    font-size: 0.95rem;
+    line-height: 1.9;
+    color: rgba(250, 248, 245, 0.7);
+    margin-bottom: 1.5rem;
+}
+
+.concept-flowers {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+.flower-meaning {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    padding: 1.2rem 1.5rem;
+    background: rgba(250, 248, 245, 0.04);
+    border: 1px solid rgba(250, 248, 245, 0.08);
+    transition: var(--transition);
+}
+
+.flower-meaning:hover {
+    background: rgba(250, 248, 245, 0.08);
+    border-color: rgba(201, 168, 76, 0.3);
+    transform: translateX(5px);
+}
+
+.flower-icon {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    border: 1px solid var(--gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gold);
+    font-size: 0.9rem;
+}
+
+.flower-meaning h4 {
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--offwhite);
+    margin-bottom: 0.2rem;
+}
+
+.flower-meaning p {
+    font-size: 0.8rem;
+    color: rgba(250, 248, 245, 0.5);
+    margin: 0;
+    letter-spacing: 0.03em;
+}
+
+/* ================================
    VALUES SECTION
    ================================ */
-.values-section {
-    margin-bottom: 5rem;
+.about-values {
+    padding: 5rem 0;
+    background: var(--cream);
 }
 
 .values-header {
@@ -181,7 +294,7 @@
     margin-bottom: 0.8rem;
 }
 
-.section-title {
+.about-section-title {
     font-family: var(--font-heading);
     font-size: 2.5rem;
     font-weight: 400;
@@ -199,33 +312,36 @@
 
 .values-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     gap: 2rem;
 }
 
 .value-card {
     background: var(--white);
-    padding: 2.5rem 2rem;
+    padding: 3rem 2rem;
     text-align: center;
     border: 1px solid rgba(27, 42, 74, 0.06);
     transition: var(--transition);
-    border-top: 3px solid var(--gold);
 }
 
 .value-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 40px rgba(27, 42, 74, 0.08);
+    transform: translateY(-6px);
+    box-shadow: 0 20px 50px rgba(27, 42, 74, 0.1);
+}
+
+.value-featured {
+    border-top: 3px solid var(--gold);
 }
 
 .value-icon {
-    width: 60px;
-    height: 60px;
+    width: 70px;
+    height: 70px;
     border: 1px solid var(--gold);
     display: flex;
     align-items: center;
     justify-content: center;
     margin: 0 auto 1.5rem;
-    font-size: 1.3rem;
+    font-size: 1.4rem;
     color: var(--gold);
     transition: var(--transition);
 }
@@ -235,12 +351,20 @@
     color: var(--white);
 }
 
+.value-number {
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    color: var(--gold);
+    letter-spacing: 0.1em;
+    margin-bottom: 0.8rem;
+}
+
 .value-card h3 {
     font-family: var(--font-heading);
-    font-size: 1.4rem;
+    font-size: 1.6rem;
     font-weight: 500;
     color: var(--navy);
-    margin-bottom: 0.8rem;
+    margin-bottom: 1rem;
 }
 
 .value-card p {
@@ -253,14 +377,19 @@
 /* ================================
    CTA SECTION
    ================================ */
-.cta-section {
-    background: var(--cream);
+.about-cta {
+    padding: 5rem 0;
+    background: var(--offwhite);
+}
+
+.about-cta-content {
+    background: var(--white);
     padding: 4rem 3rem;
     text-align: center;
     border: 1px solid rgba(27, 42, 74, 0.06);
 }
 
-.cta-section h2 {
+.about-cta-content h2 {
     font-family: var(--font-heading);
     font-size: 2.2rem;
     font-weight: 400;
@@ -268,7 +397,7 @@
     margin-bottom: 0.8rem;
 }
 
-.cta-section p {
+.about-cta-content p {
     color: var(--gray);
     font-size: 0.95rem;
     margin-bottom: 2rem;
@@ -285,30 +414,39 @@
    RESPONSIVE
    ================================ */
 @media (max-width: 768px) {
-    .hero-title {
+    .about-hero-title {
         font-size: 2.5rem;
     }
 
-    .about-content {
+    .about-origin-content {
         grid-template-columns: 1fr;
         gap: 2rem;
     }
 
-    .about-image {
+    .about-origin-image {
         max-width: 400px;
         margin: 0 auto;
+    }
+
+    .concept-content {
+        grid-template-columns: 1fr;
+        gap: 3rem;
     }
 
     .values-grid {
         grid-template-columns: 1fr;
     }
 
-    .story-section {
+    .origin-chapter {
         padding: 1.5rem;
     }
 
-    .story-section h2 {
+    .chapter-content h2 {
         font-size: 1.2rem;
+    }
+
+    .concept-text h2 {
+        font-size: 2rem;
     }
 
     .cta-buttons {
@@ -316,24 +454,36 @@
         align-items: center;
     }
 
-    .cta-section {
+    .about-cta-content {
         padding: 3rem 2rem;
     }
 }
 
 @media (max-width: 480px) {
-    .hero-section {
+    .about-hero {
+        padding: 4rem 0 3rem;
+    }
+
+    .about-origin {
         padding: 3rem 0;
     }
 
-    .about-section {
+    .about-concept {
         padding: 3rem 0;
     }
 
-    .story-section {
+    .about-values {
+        padding: 3rem 0;
+    }
+
+    .origin-chapter {
         padding: 1.2rem;
         flex-direction: column;
         gap: 1rem;
+    }
+
+    .flower-meaning {
+        padding: 1rem;
     }
 
     .value-card {
@@ -341,8 +491,12 @@
     }
 
     .value-icon {
-        width: 50px;
-        height: 50px;
-        font-size: 1.1rem;
+        width: 55px;
+        height: 55px;
+        font-size: 1.2rem;
+    }
+
+    .about-section-title {
+        font-size: 2rem;
     }
 }

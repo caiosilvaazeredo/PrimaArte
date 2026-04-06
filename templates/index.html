@@ -5,25 +5,25 @@
 {% endblock %}
 
 {% block content %}
-<!-- Hero Section - Luxury -->
-<section class="hero-luxury">
-    <div class="hero-content-luxury container">
-        <div class="hero-logo-luxury">
-            <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="Val's">
+<!-- Hero Section - Riviera Botanica -->
+<section class="hero-riviera">
+    <div class="hero-riviera-overlay"></div>
+    <div class="hero-riviera-content container">
+        <div class="hero-riviera-badge">
+            <i class="fas fa-anchor"></i>
         </div>
-
-        <h1 class="hero-title-luxury">Val's</h1>
-        <p class="hero-subtitle-luxury">Luxury Handcrafted</p>
-        <p class="hero-description-luxury">
-            Pecas artesanais exclusivas, confeccionadas a mao com materiais nobres e atencao meticulosa a cada detalhe. Da nossa oficina para voce.
+        <span class="hero-riviera-label">Colecao Riviera Botanica</span>
+        <h1 class="hero-riviera-title">Onde o Mar<br>Encontra a Flora</h1>
+        <div class="hero-riviera-divider"></div>
+        <p class="hero-riviera-description">
+            Pecas artesanais de luxo inspiradas na costa e batizadas com nomes de flores. Cada criacao carrega a brisa do oceano e a delicadeza da natureza.
         </p>
-
-        <div class="hero-actions-luxury">
+        <div class="hero-riviera-actions">
             <a href="{{ url_for('products') }}" class="btn-hero-primary">
                 <span>Explorar Colecao</span>
                 <i class="fas fa-arrow-right"></i>
             </a>
-            <a href="https://wa.me/5521973108293?text=Olá! Gostaria de conhecer mais sobre a Val's" target="_blank" class="btn-hero-secondary">
+            <a href="https://wa.me/5521973108293?text=Olá! Gostaria de conhecer a coleção Riviera Botanica da Val's" target="_blank" class="btn-hero-secondary">
                 <i class="fab fa-whatsapp"></i>
                 <span>Atendimento Exclusivo</span>
             </a>
@@ -53,36 +53,44 @@
 </section>
 {% endif %}
 
-<!-- Brand Story Section -->
-<section class="brand-story">
+<!-- Born from the Ocean -->
+<section class="origin-section">
     <div class="container">
-        <div class="brand-story-content">
-            <div class="brand-story-text">
-                <span class="section-label">Nossa Essencia</span>
+        <div class="origin-content">
+            <div class="origin-text">
+                <span class="section-label">Nascida do Oceano</span>
                 <h2>
                     <i class="fas fa-anchor" style="color: var(--gold); margin-right: 0.5rem; font-size: 1.8rem;"></i>
-                    A Arte de Criar com as Maos
+                    Born from the Ocean
                 </h2>
                 <p>
-                    Nossa historia comecou na Region dos Lagos, onde lagoa, mar e sol se encontram. Nesse cenario inspirador, cada peca e cuidadosamente criada a mao, unindo tecnicas artesanais ao requinte dos materiais nobres.
+                    Na Region dos Lagos, onde o azul do mar se funde com o verde da restinga, nasceu a Val's. Inspiradas pela paisagem costeira e pela flora exuberante, Flavia e Valeria decidiram dar vida a pecas que carregam a alma desse lugar.
                 </p>
                 <p>
-                    Cada produto carrega a energia desse lugar e a paixao pelo artesanato de luxo. Do nosso atelie para voce, levamos dedicacao em cada costura.
+                    Cada bolsa da colecao Riviera Botanica recebe o nome de uma flor — Dalia, Lirio, Azaleia, Hortensia — como tributo a natureza que nos inspira e a tradicao familiar que nos guia desde tres geracoes.
                 </p>
+                <div class="origin-signature">
+                    <div class="origin-sig-line"></div>
+                    <span>Flavia & Valeria</span>
+                    <span class="origin-sig-sub">Fundadoras da Val's</span>
+                </div>
             </div>
-            <div class="brand-story-visual">
-                <div class="brand-values">
-                    <div class="brand-value-item" data-aos="fade-up">
-                        <i class="fas fa-gem"></i>
-                        <span>Materiais Nobres</span>
+            <div class="origin-visual">
+                <div class="origin-stats">
+                    <div class="origin-stat" data-aos="fade-up">
+                        <i class="fas fa-water"></i>
+                        <span class="origin-stat-number">Region dos Lagos</span>
+                        <span class="origin-stat-label">Origem</span>
                     </div>
-                    <div class="brand-value-item" data-aos="fade-up" data-aos-delay="100">
-                        <i class="fas fa-hands"></i>
-                        <span>Feito a Mao</span>
+                    <div class="origin-stat" data-aos="fade-up" data-aos-delay="100">
+                        <i class="fas fa-seedling"></i>
+                        <span class="origin-stat-number">3 Geracoes</span>
+                        <span class="origin-stat-label">De Artesanato</span>
                     </div>
-                    <div class="brand-value-item" data-aos="fade-up" data-aos-delay="200">
-                        <i class="fas fa-award"></i>
-                        <span>Exclusividade</span>
+                    <div class="origin-stat" data-aos="fade-up" data-aos-delay="200">
+                        <i class="fas fa-leaf"></i>
+                        <span class="origin-stat-number">100% Artesanal</span>
+                        <span class="origin-stat-label">Feito a Mao</span>
                     </div>
                 </div>
             </div>
@@ -90,13 +98,14 @@
     </div>
 </section>
 
-<!-- New Arrivals / Featured Products -->
+<!-- Riviera Botanica Collection - Featured Products -->
 {% if featured_products %}
-<section class="new-arrivals">
+<section class="riviera-collection">
     <div class="container">
         <div class="section-header-luxury">
-            <span class="section-label">Selecao Exclusiva</span>
-            <h2 class="section-title-luxury">New Arrivals</h2>
+            <span class="section-label">Colecao Riviera Botanica</span>
+            <h2 class="section-title-luxury">Pecas que Contam Historias</h2>
+            <p class="section-subtitle-riviera">Cada bolsa leva o nome de uma flor, unindo a elegancia costeira ao artesanato de luxo</p>
             <div class="section-divider"></div>
         </div>
 
@@ -119,7 +128,7 @@
                     </div>
                     {% elif product.featured %}
                     <div class="product-badge-luxury">
-                        Destaque
+                        <i class="fas fa-leaf"></i> Riviera
                     </div>
                     {% endif %}
 
@@ -161,6 +170,103 @@
     </div>
 </section>
 {% endif %}
+
+<!-- Uncompromising Craftsmanship -->
+<section class="craftsmanship-section">
+    <div class="container">
+        <div class="craftsmanship-content">
+            <div class="craftsmanship-visual">
+                <div class="craft-process">
+                    <div class="craft-step" data-aos="fade-up">
+                        <div class="craft-step-number">01</div>
+                        <div class="craft-step-info">
+                            <h4>Selecao de Materiais</h4>
+                            <p>Tecidos e aviamentos escolhidos a dedo, priorizando qualidade e sustentabilidade</p>
+                        </div>
+                    </div>
+                    <div class="craft-step" data-aos="fade-up" data-aos-delay="100">
+                        <div class="craft-step-number">02</div>
+                        <div class="craft-step-info">
+                            <h4>Corte Artesanal</h4>
+                            <p>Cada peca e cortada manualmente com precisao e atencao aos detalhes</p>
+                        </div>
+                    </div>
+                    <div class="craft-step" data-aos="fade-up" data-aos-delay="200">
+                        <div class="craft-step-number">03</div>
+                        <div class="craft-step-info">
+                            <h4>Costura de Luxo</h4>
+                            <p>Tecnicas herdadas de tres geracoes, unindo tradicao e refinamento</p>
+                        </div>
+                    </div>
+                    <div class="craft-step" data-aos="fade-up" data-aos-delay="300">
+                        <div class="craft-step-number">04</div>
+                        <div class="craft-step-info">
+                            <h4>Acabamento Final</h4>
+                            <p>Inspecao minuciosa para garantir a perfeicao de cada detalhe</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="craftsmanship-text">
+                <span class="section-label">Artesanato Sem Concessoes</span>
+                <h2>Uncompromising<br>Craftsmanship</h2>
+                <p>
+                    Nossas pecas nao sao apenas bolsas — sao obras de arte artesanais. Cada costura e feita a mao, cada detalhe e pensado para durar e encantar. A tradicao de alfaiataria de nossa familia, que remonta a tres geracoes, vive em cada peca que criamos.
+                </p>
+                <p>
+                    Do atelie na Region dos Lagos, trabalhamos com materiais nobres e tecnicas ancestrais para criar pecas que transcendem tendencias e se tornam legados.
+                </p>
+                <a href="{{ url_for('about') }}" class="btn-craft-link">
+                    <span>Conheca Nossa Historia</span>
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Three Pillars -->
+<section class="pillars-section">
+    <div class="container">
+        <div class="section-header-luxury">
+            <span class="section-label">Nossos Pilares</span>
+            <h2 class="section-title-luxury">O que nos Define</h2>
+            <div class="section-divider"></div>
+        </div>
+
+        <div class="pillars-grid">
+            <div class="pillar-card" data-aos="fade-up">
+                <div class="pillar-icon">
+                    <i class="fas fa-crown"></i>
+                </div>
+                <div class="pillar-number">I</div>
+                <h3>Elegancia</h3>
+                <p>Design sofisticado que une a beleza da costa a nobreza dos materiais. Cada peca e projetada para elevar qualquer ocasiao com graca atemporal.</p>
+                <div class="pillar-line"></div>
+            </div>
+
+            <div class="pillar-card pillar-featured" data-aos="fade-up" data-aos-delay="100">
+                <div class="pillar-icon">
+                    <i class="fas fa-gem"></i>
+                </div>
+                <div class="pillar-number">II</div>
+                <h3>Qualidade</h3>
+                <p>Materiais selecionados, costuras impecaveis e acabamento de luxo. Nossas pecas sao feitas para serem apreciadas e passadas adiante como verdadeiros tesouros.</p>
+                <div class="pillar-line"></div>
+            </div>
+
+            <div class="pillar-card" data-aos="fade-up" data-aos-delay="200">
+                <div class="pillar-icon">
+                    <i class="fas fa-leaf"></i>
+                </div>
+                <div class="pillar-number">III</div>
+                <h3>Sustentabilidade</h3>
+                <p>Producao consciente com materiais responsaveis e tecnicas que respeitam o meio ambiente. Luxo e sustentabilidade caminham juntos na Val's.</p>
+                <div class="pillar-line"></div>
+            </div>
+        </div>
+    </div>
+</section>
 
 <!-- Collections -->
 <section class="collections-luxury">
@@ -221,7 +327,7 @@
                 <p>Entre em contato para um atendimento exclusivo. Estamos prontos para ajuda-lo a encontrar a peca perfeita ou criar algo unico para voce.</p>
             </div>
             <div class="cta-actions-luxury" data-aos="fade-left" data-aos-delay="200">
-                <a href="https://wa.me/5521973108293?text=Olá! Gostaria de conhecer mais sobre os produtos da Val's!" target="_blank" class="btn-whatsapp-luxury">
+                <a href="https://wa.me/5521973108293?text=Olá! Gostaria de conhecer mais sobre a coleção Riviera Botanica da Val's!" target="_blank" class="btn-whatsapp-luxury">
                     <i class="fab fa-whatsapp"></i>
                     <span>WhatsApp</span>
                 </a>

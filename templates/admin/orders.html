@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block page_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+{% endblock %}
+
+{% block title %}Pedidos - Admin Val's{% endblock %}
+
+{% block content %}
+<div class="admin-nav">
+    <div class="container">
+        <h1><i class="fas fa-shopping-cart"></i> Gerenciar Pedidos</h1>
+        <div class="nav-links">
+            <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('admin_products') }}">Produtos</a>
+            <a href="{{ url_for('admin_orders') }}" class="active">Pedidos</a>
+            <a href="{{ url_for('admin_announcements') }}">Anuncios</a>
+            <a href="{{ url_for('admin_customers') }}">Clientes</a>
+            <a href="{{ url_for('admin_logout') }}">Sair</a>
+        </div>
+    </div>
+</div>
+
+<section class="section">
+    <div class="container">
+        <!-- Filters -->
+        <div class="admin-filters">
+            <a href="{{ url_for('admin_orders') }}" class="filter-btn {% if not current_status %}active{% endif %}">Todos</a>
+            <a href="{{ url_for('admin_orders', status='pending') }}" class="filter-btn {% if current_status == 'pending' %}active{% endif %}">Pendentes</a>
+            <a href="{{ url_for('admin_orders', status='paid') }}" class="filter-btn {% if current_status == 'paid' %}active{% endif %}">Pagos</a>
+            <a href="{{ url_for('admin_orders', status='shipped') }}" class="filter-btn {% if current_status == 'shipped' %}active{% endif %}">Enviados</a>
+            <a href="{{ url_for('admin_orders', status='delivered') }}" class="filter-btn {% if current_status == 'delivered' %}active{% endif %}">Entregues</a>
+            <a href="{{ url_for('admin_orders', status='cancelled') }}" class="filter-btn {% if current_status == 'cancelled' %}active{% endif %}">Cancelados</a>
+        </div>
+
+        {% if orders %}
+        <div class="admin-table-container">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Pedido</th>
+                        <th>Cliente</th>
+                        <th>Itens</th>
+                        <th>Total</th>
+                        <th>Pagamento</th>
+                        <th>Status</th>
+                        <th>Data</th>
+                        <th>Acoes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                    <tr>
+                        <td><strong>{{ order.order_number }}</strong></td>
+                        <td>{{ order.customer_name }}<br><small>{{ order.customer_email }}</small></td>
+                        <td>{{ order.items|length }} item(s)</td>
+                        <td>R$ {{ "%.2f"|format(order.total) }}</td>
+                        <td>
+                            {% if order.payment_method == 'PIX' %}<i class="fas fa-qrcode"></i> PIX
+                            {% elif order.payment_method == 'CREDIT_CARD' %}<i class="fas fa-credit-card"></i> Cartao
+                            {% elif order.payment_method == 'BOLETO' %}<i class="fas fa-barcode"></i> Boleto
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="status-badge status-{{ order.status }}">
+                                {% if order.status == 'pending' %}Pendente
+                                {% elif order.status == 'paid' %}Pago
+                                {% elif order.status == 'shipped' %}Enviado
+                                {% elif order.status == 'delivered' %}Entregue
+                                {% elif order.status == 'cancelled' %}Cancelado
+                                {% else %}{{ order.status }}{% endif %}
+                            </span>
+                        </td>
+                        <td>{{ order.created_at[:10] }}</td>
+                        <td>
+                            <a href="{{ url_for('admin_order_detail', order_id=order.id) }}" class="btn-admin-sm">Ver</a>
+                            <a href="{{ url_for('admin_generate_invoice', order_id=order.id) }}" class="btn-admin-sm btn-invoice" title="Gerar NF">
+                                <i class="fas fa-file-pdf"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state-admin">
+            <i class="fas fa-inbox"></i>
+            <p>Nenhum pedido encontrado.</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
