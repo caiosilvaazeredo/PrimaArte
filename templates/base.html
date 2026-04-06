@@ -44,7 +44,7 @@
                     <ul>
                         <li><a href="{{ url_for('index') }}"><span class="nav-text">INICIO</span></a></li>
                         <li><a href="{{ url_for('products') }}"><span class="nav-text">COLECAO</span></a></li>
-                        <li><a href="{{ url_for('about') }}"><span class="nav-text">NOSSA HISTORIA</span></a></li>
+                        <li><a href="{{ url_for('about') }}"><span class="nav-text">SOBRE</span></a></li>
                         <li><a href="https://www.instagram.com/primaarte2025/" target="_blank"><span class="nav-text">INSTAGRAM</span></a></li>
                     </ul>
                 </nav>
@@ -53,7 +53,7 @@
                     <ul>
                         <li><a href="{{ url_for('index') }}">Inicio</a></li>
                         <li><a href="{{ url_for('products') }}">Colecao</a></li>
-                        <li><a href="{{ url_for('about') }}">Nossa Historia</a></li>
+                        <li><a href="{{ url_for('about') }}">Sobre</a></li>
                         <li><a href="https://www.instagram.com/primaarte2025/" target="_blank">Instagram</a></li>
                         {% if current_customer %}
                         <li><a href="{{ url_for('customer_profile') }}"><i class="fas fa-user"></i> Minha Conta</a></li>
@@ -121,7 +121,7 @@
                     <ul class="footer-links">
                         <li><a href="{{ url_for('index') }}">Inicio</a></li>
                         <li><a href="{{ url_for('products') }}">Colecao</a></li>
-                        <li><a href="{{ url_for('about') }}">Nossa Historia</a></li>
+                        <li><a href="{{ url_for('about') }}">Sobre</a></li>
                         {% if current_customer %}
                         <li><a href="{{ url_for('customer_profile') }}">Minha Conta</a></li>
                         {% else %}

@@ -1,4 +1,4 @@
-/* Val's - Riviera Botanica About Page */
+/* Val's - About Page (Purpose & Values) */
 
 /* ================================
    HERO SECTION
@@ -49,7 +49,7 @@
     font-weight: 300;
     margin-bottom: 0;
     color: var(--offwhite);
-    letter-spacing: 0.05em;
+    letter-spacing: 0.08em;
 }
 
 .about-hero-divider {
@@ -68,121 +68,210 @@
 }
 
 /* ================================
-   ORIGIN STORY
+   PURPOSE SECTION
    ================================ */
-.about-origin {
+.about-purpose {
     padding: 5rem 0;
     background: var(--offwhite);
 }
 
-.about-origin-content {
+.purpose-content {
     display: grid;
-    grid-template-columns: 1fr 1.5fr;
+    grid-template-columns: 1fr 1.2fr;
     gap: 4rem;
-    align-items: start;
+    align-items: center;
 }
 
-.about-origin-image {
+.purpose-image {
     position: relative;
     overflow: hidden;
     border: 1px solid rgba(27, 42, 74, 0.06);
     transition: var(--transition);
 }
 
-.about-origin-image:hover {
+.purpose-image:hover {
     box-shadow: 0 20px 50px rgba(27, 42, 74, 0.1);
 }
 
-.founders-photo {
+.purpose-photo {
     width: 100%;
     height: auto;
     display: block;
 }
 
-.about-origin-overlay {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: linear-gradient(transparent, rgba(27, 42, 74, 0.9));
-    color: var(--offwhite);
-    padding: 2rem;
-    text-align: center;
+.purpose-text .section-label-about {
+    color: var(--gold);
 }
 
-.about-origin-overlay h3 {
+.purpose-text h2 {
     font-family: var(--font-heading);
-    font-size: 1.5rem;
+    font-size: 2.2rem;
     font-weight: 400;
-    margin-bottom: 0.3rem;
+    color: var(--navy);
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
 }
 
-.about-origin-overlay p {
-    margin: 0;
-    opacity: 0.7;
-    font-size: 0.85rem;
-    letter-spacing: 0.05em;
+.purpose-text p {
+    font-size: 0.95rem;
+    line-height: 1.9;
+    color: var(--gray);
+    margin-bottom: 1.2rem;
 }
 
-.about-origin-text {
+.purpose-highlight {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 1rem;
+    margin-top: 2rem;
 }
 
-.origin-chapter {
+.purpose-stat {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    padding: 1.2rem 1.5rem;
     background: var(--white);
-    padding: 2rem;
     border: 1px solid rgba(27, 42, 74, 0.06);
     border-left: 3px solid var(--gold);
     transition: var(--transition);
-    display: flex;
-    gap: 1.5rem;
-    align-items: flex-start;
 }
 
-.origin-chapter:hover {
+.purpose-stat:hover {
     transform: translateX(5px);
     box-shadow: 0 5px 20px rgba(27, 42, 74, 0.06);
 }
 
-.chapter-icon {
-    width: 40px;
-    height: 40px;
-    min-width: 40px;
+.stat-icon {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
     border: 1px solid var(--gold);
     display: flex;
     align-items: center;
     justify-content: center;
     color: var(--gold);
     font-size: 1rem;
-    margin-top: 0.2rem;
 }
 
-.chapter-number {
+.purpose-stat strong {
+    display: block;
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--navy);
+    margin-bottom: 0.2rem;
+}
+
+.purpose-stat p {
+    font-size: 0.8rem;
+    color: var(--gray);
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* ================================
+   VALUES SECTION
+   ================================ */
+.about-values {
+    padding: 5rem 0;
+    background: var(--cream);
+}
+
+.values-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.section-label-about {
     font-family: var(--font-body);
-    font-size: 0.65rem;
-    font-weight: 600;
+    font-size: 0.7rem;
+    font-weight: 500;
     letter-spacing: var(--letter-spacing-wide);
     text-transform: uppercase;
     color: var(--gold);
     display: block;
-    margin-bottom: 0.4rem;
-}
-
-.chapter-content h2 {
-    font-family: var(--font-heading);
-    color: var(--navy);
-    font-size: 1.4rem;
-    font-weight: 500;
     margin-bottom: 0.8rem;
 }
 
-.chapter-content p {
+.about-section-title {
+    font-family: var(--font-heading);
+    font-size: 2.5rem;
+    font-weight: 400;
+    color: var(--navy);
+    text-align: center;
+    margin-bottom: 0.5rem;
+}
+
+.values-divider {
+    width: 60px;
+    height: 1px;
+    background: var(--gold);
+    margin: 1rem auto 0;
+}
+
+.values-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+}
+
+.value-card {
+    background: var(--white);
+    padding: 2.5rem 1.8rem;
+    text-align: center;
+    border: 1px solid rgba(27, 42, 74, 0.06);
+    transition: var(--transition);
+}
+
+.value-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 50px rgba(27, 42, 74, 0.1);
+}
+
+.value-featured {
+    border-top: 3px solid var(--gold);
+}
+
+.value-icon {
+    width: 65px;
+    height: 65px;
+    border: 1px solid var(--gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    font-size: 1.3rem;
+    color: var(--gold);
+    transition: var(--transition);
+}
+
+.value-card:hover .value-icon {
+    background: var(--gold);
+    color: var(--white);
+}
+
+.value-number {
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    color: var(--gold);
+    letter-spacing: 0.1em;
+    margin-bottom: 0.8rem;
+}
+
+.value-card h3 {
+    font-family: var(--font-heading);
+    font-size: 1.3rem;
+    font-weight: 500;
+    color: var(--navy);
+    margin-bottom: 1rem;
+}
+
+.value-card p {
     line-height: 1.7;
     color: var(--gray);
     margin: 0;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
 }
 
 /* ================================
@@ -271,110 +360,6 @@
 }
 
 /* ================================
-   VALUES SECTION
-   ================================ */
-.about-values {
-    padding: 5rem 0;
-    background: var(--cream);
-}
-
-.values-header {
-    text-align: center;
-    margin-bottom: 3rem;
-}
-
-.section-label-about {
-    font-family: var(--font-body);
-    font-size: 0.7rem;
-    font-weight: 500;
-    letter-spacing: var(--letter-spacing-wide);
-    text-transform: uppercase;
-    color: var(--gold);
-    display: block;
-    margin-bottom: 0.8rem;
-}
-
-.about-section-title {
-    font-family: var(--font-heading);
-    font-size: 2.5rem;
-    font-weight: 400;
-    color: var(--navy);
-    text-align: center;
-    margin-bottom: 0.5rem;
-}
-
-.values-divider {
-    width: 60px;
-    height: 1px;
-    background: var(--gold);
-    margin: 1rem auto 0;
-}
-
-.values-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 2rem;
-}
-
-.value-card {
-    background: var(--white);
-    padding: 3rem 2rem;
-    text-align: center;
-    border: 1px solid rgba(27, 42, 74, 0.06);
-    transition: var(--transition);
-}
-
-.value-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 20px 50px rgba(27, 42, 74, 0.1);
-}
-
-.value-featured {
-    border-top: 3px solid var(--gold);
-}
-
-.value-icon {
-    width: 70px;
-    height: 70px;
-    border: 1px solid var(--gold);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 1.5rem;
-    font-size: 1.4rem;
-    color: var(--gold);
-    transition: var(--transition);
-}
-
-.value-card:hover .value-icon {
-    background: var(--gold);
-    color: var(--white);
-}
-
-.value-number {
-    font-family: var(--font-heading);
-    font-size: 1rem;
-    color: var(--gold);
-    letter-spacing: 0.1em;
-    margin-bottom: 0.8rem;
-}
-
-.value-card h3 {
-    font-family: var(--font-heading);
-    font-size: 1.6rem;
-    font-weight: 500;
-    color: var(--navy);
-    margin-bottom: 1rem;
-}
-
-.value-card p {
-    line-height: 1.7;
-    color: var(--gray);
-    margin: 0;
-    font-size: 0.9rem;
-}
-
-/* ================================
    CTA SECTION
    ================================ */
 .about-cta {
@@ -413,19 +398,29 @@
 /* ================================
    RESPONSIVE
    ================================ */
+@media (max-width: 1024px) {
+    .values-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
 @media (max-width: 768px) {
     .about-hero-title {
         font-size: 2.5rem;
     }
 
-    .about-origin-content {
+    .purpose-content {
         grid-template-columns: 1fr;
-        gap: 2rem;
+        gap: 2.5rem;
     }
 
-    .about-origin-image {
-        max-width: 400px;
+    .purpose-image {
+        max-width: 500px;
         margin: 0 auto;
+    }
+
+    .purpose-text h2 {
+        font-size: 1.8rem;
     }
 
     .concept-content {
@@ -433,20 +428,12 @@
         gap: 3rem;
     }
 
-    .values-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .origin-chapter {
-        padding: 1.5rem;
-    }
-
-    .chapter-content h2 {
-        font-size: 1.2rem;
-    }
-
     .concept-text h2 {
         font-size: 2rem;
+    }
+
+    .values-grid {
+        grid-template-columns: 1fr;
     }
 
     .cta-buttons {
@@ -464,7 +451,7 @@
         padding: 4rem 0 3rem;
     }
 
-    .about-origin {
+    .about-purpose {
         padding: 3rem 0;
     }
 
@@ -476,10 +463,12 @@
         padding: 3rem 0;
     }
 
-    .origin-chapter {
-        padding: 1.2rem;
-        flex-direction: column;
-        gap: 1rem;
+    .purpose-stat {
+        padding: 1rem;
+    }
+
+    .purpose-highlight {
+        margin-top: 1.5rem;
     }
 
     .flower-meaning {

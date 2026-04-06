@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/about.css') }}">
 {% endblock %}
 
-{% block title %}Nossa Historia - Val's{% endblock %}
+{% block title %}Sobre - Val's{% endblock %}
 
 {% block content %}
 <!-- Hero -->
@@ -12,62 +12,44 @@
     <div class="container">
         <div class="about-hero-content">
             <div class="about-hero-badge">
-                <i class="fas fa-anchor"></i>
+                <i class="fas fa-shell"></i>
             </div>
-            <span class="about-hero-label">Nossa Historia</span>
-            <h1 class="about-hero-title">Riviera Botanica</h1>
+            <span class="about-hero-label">Quem Somos</span>
+            <h1 class="about-hero-title">Val's</h1>
             <div class="about-hero-divider"></div>
-            <p class="about-hero-subtitle">Onde a tradicao familiar encontra a beleza da costa</p>
+            <p class="about-hero-subtitle">Arte feita a mao com proposito, amor e identidade</p>
         </div>
     </div>
 </section>
 
-<!-- Origin Story -->
-<section class="about-origin">
+<!-- Purpose Section (Image + Text) -->
+<section class="about-purpose">
     <div class="container">
-        <div class="about-origin-content">
-            <div class="about-origin-image">
-                <img src="{{ url_for('static', filename='images/sobre.jpg') }}" alt="Flavia e Valeria - Val's" class="founders-photo">
-                <div class="about-origin-overlay">
-                    <h3>Flavia & Valeria</h3>
-                    <p>Fundadoras da Val's</p>
-                </div>
+        <div class="purpose-content">
+            <div class="purpose-image">
+                <img src="{{ url_for('static', filename='images/sobre.jpg') }}" alt="Barraca Val's - Feira artesanal" class="purpose-photo">
             </div>
 
-            <div class="about-origin-text">
-                <div class="origin-chapter">
-                    <div class="chapter-icon"><i class="fas fa-anchor"></i></div>
-                    <div class="chapter-content">
-                        <span class="chapter-number">Capitulo I</span>
-                        <h2>As Raizes</h2>
-                        <p>Flavia e Valeria cresceram entre linhas, tecidos e dedais. O avo alfaiate espalhou o oficio entre seus onze filhos, onde a maioria seguiu a arte da costura que uniu geracoes. Essa heranca de tres geracoes e a fundacao de tudo que criamos.</p>
-                    </div>
-                </div>
+            <div class="purpose-text">
+                <span class="section-label-about">Nosso Proposito</span>
+                <h2>Mais do que bolsas. Identidade.</h2>
+                <p>A Val's existe para transformar o artesanato em arte de luxo. Cada peca que sai das nossas maos carrega dedicacao, cuidado e a crenca de que o feito a mao tem um valor que nenhuma maquina consegue reproduzir.</p>
+                <p>Acreditamos que acessorios contam historias. Quando voce escolhe uma peca Val's, esta levando um pedaco da nossa essencia — da costa, das flores, do trabalho manual que atravessa geracoes.</p>
 
-                <div class="origin-chapter">
-                    <div class="chapter-icon"><i class="fas fa-compass"></i></div>
-                    <div class="chapter-content">
-                        <span class="chapter-number">Capitulo II</span>
-                        <h2>Os Caminhos</h2>
-                        <p>A vida as levou por caminhos diferentes, e durante anos seguiram distantes, embora o amor pelo artesanato sempre vivesse em cada uma. O fio da costura, invisivel, continuava a conecta-las.</p>
+                <div class="purpose-highlight">
+                    <div class="purpose-stat">
+                        <span class="stat-icon"><i class="fas fa-hands"></i></span>
+                        <div>
+                            <strong>100% Artesanal</strong>
+                            <p>Cada peca e feita inteiramente a mao</p>
+                        </div>
                     </div>
-                </div>
-
-                <div class="origin-chapter">
-                    <div class="chapter-icon"><i class="fas fa-water"></i></div>
-                    <div class="chapter-content">
-                        <span class="chapter-number">Capitulo III</span>
-                        <h2>O Reencontro</h2>
-                        <p>O reencontro aconteceu no emocionado aniversario de 90 anos da mae da Flavia, costureira dedicada e guardia da tradicao familiar. Na Region dos Lagos, entre o azul do oceano e o verde da restinga, a inspiracao nasceu.</p>
-                    </div>
-                </div>
-
-                <div class="origin-chapter">
-                    <div class="chapter-icon"><i class="fas fa-crown"></i></div>
-                    <div class="chapter-content">
-                        <span class="chapter-number">Capitulo IV</span>
-                        <h2>A Val's Nasce</h2>
-                        <p>Movidas pela saudade e pelo amor compartilhado pelo artesanato, decidiram unir talentos e criar a Val's — uma marca de pecas artesanais de luxo inspirada na costa e batizada pela natureza.</p>
+                    <div class="purpose-stat">
+                        <span class="stat-icon"><i class="fas fa-heart"></i></span>
+                        <div>
+                            <strong>Pecas Unicas</strong>
+                            <p>Nenhuma criacao e igual a outra</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -75,15 +57,60 @@
     </div>
 </section>
 
-<!-- The Concept -->
+<!-- Values -->
+<section class="about-values">
+    <div class="container">
+        <div class="values-header">
+            <span class="section-label-about">O que nos Move</span>
+            <h2 class="about-section-title">Nossos Valores</h2>
+            <div class="values-divider"></div>
+        </div>
+
+        <div class="values-grid">
+            <div class="value-card" data-aos="fade-up">
+                <div class="value-icon">
+                    <i class="fas fa-hands"></i>
+                </div>
+                <div class="value-number">I</div>
+                <h3>Trabalho Manual</h3>
+                <p>Valorizamos o feito a mao como forma de arte. Cada ponto, cada costura e cada detalhe e pensado e executado com intencao e carinho.</p>
+            </div>
+            <div class="value-card value-featured" data-aos="fade-up" data-aos-delay="100">
+                <div class="value-icon">
+                    <i class="fas fa-gem"></i>
+                </div>
+                <div class="value-number">II</div>
+                <h3>Autenticidade</h3>
+                <p>Nossas pecas nao seguem tendencias passageiras. Criamos com identidade propria, inspiradas na natureza e na beleza da costa brasileira.</p>
+            </div>
+            <div class="value-card" data-aos="fade-up" data-aos-delay="200">
+                <div class="value-icon">
+                    <i class="fas fa-leaf"></i>
+                </div>
+                <div class="value-number">III</div>
+                <h3>Consciencia</h3>
+                <p>Producao lenta, materiais escolhidos com cuidado e respeito ao tempo de cada criacao. O oposto do descartavel.</p>
+            </div>
+            <div class="value-card" data-aos="fade-up" data-aos-delay="300">
+                <div class="value-icon">
+                    <i class="fas fa-crown"></i>
+                </div>
+                <div class="value-number">IV</div>
+                <h3>Acessibilidade do Luxo</h3>
+                <p>Acreditamos que o luxo artesanal pode ser acessivel. Pecas sofisticadas com preco justo, direto de quem faz.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Flowers Concept -->
 <section class="about-concept">
     <div class="container">
         <div class="concept-content">
             <div class="concept-text">
-                <span class="section-label-about">O Conceito</span>
-                <h2>Riviera Botanica</h2>
-                <p>Cada bolsa da nossa colecao recebe o nome de uma flor — Dalia, Lirio, Azaleia, Hortensia, Girassol. Essa escolha nao e por acaso: cada flor representa uma qualidade que buscamos transmitir em nossas pecas.</p>
-                <p>A paisagem costeira da Region dos Lagos, com sua flora exuberante e luz dourada, e a alma de cada criacao. Do nosso atelie a beira-mar, levamos a voce pecas que carregam a energia do oceano e a delicadeza das flores.</p>
+                <span class="section-label-about">A Colecao</span>
+                <h2>Batizadas pela Natureza</h2>
+                <p>Cada bolsa da colecao Riviera Botanica recebe o nome de uma flor. Nao e apenas estetica — cada flor representa uma qualidade que buscamos transmitir em nossas criações.</p>
             </div>
             <div class="concept-flowers">
                 <div class="flower-meaning" data-aos="fade-up">
@@ -119,51 +146,13 @@
     </div>
 </section>
 
-<!-- Values -->
-<section class="about-values">
-    <div class="container">
-        <div class="values-header">
-            <span class="section-label-about">Nossos Pilares</span>
-            <h2 class="about-section-title">O que nos Define</h2>
-            <div class="values-divider"></div>
-        </div>
-
-        <div class="values-grid">
-            <div class="value-card" data-aos="fade-up">
-                <div class="value-icon">
-                    <i class="fas fa-crown"></i>
-                </div>
-                <div class="value-number">I</div>
-                <h3>Elegancia</h3>
-                <p>Design sofisticado que une a beleza da costa a nobreza dos materiais. Cada peca e projetada para elevar qualquer ocasiao.</p>
-            </div>
-            <div class="value-card value-featured" data-aos="fade-up" data-aos-delay="100">
-                <div class="value-icon">
-                    <i class="fas fa-gem"></i>
-                </div>
-                <div class="value-number">II</div>
-                <h3>Qualidade</h3>
-                <p>Materiais selecionados, costuras impecaveis e acabamento de luxo. Pecas feitas para serem apreciadas por geracoes.</p>
-            </div>
-            <div class="value-card" data-aos="fade-up" data-aos-delay="200">
-                <div class="value-icon">
-                    <i class="fas fa-leaf"></i>
-                </div>
-                <div class="value-number">III</div>
-                <h3>Sustentabilidade</h3>
-                <p>Producao consciente com materiais responsaveis e tecnicas que respeitam o meio ambiente. Luxo e natureza em harmonia.</p>
-            </div>
-        </div>
-    </div>
-</section>
-
 <!-- CTA -->
 <section class="about-cta">
     <div class="container">
         <div class="about-cta-content">
             <span class="section-label-about">Descubra</span>
-            <h2>Explore a Colecao Riviera Botanica</h2>
-            <p>Pecas unicas inspiradas na costa, batizadas com nomes de flores</p>
+            <h2>Conheca Nossas Pecas</h2>
+            <p>Cada bolsa conta uma historia. Encontre a sua.</p>
             <div class="cta-buttons">
                 <a href="{{ url_for('products') }}" class="btn-primary-large">
                     Ver Colecao
