@@ -626,10 +626,55 @@ def checkout_process():
             })
 
     # Customer info
-    customer_name = request.form.get('name', '')
-    customer_email = request.form.get('email', '')
-    customer_cpf = request.form.get('cpf', '')
-    customer_phone = request.form.get('phone', '')
+    customer_name = request.form.get('name', '').strip()
+    customer_email = request.form.get('email', '').strip().lower()
+    customer_cpf = re.sub(r'[^\d]', '', request.form.get('cpf', ''))
+    customer_phone = request.form.get('phone', '').strip()
+
+    # Auto-create guest customer by CPF (invisible to user)
+    # If user later registers with same email, orders will already be linked
+    guest_customer_id = session.get('customer_id')
+    if not guest_customer_id and customer_cpf:
+        data_all = load_data()
+        # Search by CPF first, then by email
+        existing = next(
+            (c for c in data_all['customers'] if c.get('cpf') == customer_cpf),
+            None
+        )
+        if not existing and customer_email:
+            existing = next(
+                (c for c in data_all['customers'] if c.get('email') == customer_email),
+                None
+            )
+
+        if existing:
+            guest_customer_id = existing['id']
+            # Update name/phone if missing
+            changed = False
+            if not existing.get('name') and customer_name:
+                existing['name'] = customer_name
+                changed = True
+            if not existing.get('phone') and customer_phone:
+                existing['phone'] = customer_phone
+                changed = True
+            if changed:
+                save_item('customers', existing['id'], existing)
+        else:
+            # Create ghost customer (no password = can't login until registers)
+            guest_customer_id = str(uuid.uuid4())
+            guest_customer = {
+                'id': guest_customer_id,
+                'name': customer_name,
+                'email': customer_email,
+                'cpf': customer_cpf,
+                'phone': customer_phone,
+                'password': '',
+                'totp_secret': '',
+                'totp_enabled': False,
+                'is_guest': True,
+                'created_at': datetime.now().isoformat()
+            }
+            save_item('customers', guest_customer_id, guest_customer)
 
     # Create or find Asaas customer
     asaas_customer_id = None
@@ -664,7 +709,7 @@ def checkout_process():
     order = {
         'id': str(uuid.uuid4()),
         'order_number': order_number,
-        'customer_id': session.get('customer_id'),
+        'customer_id': guest_customer_id,
         'customer_name': customer_name,
         'customer_email': customer_email,
         'customer_cpf': customer_cpf,
@@ -895,26 +940,54 @@ def customer_register():
         return redirect(url_for('customer_register'))
 
     data = load_data()
+    cpf_clean = re.sub(r'[^\d]', '', cpf)
 
-    # Check duplicate email
-    if any(c['email'] == email for c in data['customers']):
-        flash('Este email ja esta cadastrado.', 'error')
-        return redirect(url_for('customer_register'))
+    # Check if there's a guest account with same CPF or email (from a previous purchase)
+    guest = None
+    for c in data['customers']:
+        if c.get('is_guest'):
+            c_cpf = re.sub(r'[^\d]', '', c.get('cpf', ''))
+            if (c_cpf and c_cpf == cpf_clean) or (c.get('email') == email):
+                guest = c
+                break
 
-    # Create customer
-    customer = {
-        'id': str(uuid.uuid4()),
-        'name': name,
-        'email': email,
-        'password': hash_password(password),
-        'cpf': cpf,
-        'phone': phone,
-        'totp_secret': pyotp.random_base32(),
-        'totp_enabled': False,
-        'created_at': datetime.now().isoformat()
-    }
+    # Check duplicate email (only among non-guest accounts)
+    registered = next(
+        (c for c in data['customers']
+         if c['email'] == email and not c.get('is_guest') and c.get('password')),
+        None
+    )
+    if registered:
+        flash('Este email ja esta cadastrado. Faca login.', 'error')
+        return redirect(url_for('customer_login'))
 
-    save_item('customers', customer['id'], customer)
+    if guest:
+        # Upgrade guest to full account — keeps same ID so orders stay linked
+        guest['name'] = name
+        guest['email'] = email
+        guest['password'] = hash_password(password)
+        guest['cpf'] = cpf_clean
+        guest['phone'] = phone or guest.get('phone', '')
+        guest['totp_secret'] = pyotp.random_base32()
+        guest['totp_enabled'] = False
+        guest['is_guest'] = False
+        guest['registered_at'] = datetime.now().isoformat()
+        customer = guest
+        save_item('customers', customer['id'], customer)
+    else:
+        # Create brand new customer
+        customer = {
+            'id': str(uuid.uuid4()),
+            'name': name,
+            'email': email,
+            'password': hash_password(password),
+            'cpf': cpf_clean,
+            'phone': phone,
+            'totp_secret': pyotp.random_base32(),
+            'totp_enabled': False,
+            'created_at': datetime.now().isoformat()
+        }
+        save_item('customers', customer['id'], customer)
 
     # Send welcome email
     email_service.send_welcome_email(app, name, email)
