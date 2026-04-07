@@ -79,6 +79,38 @@
     font-size: 2.5rem;
 }
 
+.unique-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: var(--navy);
+    color: var(--gold);
+    padding: 0.35rem 1rem;
+    font-size: 0.6rem;
+    font-weight: 600;
+    letter-spacing: var(--letter-spacing);
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    z-index: 3;
+    border: 1px solid var(--gold);
+}
+
+.filter-tipo {
+    border-width: 2px;
+}
+
+.filter-tipo.active {
+    background: var(--navy);
+    color: var(--offwhite);
+    border-color: var(--navy);
+}
+
+.filter-tipo i {
+    margin-right: 0.3rem;
+}
+
 .featured-badge {
     position: absolute;
     top: 1rem;

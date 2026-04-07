@@ -36,6 +36,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 import email_service
+import shipping_service
 
 # ================================
 # FIREBASE FIRESTORE
@@ -379,7 +380,7 @@ class AsaasAPI:
                        due_date=None, installment_count=None):
         """
         Create a payment.
-        billing_type: BOLETO, CREDIT_CARD, PIX
+        billing_type: BOLETO, CREDIT_CARD, CREDIT_CARD (debit via Asaas), PIX
         """
         if not due_date:
             due_date = (datetime.now() + timedelta(days=3)).strftime('%Y-%m-%d')
@@ -425,24 +426,32 @@ asaas = AsaasAPI()
 @app.route('/')
 def index():
     data = load_data()
-    featured_products = [p for p in data['products'] if p.get('featured', False)][:6]
 
-    for product in featured_products:
-        product['current_price'] = get_product_current_price(product)
-        if product.get('promotion_active') and product.get('promotional_price'):
-            product['discount_percent'] = calculate_discount_percentage(
-                product['price'], product['promotional_price']
-            )
+    def _enrich(products):
+        for p in products:
+            p['current_price'] = get_product_current_price(p)
+            if p.get('promotion_active') and p.get('promotional_price'):
+                p['discount_percent'] = calculate_discount_percentage(
+                    p['price'], p['promotional_price']
+                )
+        return products
+
+    featured_products = _enrich([p for p in data['products'] if p.get('featured', False)][:6])
+    unique_products = _enrich([p for p in data['products'] if p.get('is_unique', False)][:6])
+    collection_products = _enrich([p for p in data['products'] if not p.get('is_unique', False)][:6])
 
     announcements = [a for a in data['announcements'] if a.get('active', True)][:3]
     return render_template('index.html',
                            featured_products=featured_products,
+                           unique_products=unique_products,
+                           collection_products=collection_products,
                            announcements=announcements)
 
 @app.route('/produtos')
 def products():
     data = load_data()
     category = request.args.get('categoria', '')
+    tipo = request.args.get('tipo', '')  # 'unicas' or 'colecao'
     products_list = data['products']
 
     if category:
@@ -450,6 +459,11 @@ def products():
             p for p in products_list
             if p.get('category', '').lower() == category.lower()
         ]
+
+    if tipo == 'unicas':
+        products_list = [p for p in products_list if p.get('is_unique', False)]
+    elif tipo == 'colecao':
+        products_list = [p for p in products_list if not p.get('is_unique', False)]
 
     for product in products_list:
         product['current_price'] = get_product_current_price(product)
@@ -460,7 +474,8 @@ def products():
 
     return render_template('products.html',
                            products=products_list,
-                           current_category=category)
+                           current_category=category,
+                           current_tipo=tipo)
 
 @app.route('/produto/<product_slug>')
 def product_detail(product_slug):
@@ -700,9 +715,48 @@ def checkout_process():
     billing_type_map = {
         'PIX': 'PIX',
         'CREDIT_CARD': 'CREDIT_CARD',
+        'DEBIT_CARD': 'CREDIT_CARD',  # Asaas uses CREDIT_CARD type for debit too
         'BOLETO': 'BOLETO'
     }
     billing_type = billing_type_map.get(payment_method, 'PIX')
+
+    # Shipping calculation
+    shipping_cep = request.form.get('shipping_cep', '').strip()
+    shipping_method = request.form.get('shipping_method', '')
+    shipping_cost = 0
+    shipping_address = request.form.get('shipping_address', '')
+    shipping_address_number = request.form.get('shipping_address_num', '')
+    shipping_complement = request.form.get('shipping_complement', '')
+    shipping_neighborhood = request.form.get('shipping_neighborhood', '')
+    shipping_city = request.form.get('shipping_city', '')
+    shipping_state = request.form.get('shipping_state', '')
+
+    if shipping_cep and shipping_method:
+        store_settings = get_item('settings', 'store') or {}
+        options = shipping_service.calculate_shipping(shipping_cep, settings=store_settings)
+        chosen = next((o for o in options if o['code'] == shipping_method), None)
+        # Check free shipping threshold
+        free_shipping_min = store_settings.get('free_shipping_min', 0)
+        if free_shipping_min and total >= free_shipping_min:
+            shipping_cost = 0
+        elif chosen:
+            shipping_cost = chosen['price']
+
+    order_total = total + shipping_cost
+
+    # Progressive discount
+    store_settings = get_item('settings', 'store') or {}
+    discount_amount = 0
+    discount_label = ''
+    progressive_discounts = store_settings.get('progressive_discounts', [])
+    for tier in sorted(progressive_discounts, key=lambda t: t.get('min_value', 0), reverse=True):
+        if total >= tier.get('min_value', 0):
+            pct = tier.get('discount_percent', 0)
+            discount_amount = round(total * pct / 100, 2)
+            discount_label = f'{pct}% (acima de R$ {tier["min_value"]:.2f})'
+            break
+
+    order_total = order_total - discount_amount
 
     # Create order
     order_number = generate_order_number()
@@ -715,12 +769,29 @@ def checkout_process():
         'customer_cpf': customer_cpf,
         'customer_phone': customer_phone,
         'items': order_items,
-        'total': total,
+        'subtotal': total,
+        'shipping_cost': shipping_cost,
+        'shipping_method': shipping_method,
+        'shipping_cep': shipping_cep,
+        'shipping_address': shipping_address,
+        'shipping_address_number': shipping_address_number,
+        'shipping_complement': shipping_complement,
+        'shipping_neighborhood': shipping_neighborhood,
+        'shipping_city': shipping_city,
+        'shipping_state': shipping_state,
+        'discount_amount': discount_amount,
+        'discount_label': discount_label,
+        'total': order_total,
         'payment_method': payment_method,
         'payment_status': 'PENDING',
         'asaas_customer_id': asaas_customer_id,
         'asaas_payment_id': None,
-        'status': 'pending',
+        'status': 'awaiting_payment',
+        'tracking_code': '',
+        'tracking_url': '',
+        'status_history': [
+            {'status': 'awaiting_payment', 'date': datetime.now().isoformat(), 'note': 'Pedido criado'}
+        ],
         'created_at': datetime.now().isoformat(),
         'updated_at': datetime.now().isoformat()
     }
@@ -729,7 +800,7 @@ def checkout_process():
     if asaas_customer_id:
         installments = int(request.form.get('installments', 1))
         pay_result, pay_status = asaas.create_payment(
-            asaas_customer_id, total, billing_type,
+            asaas_customer_id, order_total, billing_type,
             f"Pedido {order_number} - Val's",
             installment_count=installments if billing_type == 'CREDIT_CARD' else None
         )
@@ -885,12 +956,23 @@ def asaas_webhook():
         order['payment_status'] = new_status
         order['updated_at'] = datetime.now().isoformat()
 
+        old_order_status = order.get('status')
         if new_status in ('CONFIRMED', 'RECEIVED'):
             order['status'] = 'paid'
         elif new_status == 'OVERDUE':
             order['status'] = 'overdue'
         elif new_status in ('REFUNDED', 'DELETED'):
             order['status'] = 'cancelled'
+
+        # Add to status history if order status changed
+        if order['status'] != old_order_status:
+            history = order.get('status_history', [])
+            history.append({
+                'status': order['status'],
+                'date': datetime.now().isoformat(),
+                'note': _status_label(order['status'])
+            })
+            order['status_history'] = history
 
         save_item('orders', order['id'], order)
 
@@ -1332,8 +1414,25 @@ def admin_update_order_status(order_id):
 
     if order:
         new_status = request.form.get('status', order['status'])
+        tracking_code = request.form.get('tracking_code', '').strip()
+        status_note = request.form.get('status_note', '').strip()
+
         order['status'] = new_status
         order['updated_at'] = datetime.now().isoformat()
+
+        if tracking_code:
+            order['tracking_code'] = tracking_code
+            order['tracking_url'] = f'https://www.linkcorreios.com.br/?id={tracking_code}'
+
+        # Add to status history
+        history = order.get('status_history', [])
+        history.append({
+            'status': new_status,
+            'date': datetime.now().isoformat(),
+            'note': status_note or _status_label(new_status)
+        })
+        order['status_history'] = history
+
         save_item('orders', order['id'], order)
 
         # Send order status email
@@ -1343,6 +1442,22 @@ def admin_update_order_status(order_id):
         flash('Status do pedido atualizado!', 'success')
 
     return redirect(url_for('admin_order_detail', order_id=order_id))
+
+
+def _status_label(status):
+    """Return human-readable label for order status."""
+    labels = {
+        'awaiting_payment': 'Aguardando Pagamento',
+        'paid': 'Pagamento Confirmado',
+        'invoicing': 'Emitindo Nota Fiscal',
+        'packing': 'Embalando',
+        'shipped': 'Enviado',
+        'in_transit': 'Em Transito',
+        'delivered': 'Entregue',
+        'cancelled': 'Cancelado',
+        'pending': 'Pendente',
+    }
+    return labels.get(status, status)
 
 
 # ================================
@@ -1554,6 +1669,8 @@ def admin_save_product():
         'category': request.form.get('category'),
         'images': uploaded_images,
         'featured': request.form.get('featured') == 'on',
+        'is_unique': request.form.get('is_unique') == 'on',
+        'stock_quantity': int(request.form.get('stock_quantity', 1)),
         'created_at': (
             existing_product.get('created_at', datetime.now().isoformat())
             if existing_product else datetime.now().isoformat()
@@ -1683,6 +1800,95 @@ def admin_customers():
     data = load_data()
     return render_template('admin/customers.html', customers=data.get('customers', []))
 
+@app.route('/admin/configuracoes', methods=['GET', 'POST'])
+@admin_required
+def admin_settings():
+    settings = get_item('settings', 'store') or {}
+
+    if request.method == 'POST':
+        settings['default_weight'] = float(request.form.get('default_weight', 0.5))
+        settings['default_length'] = float(request.form.get('default_length', 30))
+        settings['default_width'] = float(request.form.get('default_width', 25))
+        settings['default_height'] = float(request.form.get('default_height', 15))
+        settings['origin_cep'] = request.form.get('origin_cep', '28900000').strip()
+        settings['free_shipping_min'] = float(request.form.get('free_shipping_min', 0))
+
+        # Progressive discounts
+        disc_mins = request.form.getlist('disc_min_value')
+        disc_pcts = request.form.getlist('disc_percent')
+        progressive = []
+        for mv, pct in zip(disc_mins, disc_pcts):
+            try:
+                mv_f = float(mv)
+                pct_f = float(pct)
+                if mv_f > 0 and pct_f > 0:
+                    progressive.append({'min_value': mv_f, 'discount_percent': pct_f})
+            except (ValueError, TypeError):
+                continue
+        settings['progressive_discounts'] = sorted(progressive, key=lambda x: x['min_value'])
+
+        settings['id'] = 'store'
+        save_item('settings', 'store', settings)
+        flash('Configuracoes salvas!', 'success')
+        return redirect(url_for('admin_settings'))
+
+    return render_template('admin/settings.html', settings=settings)
+
+
+@app.route('/admin/vendas')
+@admin_required
+def admin_sales():
+    data = load_data()
+    orders = data.get('orders', [])
+
+    # Overall stats
+    all_paid = [o for o in orders if o.get('payment_status') in ('CONFIRMED', 'RECEIVED')]
+    total_revenue = sum(o.get('total', 0) for o in all_paid)
+    total_orders = len(orders)
+    total_paid = len(all_paid)
+    avg_ticket = total_revenue / total_paid if total_paid else 0
+
+    # Monthly breakdown (last 6 months)
+    from collections import defaultdict
+    monthly = defaultdict(lambda: {'revenue': 0, 'count': 0})
+    for o in all_paid:
+        month_key = o.get('created_at', '')[:7]  # YYYY-MM
+        if month_key:
+            monthly[month_key]['revenue'] += o.get('total', 0)
+            monthly[month_key]['count'] += 1
+    monthly_sorted = sorted(monthly.items(), reverse=True)[:6]
+
+    # Payment method breakdown
+    method_stats = defaultdict(lambda: {'count': 0, 'revenue': 0})
+    for o in all_paid:
+        m = o.get('payment_method', 'N/A')
+        method_stats[m]['count'] += 1
+        method_stats[m]['revenue'] += o.get('total', 0)
+
+    # Top products
+    product_stats = defaultdict(lambda: {'qty': 0, 'revenue': 0})
+    for o in all_paid:
+        for item in o.get('items', []):
+            product_stats[item['name']]['qty'] += item.get('quantity', 1)
+            product_stats[item['name']]['revenue'] += item.get('subtotal', 0)
+    top_products = sorted(product_stats.items(), key=lambda x: x[1]['revenue'], reverse=True)[:10]
+
+    # Status breakdown
+    status_counts = defaultdict(int)
+    for o in orders:
+        status_counts[o.get('status', 'unknown')] += 1
+
+    return render_template('admin/sales.html',
+                           total_revenue=total_revenue,
+                           total_orders=total_orders,
+                           total_paid=total_paid,
+                           avg_ticket=avg_ticket,
+                           monthly=monthly_sorted,
+                           method_stats=dict(method_stats),
+                           top_products=top_products,
+                           status_counts=dict(status_counts))
+
+
 @app.route('/admin/logout')
 def admin_logout():
     session.pop('admin', None)
@@ -1733,6 +1939,53 @@ def api_payment_status(order_id):
     return jsonify({
         'status': order.get('status'),
         'payment_status': order.get('payment_status')
+    })
+
+
+@app.route('/api/shipping/calculate', methods=['POST'])
+def api_calculate_shipping():
+    """Calculate shipping cost by CEP."""
+    cep = request.json.get('cep', '') if request.is_json else request.form.get('cep', '')
+    if not cep:
+        return jsonify({'error': 'CEP obrigatorio'}), 400
+
+    address = shipping_service.get_address_by_cep(cep)
+    if not address:
+        return jsonify({'error': 'CEP invalido'}), 400
+
+    store_settings = get_item('settings', 'store') or {}
+    options = shipping_service.calculate_shipping(cep, settings=store_settings)
+
+    # Check free shipping
+    cart_total = 0
+    cart_items = session.get('cart', [])
+    data = load_data()
+    for item in cart_items:
+        product = next((p for p in data['products'] if p['id'] == item['product_id']), None)
+        if product:
+            cart_total += get_product_current_price(product) * item['quantity']
+
+    free_shipping_min = store_settings.get('free_shipping_min', 0)
+    free_shipping = free_shipping_min > 0 and cart_total >= free_shipping_min
+
+    # Also compute progressive discount
+    discount_info = None
+    progressive_discounts = store_settings.get('progressive_discounts', [])
+    for tier in sorted(progressive_discounts, key=lambda t: t.get('min_value', 0), reverse=True):
+        if cart_total >= tier.get('min_value', 0):
+            discount_info = {
+                'percent': tier['discount_percent'],
+                'amount': round(cart_total * tier['discount_percent'] / 100, 2),
+                'label': f'{tier["discount_percent"]}% de desconto'
+            }
+            break
+
+    return jsonify({
+        'address': address,
+        'options': options,
+        'free_shipping': free_shipping,
+        'free_shipping_min': free_shipping_min,
+        'discount': discount_info
     })
 
 

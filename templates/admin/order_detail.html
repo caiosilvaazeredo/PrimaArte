@@ -20,6 +20,60 @@
 
 <section class="section">
     <div class="container">
+        <!-- Order Status Timeline -->
+        <div class="admin-card" style="margin-bottom: 2rem;">
+            <h2><i class="fas fa-route"></i> Rastreio do Pedido</h2>
+            <div class="order-timeline">
+                {% set statuses = ['awaiting_payment', 'paid', 'invoicing', 'packing', 'shipped', 'in_transit', 'delivered'] %}
+                {% set status_labels = {
+                    'awaiting_payment': 'Aguardando Pagamento',
+                    'paid': 'Pago',
+                    'invoicing': 'Emissao NF',
+                    'packing': 'Embalando',
+                    'shipped': 'Enviado',
+                    'in_transit': 'Em Transito',
+                    'delivered': 'Entregue'
+                } %}
+                {% set status_icons = {
+                    'awaiting_payment': 'fa-clock',
+                    'paid': 'fa-check-circle',
+                    'invoicing': 'fa-file-invoice',
+                    'packing': 'fa-box',
+                    'shipped': 'fa-shipping-fast',
+                    'in_transit': 'fa-truck',
+                    'delivered': 'fa-home'
+                } %}
+                {% set current_idx = statuses.index(order.status) if order.status in statuses else -1 %}
+
+                {% if order.status == 'cancelled' %}
+                <div class="timeline-cancelled">
+                    <i class="fas fa-times-circle"></i> Pedido Cancelado
+                </div>
+                {% else %}
+                <div class="timeline-bar">
+                    {% for s in statuses %}
+                    <div class="timeline-step {% if loop.index0 <= current_idx %}active{% endif %} {% if loop.index0 == current_idx %}current{% endif %}">
+                        <div class="timeline-dot"><i class="fas {{ status_icons[s] }}"></i></div>
+                        <span class="timeline-label">{{ status_labels[s] }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+
+            {% if order.tracking_code %}
+            <div class="tracking-info">
+                <strong><i class="fas fa-barcode"></i> Codigo de Rastreio:</strong>
+                <code>{{ order.tracking_code }}</code>
+                {% if order.tracking_url %}
+                <a href="{{ order.tracking_url }}" target="_blank" class="btn-admin-sm">
+                    <i class="fas fa-external-link-alt"></i> Rastrear
+                </a>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+
         <div class="order-admin-grid">
             <!-- Order Details -->
             <div>
@@ -45,6 +99,24 @@
                             {% endfor %}
                         </tbody>
                         <tfoot>
+                            {% if order.subtotal and order.subtotal != order.total %}
+                            <tr>
+                                <td colspan="3">Subtotal</td>
+                                <td>R$ {{ "%.2f"|format(order.subtotal) }}</td>
+                            </tr>
+                            {% endif %}
+                            {% if order.shipping_cost %}
+                            <tr>
+                                <td colspan="3">Frete ({{ order.shipping_method or '' }})</td>
+                                <td>R$ {{ "%.2f"|format(order.shipping_cost) }}</td>
+                            </tr>
+                            {% endif %}
+                            {% if order.discount_amount %}
+                            <tr>
+                                <td colspan="3">Desconto {{ order.discount_label or '' }}</td>
+                                <td style="color:#27ae60;">- R$ {{ "%.2f"|format(order.discount_amount) }}</td>
+                            </tr>
+                            {% endif %}
                             <tr>
                                 <td colspan="3"><strong>Total</strong></td>
                                 <td><strong>R$ {{ "%.2f"|format(order.total) }}</strong></td>
@@ -62,6 +134,34 @@
                         <div><strong>Telefone:</strong> {{ order.customer_phone or 'N/A' }}</div>
                     </div>
                 </div>
+
+                {% if order.shipping_cep %}
+                <div class="admin-card">
+                    <h2><i class="fas fa-map-marker-alt"></i> Endereco de Entrega</h2>
+                    <div class="info-grid">
+                        <div><strong>CEP:</strong> {{ order.shipping_cep }}</div>
+                        <div><strong>Endereco:</strong> {{ order.shipping_address }}{% if order.shipping_address_number %}, {{ order.shipping_address_number }}{% endif %}</div>
+                        {% if order.shipping_complement %}<div><strong>Complemento:</strong> {{ order.shipping_complement }}</div>{% endif %}
+                        <div><strong>Bairro:</strong> {{ order.shipping_neighborhood or 'N/A' }}</div>
+                        <div><strong>Cidade:</strong> {{ order.shipping_city or 'N/A' }}/{{ order.shipping_state or '' }}</div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Status History -->
+                {% if order.status_history %}
+                <div class="admin-card">
+                    <h2><i class="fas fa-history"></i> Historico</h2>
+                    <div class="status-history">
+                        {% for entry in order.status_history|reverse %}
+                        <div class="history-entry">
+                            <div class="history-date">{{ entry.date[:16].replace('T', ' ') }}</div>
+                            <div class="history-note">{{ entry.note }}</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
             </div>
 
             <!-- Sidebar -->
@@ -69,9 +169,13 @@
                 <div class="admin-card">
                     <h2>Status & Pagamento</h2>
                     <div class="status-display-admin status-{{ order.status }}">
-                        {% if order.status == 'pending' %}Pendente
+                        {% if order.status == 'awaiting_payment' %}Aguardando Pagamento
+                        {% elif order.status == 'pending' %}Pendente
                         {% elif order.status == 'paid' %}Pago
+                        {% elif order.status == 'invoicing' %}Emissao de NF
+                        {% elif order.status == 'packing' %}Embalando
                         {% elif order.status == 'shipped' %}Enviado
+                        {% elif order.status == 'in_transit' %}Em Transito
                         {% elif order.status == 'delivered' %}Entregue
                         {% elif order.status == 'cancelled' %}Cancelado
                         {% else %}{{ order.status }}{% endif %}
@@ -81,6 +185,7 @@
                         <p><strong>Pagamento:</strong>
                             {% if order.payment_method == 'PIX' %}PIX
                             {% elif order.payment_method == 'CREDIT_CARD' %}Cartao de Credito
+                            {% elif order.payment_method == 'DEBIT_CARD' %}Cartao de Debito
                             {% elif order.payment_method == 'BOLETO' %}Boleto
                             {% endif %}
                         </p>
@@ -88,7 +193,7 @@
                         <p><strong>Criado em:</strong> {{ order.created_at[:16].replace('T', ' ') }}</p>
                         <p><strong>Atualizado:</strong> {{ order.updated_at[:16].replace('T', ' ') }}</p>
                         {% if order.asaas_payment_id %}
-                        <p><strong>ID Asaas:</strong> {{ order.asaas_payment_id }}</p>
+                        <p><strong>ID Asaas:</strong> <small>{{ order.asaas_payment_id }}</small></p>
                         {% endif %}
                     </div>
 
@@ -98,14 +203,25 @@
                         <div class="form-group">
                             <label>Atualizar Status:</label>
                             <select name="status">
-                                <option value="pending" {% if order.status == 'pending' %}selected{% endif %}>Pendente</option>
+                                <option value="awaiting_payment" {% if order.status == 'awaiting_payment' %}selected{% endif %}>Aguardando Pagamento</option>
                                 <option value="paid" {% if order.status == 'paid' %}selected{% endif %}>Pago</option>
+                                <option value="invoicing" {% if order.status == 'invoicing' %}selected{% endif %}>Emissao de NF</option>
+                                <option value="packing" {% if order.status == 'packing' %}selected{% endif %}>Embalando</option>
                                 <option value="shipped" {% if order.status == 'shipped' %}selected{% endif %}>Enviado</option>
+                                <option value="in_transit" {% if order.status == 'in_transit' %}selected{% endif %}>Em Transito</option>
                                 <option value="delivered" {% if order.status == 'delivered' %}selected{% endif %}>Entregue</option>
                                 <option value="cancelled" {% if order.status == 'cancelled' %}selected{% endif %}>Cancelado</option>
                             </select>
                         </div>
-                        <button type="submit" class="btn-admin-primary" style="width: 100%;">Salvar Status</button>
+                        <div class="form-group">
+                            <label>Codigo de Rastreio:</label>
+                            <input type="text" name="tracking_code" value="{{ order.tracking_code or '' }}" placeholder="Ex: BR123456789XX">
+                        </div>
+                        <div class="form-group">
+                            <label>Observacao:</label>
+                            <input type="text" name="status_note" placeholder="Nota opcional">
+                        </div>
+                        <button type="submit" class="btn-admin-primary" style="width: 100%;">Salvar</button>
                     </form>
                 </div>
 

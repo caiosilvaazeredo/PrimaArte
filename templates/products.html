@@ -16,22 +16,37 @@
             <p class="section-subtitle">Pecas artesanais de luxo, feitas a mao com dedicacao</p>
         </div>
 
-        <!-- Filtros -->
-        <div style="text-align: center; margin-bottom: 3rem;">
+        <!-- Filtro por tipo -->
+        <div style="text-align: center; margin-bottom: 1.5rem;">
             <div style="display: inline-flex; gap: 0.8rem; flex-wrap: wrap; justify-content: center;">
-                <a href="{{ url_for('products') }}" class="filter-btn {% if not current_category %}active{% endif %}">
+                <a href="{{ url_for('products') }}" class="filter-btn filter-tipo {% if not current_tipo %}active{% endif %}">
                     Todos
                 </a>
-                <a href="{{ url_for('products', categoria='bolsa') }}" class="filter-btn {% if current_category == 'bolsa' %}active{% endif %}">
+                <a href="{{ url_for('products', tipo='unicas') }}" class="filter-btn filter-tipo {% if current_tipo == 'unicas' %}active{% endif %}">
+                    <i class="fas fa-fingerprint"></i> Pecas Unicas
+                </a>
+                <a href="{{ url_for('products', tipo='colecao') }}" class="filter-btn filter-tipo {% if current_tipo == 'colecao' %}active{% endif %}">
+                    <i class="fas fa-layer-group"></i> Colecao
+                </a>
+            </div>
+        </div>
+
+        <!-- Filtro por categoria -->
+        <div style="text-align: center; margin-bottom: 3rem;">
+            <div style="display: inline-flex; gap: 0.8rem; flex-wrap: wrap; justify-content: center;">
+                <a href="{{ url_for('products', tipo=current_tipo) if current_tipo else url_for('products') }}" class="filter-btn {% if not current_category %}active{% endif %}">
+                    Todas Categorias
+                </a>
+                <a href="{{ url_for('products', categoria='bolsa', tipo=current_tipo) }}" class="filter-btn {% if current_category == 'bolsa' %}active{% endif %}">
                     Bolsas
                 </a>
-                <a href="{{ url_for('products', categoria='decoracao') }}" class="filter-btn {% if current_category == 'decoracao' %}active{% endif %}">
+                <a href="{{ url_for('products', categoria='decoracao', tipo=current_tipo) }}" class="filter-btn {% if current_category == 'decoracao' %}active{% endif %}">
                     Decoracao
                 </a>
-                <a href="{{ url_for('products', categoria='acessorios') }}" class="filter-btn {% if current_category == 'acessorios' %}active{% endif %}">
+                <a href="{{ url_for('products', categoria='acessorios', tipo=current_tipo) }}" class="filter-btn {% if current_category == 'acessorios' %}active{% endif %}">
                     Acessorios
                 </a>
-                <a href="{{ url_for('products', categoria='personalizados') }}" class="filter-btn {% if current_category == 'personalizados' %}active{% endif %}">
+                <a href="{{ url_for('products', categoria='personalizados', tipo=current_tipo) }}" class="filter-btn {% if current_category == 'personalizados' %}active{% endif %}">
                     Personalizados
                 </a>
             </div>
@@ -46,6 +61,12 @@
                 {% else %}
                 <div class="product-image no-image">
                     <i class="fas fa-image"></i>
+                </div>
+                {% endif %}
+
+                {% if product.is_unique %}
+                <div class="unique-badge">
+                    <i class="fas fa-fingerprint"></i> Peca Unica
                 </div>
                 {% endif %}
 

@@ -1161,3 +1161,122 @@
     font-weight: 600;
     color: var(--navy);
 }
+
+/* ================================
+   BANNER LIFESTYLE
+   ================================ */
+.banner-lifestyle {
+    width: 100%;
+    overflow: hidden;
+}
+
+.banner-lifestyle-inner {
+    position: relative;
+    width: 100%;
+    max-height: 500px;
+    overflow: hidden;
+}
+
+.banner-lifestyle-inner img {
+    width: 100%;
+    height: 500px;
+    object-fit: cover;
+    display: block;
+}
+
+.banner-lifestyle-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to right, rgba(27, 42, 74, 0.75) 0%, rgba(27, 42, 74, 0.2) 60%, transparent 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 5%;
+}
+
+.banner-lifestyle-overlay h2 {
+    font-family: var(--font-heading);
+    font-size: 2.5rem;
+    font-weight: 300;
+    color: var(--offwhite);
+    margin: 0.5rem 0 1.5rem;
+    max-width: 500px;
+    line-height: 1.2;
+}
+
+/* ================================
+   UNIQUE PIECES SECTION
+   ================================ */
+.unique-pieces-section {
+    padding: 5rem 0;
+    background: var(--navy);
+    color: var(--offwhite);
+}
+
+.unique-pieces-section .section-label {
+    color: var(--gold);
+}
+
+.unique-pieces-section .section-title-luxury {
+    color: var(--offwhite);
+}
+
+.unique-pieces-section .section-subtitle-riviera {
+    color: rgba(250, 248, 245, 0.6);
+}
+
+.unique-pieces-section .section-divider {
+    background: var(--gold);
+}
+
+.product-card-unique {
+    border: 1px solid rgba(201, 168, 76, 0.3) !important;
+}
+
+.unique-badge-home {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: var(--navy);
+    color: var(--gold);
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 6px 12px;
+    z-index: 2;
+    border: 1px solid var(--gold);
+}
+
+.unique-pieces-section .btn-view-all-luxury {
+    color: var(--offwhite);
+    border-color: rgba(250, 248, 245, 0.3);
+}
+
+.unique-pieces-section .btn-view-all-luxury:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+}
+
+/* ================================
+   COLLECTION PRODUCTS SECTION
+   ================================ */
+.collection-products-section {
+    padding: 5rem 0;
+    background: var(--offwhite);
+}
+
+@media (max-width: 768px) {
+    .banner-lifestyle-inner img {
+        height: 300px;
+    }
+
+    .banner-lifestyle-overlay h2 {
+        font-size: 1.6rem;
+    }
+
+    .unique-pieces-section,
+    .collection-products-section {
+        padding: 3rem 0;
+    }
+}

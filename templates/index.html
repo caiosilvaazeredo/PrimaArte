@@ -171,6 +171,155 @@
 </section>
 {% endif %}
 
+<!-- Banner Image -->
+<section class="banner-lifestyle">
+    <div class="banner-lifestyle-inner">
+        <img src="{{ url_for('static', filename='images/banner_lifestyle.jpg') }}" alt="Val's - Colecao Riviera Botanica">
+        <div class="banner-lifestyle-overlay">
+            <span class="section-label" style="color: var(--gold);">Riviera Botanica</span>
+            <h2>Feitas Para Quem Valoriza o Unico</h2>
+            <a href="{{ url_for('products') }}" class="btn-hero-primary">
+                <span>Ver Colecao</span>
+                <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Unique Pieces -->
+{% if unique_products %}
+<section class="unique-pieces-section">
+    <div class="container">
+        <div class="section-header-luxury">
+            <span class="section-label">Exclusividade</span>
+            <h2 class="section-title-luxury">Pecas Unicas</h2>
+            <p class="section-subtitle-riviera">Criadas uma unica vez. Quando acabar, nao volta.</p>
+            <div class="section-divider"></div>
+        </div>
+
+        <div class="products-grid-luxury">
+            {% for product in unique_products %}
+            <div class="product-card-luxury product-card-unique" data-aos="fade-up" data-aos-delay="{{ loop.index0 * 100 }}">
+                <div class="product-image-luxury">
+                    {% if product.images and product.images|length > 0 %}
+                    <img src="{{ product.images[0] }}" alt="{{ product.name }}">
+                    {% else %}
+                    <div class="no-image-luxury"><i class="fas fa-image"></i></div>
+                    {% endif %}
+
+                    <div class="unique-badge-home">
+                        <i class="fas fa-fingerprint"></i> Peca Unica
+                    </div>
+
+                    {% if product.promotion_active and product.promotional_price %}
+                    <div class="promotion-badge-luxury">
+                        {% set discount = ((product.price - product.promotional_price) / product.price * 100) | round %}
+                        {{ discount }}% OFF
+                    </div>
+                    {% endif %}
+
+                    <div class="product-overlay-luxury">
+                        <a href="{{ url_for('product_detail', product_slug=product.name|slug) }}" class="btn-view-luxury">
+                            Ver Detalhes
+                        </a>
+                    </div>
+                </div>
+
+                <div class="product-info-luxury">
+                    <h3>{{ product.name }}</h3>
+                    <p>{{ product.description[:80] }}{% if product.description|length > 80 %}...{% endif %}</p>
+                    <div class="product-price-luxury">
+                        {% if product.promotion_active and product.promotional_price %}
+                        <span class="regular-price-luxury">R$ {{ "%.2f"|format(product.price) }}</span>
+                        <span class="promotional-price-luxury">R$ {{ "%.2f"|format(product.promotional_price) }}</span>
+                        {% else %}
+                        <span class="price-current-luxury">R$ {{ "%.2f"|format(product.price) }}</span>
+                        {% endif %}
+                    </div>
+                    <a href="{{ url_for('product_detail', product_slug=product.name|slug) }}" class="btn-buy-luxury">
+                        <span>Comprar</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="section-footer-luxury">
+            <a href="{{ url_for('products', tipo='unicas') }}" class="btn-view-all-luxury">
+                <span>Ver Todas as Pecas Unicas</span>
+                <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Collection Products -->
+{% if collection_products %}
+<section class="collection-products-section">
+    <div class="container">
+        <div class="section-header-luxury">
+            <span class="section-label">Colecao</span>
+            <h2 class="section-title-luxury">Linha Permanente</h2>
+            <p class="section-subtitle-riviera">Pecas que fazem parte da nossa colecao fixa</p>
+            <div class="section-divider"></div>
+        </div>
+
+        <div class="products-grid-luxury">
+            {% for product in collection_products %}
+            <div class="product-card-luxury" data-aos="fade-up" data-aos-delay="{{ loop.index0 * 100 }}">
+                <div class="product-image-luxury">
+                    {% if product.images and product.images|length > 0 %}
+                    <img src="{{ product.images[0] }}" alt="{{ product.name }}">
+                    {% else %}
+                    <div class="no-image-luxury"><i class="fas fa-image"></i></div>
+                    {% endif %}
+
+                    {% if product.promotion_active and product.promotional_price %}
+                    <div class="promotion-badge-luxury">
+                        {% set discount = ((product.price - product.promotional_price) / product.price * 100) | round %}
+                        {{ discount }}% OFF
+                    </div>
+                    {% endif %}
+
+                    <div class="product-overlay-luxury">
+                        <a href="{{ url_for('product_detail', product_slug=product.name|slug) }}" class="btn-view-luxury">
+                            Ver Detalhes
+                        </a>
+                    </div>
+                </div>
+
+                <div class="product-info-luxury">
+                    <h3>{{ product.name }}</h3>
+                    <p>{{ product.description[:80] }}{% if product.description|length > 80 %}...{% endif %}</p>
+                    <div class="product-price-luxury">
+                        {% if product.promotion_active and product.promotional_price %}
+                        <span class="regular-price-luxury">R$ {{ "%.2f"|format(product.price) }}</span>
+                        <span class="promotional-price-luxury">R$ {{ "%.2f"|format(product.promotional_price) }}</span>
+                        {% else %}
+                        <span class="price-current-luxury">R$ {{ "%.2f"|format(product.price) }}</span>
+                        {% endif %}
+                    </div>
+                    <a href="{{ url_for('product_detail', product_slug=product.name|slug) }}" class="btn-buy-luxury">
+                        <span>Comprar</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="section-footer-luxury">
+            <a href="{{ url_for('products', tipo='colecao') }}" class="btn-view-all-luxury">
+                <span>Ver Toda a Colecao</span>
+                <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
 <!-- Uncompromising Craftsmanship -->
 <section class="craftsmanship-section">
     <div class="container">

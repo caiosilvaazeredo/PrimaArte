@@ -53,6 +53,57 @@
                         </div>
                     </div>
 
+                    <!-- Shipping -->
+                    <div class="checkout-card">
+                        <h2><i class="fas fa-truck"></i> Entrega</h2>
+                        <div class="form-row form-row-2">
+                            <div class="form-group">
+                                <label>CEP *</label>
+                                <div style="display:flex; gap:0.5rem;">
+                                    <input type="text" name="shipping_cep" id="shipping-cep" required
+                                           placeholder="00000-000" maxlength="9" style="flex:1;">
+                                    <button type="button" class="btn-calc-shipping" id="btn-calc-shipping" onclick="calcularFrete()">Calcular</button>
+                                </div>
+                            </div>
+                            <div class="form-group" id="shipping-city-group" style="display:none;">
+                                <label>Cidade/UF</label>
+                                <input type="text" id="shipping-city-display" readonly style="background:#f5f5f5;">
+                                <input type="hidden" name="shipping_city" id="shipping-city">
+                                <input type="hidden" name="shipping_state" id="shipping-state">
+                            </div>
+                        </div>
+
+                        <div id="shipping-options" style="display:none;">
+                            <div class="shipping-options-list"></div>
+                            <div id="free-shipping-msg" style="display:none;" class="free-shipping-badge">
+                                <i class="fas fa-gift"></i> Frete gratis para este pedido!
+                            </div>
+                        </div>
+
+                        <div id="shipping-address-fields" style="display:none;">
+                            <div class="form-row form-row-2">
+                                <div class="form-group">
+                                    <label>Endereco *</label>
+                                    <input type="text" name="shipping_address" id="shipping-address" required placeholder="Rua, Av...">
+                                </div>
+                                <div class="form-group" style="max-width:120px;">
+                                    <label>Numero *</label>
+                                    <input type="text" name="shipping_address_num" required placeholder="123">
+                                </div>
+                            </div>
+                            <div class="form-row form-row-2">
+                                <div class="form-group">
+                                    <label>Complemento</label>
+                                    <input type="text" name="shipping_complement" placeholder="Apto, bloco...">
+                                </div>
+                                <div class="form-group">
+                                    <label>Bairro *</label>
+                                    <input type="text" name="shipping_neighborhood" id="shipping-neighborhood" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Payment Method -->
                     <div class="checkout-card">
                         <h2><i class="fas fa-credit-card"></i> Forma de Pagamento</h2>
@@ -69,8 +120,16 @@
                                 <input type="radio" name="payment_method" value="CREDIT_CARD">
                                 <div class="payment-option-content">
                                     <i class="fas fa-credit-card"></i>
-                                    <span>Cartao de Credito</span>
+                                    <span>Credito</span>
                                     <small>Ate 12x</small>
+                                </div>
+                            </label>
+                            <label class="payment-option">
+                                <input type="radio" name="payment_method" value="DEBIT_CARD">
+                                <div class="payment-option-content">
+                                    <i class="fas fa-money-check"></i>
+                                    <span>Debito</span>
+                                    <small>Desconto direto</small>
                                 </div>
                             </label>
                             <label class="payment-option">
@@ -78,13 +137,13 @@
                                 <div class="payment-option-content">
                                     <i class="fas fa-barcode"></i>
                                     <span>Boleto</span>
-                                    <small>Vencimento em 3 dias</small>
+                                    <small>Vencimento 3 dias</small>
                                 </div>
                             </label>
                         </div>
 
-                        <!-- Credit Card Fields -->
-                        <div id="credit-card-fields" style="display: none;">
+                        <!-- Credit/Debit Card Fields -->
+                        <div id="card-fields" style="display: none;">
                             <div class="form-row form-row-2">
                                 <div class="form-group">
                                     <label>Nome no Cartao</label>
@@ -111,7 +170,7 @@
                             </div>
                             <div class="form-row form-row-2">
                                 <div class="form-group">
-                                    <label>CEP</label>
+                                    <label>CEP do Cartao</label>
                                     <input type="text" name="postal_code" placeholder="00000-000">
                                 </div>
                                 <div class="form-group">
@@ -119,7 +178,7 @@
                                     <input type="text" name="address_number" placeholder="123">
                                 </div>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group" id="installments-group">
                                 <label>Parcelas</label>
                                 <select name="installments">
                                     <option value="1">1x de R$ {{ "%.2f"|format(total) }}</option>
@@ -145,11 +204,26 @@
                             {% endfor %}
                         </div>
                         <div class="summary-divider"></div>
+
+                        <div class="summary-line">
+                            <span>Subtotal</span>
+                            <span id="summary-subtotal">R$ {{ "%.2f"|format(total) }}</span>
+                        </div>
+                        <div class="summary-line" id="summary-shipping-line" style="display:none;">
+                            <span>Frete (<span id="summary-shipping-method"></span>)</span>
+                            <span id="summary-shipping-cost"></span>
+                        </div>
+                        <div class="summary-line" id="summary-discount-line" style="display:none;">
+                            <span>Desconto <span id="summary-discount-label"></span></span>
+                            <span id="summary-discount-amount" style="color:#27ae60;"></span>
+                        </div>
+
+                        <div class="summary-divider"></div>
                         <div class="summary-total">
                             <span>Total</span>
-                            <span>R$ {{ "%.2f"|format(total) }}</span>
+                            <span id="summary-total">R$ {{ "%.2f"|format(total) }}</span>
                         </div>
-                        <button type="submit" class="btn-checkout">
+                        <button type="submit" class="btn-checkout" id="btn-submit-checkout">
                             <i class="fas fa-lock"></i>
                             <span>Finalizar Pagamento</span>
                         </button>
@@ -165,11 +239,139 @@
 </section>
 
 <script>
+const subtotal = {{ total }};
+let shippingCost = 0;
+let discountAmount = 0;
+
+// Payment method toggle
 document.querySelectorAll('input[name="payment_method"]').forEach(radio => {
     radio.addEventListener('change', function() {
-        const ccFields = document.getElementById('credit-card-fields');
-        ccFields.style.display = this.value === 'CREDIT_CARD' ? 'block' : 'none';
+        const cardFields = document.getElementById('card-fields');
+        const installmentsGroup = document.getElementById('installments-group');
+        if (this.value === 'CREDIT_CARD' || this.value === 'DEBIT_CARD') {
+            cardFields.style.display = 'block';
+            installmentsGroup.style.display = this.value === 'CREDIT_CARD' ? 'block' : 'none';
+        } else {
+            cardFields.style.display = 'none';
+        }
     });
+});
+
+// Shipping calculator
+function calcularFrete() {
+    const cep = document.getElementById('shipping-cep').value.replace(/\D/g, '');
+    if (cep.length !== 8) {
+        alert('CEP invalido');
+        return;
+    }
+
+    const btn = document.getElementById('btn-calc-shipping');
+    btn.textContent = 'Calculando...';
+    btn.disabled = true;
+
+    const csrfToken = document.querySelector('input[name="_csrf_token"]').value;
+
+    fetch('/api/shipping/calculate', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken},
+        body: JSON.stringify({cep: cep})
+    })
+    .then(r => r.json())
+    .then(data => {
+        btn.textContent = 'Calcular';
+        btn.disabled = false;
+
+        if (data.error) {
+            alert(data.error);
+            return;
+        }
+
+        // Show address
+        if (data.address) {
+            document.getElementById('shipping-city-group').style.display = 'block';
+            document.getElementById('shipping-city-display').value = data.address.localidade + '/' + data.address.uf;
+            document.getElementById('shipping-city').value = data.address.localidade;
+            document.getElementById('shipping-state').value = data.address.uf;
+            if (data.address.logradouro) {
+                document.getElementById('shipping-address').value = data.address.logradouro;
+            }
+            if (data.address.bairro) {
+                document.getElementById('shipping-neighborhood').value = data.address.bairro;
+            }
+        }
+
+        // Show shipping options
+        const optionsContainer = document.querySelector('.shipping-options-list');
+        optionsContainer.innerHTML = '';
+
+        data.options.forEach((opt, i) => {
+            const price = data.free_shipping ? 0 : opt.price;
+            const priceLabel = data.free_shipping ? '<span style="color:#27ae60; font-weight:bold;">GRATIS</span>' : 'R$ ' + opt.price.toFixed(2);
+            const checked = i === 0 ? 'checked' : '';
+            optionsContainer.innerHTML += `
+                <label class="shipping-option">
+                    <input type="radio" name="shipping_method" value="${opt.code}" ${checked}
+                           data-price="${price}" data-name="${opt.name}" onchange="updateShipping()">
+                    <div class="shipping-option-content">
+                        <strong>${opt.name}</strong>
+                        <span>${opt.days_label}</span>
+                        <span class="shipping-price">${priceLabel}</span>
+                    </div>
+                </label>
+            `;
+        });
+
+        document.getElementById('shipping-options').style.display = 'block';
+        document.getElementById('shipping-address-fields').style.display = 'block';
+
+        // Free shipping badge
+        if (data.free_shipping) {
+            document.getElementById('free-shipping-msg').style.display = 'block';
+        } else {
+            document.getElementById('free-shipping-msg').style.display = 'none';
+        }
+
+        // Discount info
+        if (data.discount) {
+            discountAmount = data.discount.amount;
+            document.getElementById('summary-discount-line').style.display = 'flex';
+            document.getElementById('summary-discount-label').textContent = '(' + data.discount.label + ')';
+            document.getElementById('summary-discount-amount').textContent = '- R$ ' + discountAmount.toFixed(2);
+        } else {
+            discountAmount = 0;
+            document.getElementById('summary-discount-line').style.display = 'none';
+        }
+
+        updateShipping();
+    })
+    .catch(() => {
+        btn.textContent = 'Calcular';
+        btn.disabled = false;
+        alert('Erro ao calcular frete. Tente novamente.');
+    });
+}
+
+function updateShipping() {
+    const selected = document.querySelector('input[name="shipping_method"]:checked');
+    if (selected) {
+        shippingCost = parseFloat(selected.dataset.price);
+        document.getElementById('summary-shipping-line').style.display = 'flex';
+        document.getElementById('summary-shipping-method').textContent = selected.dataset.name;
+        document.getElementById('summary-shipping-cost').textContent = shippingCost === 0 ? 'GRATIS' : 'R$ ' + shippingCost.toFixed(2);
+    }
+    updateTotal();
+}
+
+function updateTotal() {
+    const finalTotal = subtotal + shippingCost - discountAmount;
+    document.getElementById('summary-total').textContent = 'R$ ' + finalTotal.toFixed(2);
+}
+
+// CEP mask
+document.getElementById('shipping-cep').addEventListener('input', function(e) {
+    let v = e.target.value.replace(/\D/g, '');
+    if (v.length > 5) v = v.slice(0,5) + '-' + v.slice(5,8);
+    e.target.value = v;
 });
 </script>
 {% endblock %}

@@ -43,7 +43,14 @@
                 <nav class="main-nav desktop-nav">
                     <ul>
                         <li><a href="{{ url_for('index') }}"><span class="nav-text">INICIO</span></a></li>
-                        <li><a href="{{ url_for('products') }}"><span class="nav-text">COLECAO</span></a></li>
+                        <li class="nav-dropdown">
+                            <a href="{{ url_for('products') }}"><span class="nav-text">COLECAO</span></a>
+                            <ul class="nav-dropdown-menu">
+                                <li><a href="{{ url_for('products') }}">Todos</a></li>
+                                <li><a href="{{ url_for('products', tipo='unicas') }}">Pecas Unicas</a></li>
+                                <li><a href="{{ url_for('products', tipo='colecao') }}">Colecao</a></li>
+                            </ul>
+                        </li>
                         <li><a href="{{ url_for('about') }}"><span class="nav-text">SOBRE</span></a></li>
                         <li><a href="https://www.instagram.com/primaarte2025/" target="_blank"><span class="nav-text">INSTAGRAM</span></a></li>
                     </ul>
@@ -52,7 +59,9 @@
                 <nav class="main-nav mobile-nav" id="mobileNav">
                     <ul>
                         <li><a href="{{ url_for('index') }}">Inicio</a></li>
-                        <li><a href="{{ url_for('products') }}">Colecao</a></li>
+                        <li><a href="{{ url_for('products') }}">Todos os Produtos</a></li>
+                        <li><a href="{{ url_for('products', tipo='unicas') }}">Pecas Unicas</a></li>
+                        <li><a href="{{ url_for('products', tipo='colecao') }}">Colecao</a></li>
                         <li><a href="{{ url_for('about') }}">Sobre</a></li>
                         <li><a href="https://www.instagram.com/primaarte2025/" target="_blank">Instagram</a></li>
                         {% if current_customer %}
