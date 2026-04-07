@@ -8,7 +8,7 @@
 <!-- Hero Section - Video Background -->
 <section class="hero-riviera">
     <video class="hero-video" autoplay muted loop playsinline>
-        <source src="{{ url_for('static', filename='videos/hero.mp4') }}" type="video/mp4">
+        <source src="{{ url_for('static', filename='videos/hero.mp4') }}?v={{ range(10000,99999)|random }}" type="video/mp4">
     </video>
     <div class="hero-riviera-overlay"></div>
     <div class="hero-riviera-content container">

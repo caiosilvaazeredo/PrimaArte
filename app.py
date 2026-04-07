@@ -63,6 +63,7 @@ else:
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'vals-luxury-secret-key-2025')
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max upload
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0  # No cache in dev
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=2)
 
 # ================================
