@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block page_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+{% endblock %}
+
+{% block title %}Vendas - Admin Val's{% endblock %}
+
+{% block content %}
+<div class="admin-nav">
+    <div class="container">
+        <h1><i class="fas fa-chart-line"></i> Painel de Vendas</h1>
+        <div class="nav-links">
+            <a href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('admin_orders') }}">Pedidos</a>
+            <a href="{{ url_for('admin_settings') }}">Configuracoes</a>
+            <a href="{{ url_for('admin_logout') }}">Sair</a>
+        </div>
+    </div>
+</div>
+
+<section class="section">
+    <div class="container">
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-dollar-sign"></i></div>
+                <div class="stat-number">R$ {{ "%.2f"|format(total_revenue) }}</div>
+                <div class="stat-label">Receita Total</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-shopping-cart"></i></div>
+                <div class="stat-number">{{ total_orders }}</div>
+                <div class="stat-label">Total de Pedidos</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+                <div class="stat-number">{{ total_paid }}</div>
+                <div class="stat-label">Pedidos Pagos</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-receipt"></i></div>
+                <div class="stat-number">R$ {{ "%.2f"|format(avg_ticket) }}</div>
+                <div class="stat-label">Ticket Medio</div>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem;">
+            <!-- Monthly -->
+            <div class="admin-card">
+                <h2><i class="fas fa-calendar-alt"></i> Vendas por Mes</h2>
+                {% if monthly %}
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Mes</th>
+                            <th>Pedidos</th>
+                            <th>Receita</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for month, data in monthly %}
+                        <tr>
+                            <td><strong>{{ month }}</strong></td>
+                            <td>{{ data.count }}</td>
+                            <td>R$ {{ "%.2f"|format(data.revenue) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p style="color: var(--gray);">Nenhuma venda registrada ainda.</p>
+                {% endif %}
+            </div>
+
+            <!-- Payment Methods -->
+            <div class="admin-card">
+                <h2><i class="fas fa-credit-card"></i> Por Forma de Pagamento</h2>
+                {% if method_stats %}
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Metodo</th>
+                            <th>Pedidos</th>
+                            <th>Receita</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for method, data in method_stats.items() %}
+                        <tr>
+                            <td>
+                                {% if method == 'PIX' %}PIX
+                                {% elif method == 'CREDIT_CARD' %}Cartao de Credito
+                                {% elif method == 'DEBIT_CARD' %}Cartao de Debito
+                                {% elif method == 'BOLETO' %}Boleto
+                                {% else %}{{ method }}{% endif %}
+                            </td>
+                            <td>{{ data.count }}</td>
+                            <td>R$ {{ "%.2f"|format(data.revenue) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p style="color: var(--gray);">Nenhum dado disponivel.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem;">
+            <!-- Top Products -->
+            <div class="admin-card">
+                <h2><i class="fas fa-trophy"></i> Top Produtos</h2>
+                {% if top_products %}
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Produto</th>
+                            <th>Qtd Vendida</th>
+                            <th>Receita</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for name, data in top_products %}
+                        <tr>
+                            <td><strong>{{ name }}</strong></td>
+                            <td>{{ data.qty }}</td>
+                            <td>R$ {{ "%.2f"|format(data.revenue) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p style="color: var(--gray);">Nenhum produto vendido ainda.</p>
+                {% endif %}
+            </div>
+
+            <!-- Status Breakdown -->
+            <div class="admin-card">
+                <h2><i class="fas fa-tasks"></i> Status dos Pedidos</h2>
+                {% if status_counts %}
+                <div style="display: flex; flex-direction: column; gap: 0.8rem;">
+                    {% set status_labels = {
+                        'awaiting_payment': 'Aguardando Pagamento',
+                        'pending': 'Pendente',
+                        'paid': 'Pago',
+                        'invoicing': 'Emissao NF',
+                        'packing': 'Embalando',
+                        'shipped': 'Enviado',
+                        'in_transit': 'Em Transito',
+                        'delivered': 'Entregue',
+                        'cancelled': 'Cancelado',
+                        'overdue': 'Vencido'
+                    } %}
+                    {% for status, count in status_counts.items() %}
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 1rem; background: var(--offwhite); border-left: 3px solid var(--gold);">
+                        <span>{{ status_labels.get(status, status) }}</span>
+                        <strong>{{ count }}</strong>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p style="color: var(--gray);">Nenhum pedido registrado.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

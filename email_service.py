@@ -243,11 +243,23 @@ def send_order_status_email(app, order):
     """Send email when order status changes (shipped, delivered, etc)."""
     status = order.get('status', '')
 
+    tracking_code = order.get('tracking_code', '')
+    tracking_line = ''
+    if tracking_code:
+        tracking_url = order.get('tracking_url', f'https://www.linkcorreios.com.br/?id={tracking_code}')
+        tracking_line = f'<p><strong>Codigo de Rastreio:</strong> <a href="{tracking_url}" style="color:#1B2A4A; font-weight:bold;">{tracking_code}</a></p>'
+
     status_configs = {
-        'processing': ('Em Preparacao', 'status-pending',
-                       'Seu pedido esta sendo preparado com todo cuidado. Em breve ele estara a caminho!'),
+        'paid': ('Pagamento Confirmado', 'status-paid',
+                 'Seu pagamento foi confirmado! Estamos preparando seu pedido com carinho.'),
+        'invoicing': ('Emitindo Nota Fiscal', 'status-pending',
+                      'Estamos emitindo a nota fiscal do seu pedido.'),
+        'packing': ('Em Embalagem', 'status-pending',
+                    'Seu pedido esta sendo embalado com todo cuidado. Em breve estara a caminho!'),
         'shipped': ('Pedido Enviado', 'status-shipped',
-                    'Seu pedido foi enviado! Em breve voce recebera suas pecas Val\'s.'),
+                    'Seu pedido foi enviado!' + (f' Rastreie com o codigo: <strong>{tracking_code}</strong>' if tracking_code else '')),
+        'in_transit': ('Em Transito', 'status-shipped',
+                       'Seu pedido esta a caminho!' + (f' Acompanhe pelo codigo: <strong>{tracking_code}</strong>' if tracking_code else '')),
         'delivered': ('Pedido Entregue', 'status-paid',
                       'Seu pedido foi entregue! Esperamos que ame suas novas pecas. Obrigada por escolher Val\'s!'),
         'cancelled': ('Pedido Cancelado', 'status-cancelled',
