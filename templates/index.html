@@ -5,27 +5,27 @@
 {% endblock %}
 
 {% block content %}
-<!-- Hero Section - Riviera Botanica -->
+<!-- Hero Section - Video Background -->
 <section class="hero-riviera">
+    <video class="hero-video" autoplay muted loop playsinline>
+        <source src="{{ url_for('static', filename='videos/hero.mp4') }}" type="video/mp4">
+    </video>
     <div class="hero-riviera-overlay"></div>
     <div class="hero-riviera-content container">
-        <div class="hero-riviera-badge">
-            <i class="fas fa-anchor"></i>
-        </div>
-        <span class="hero-riviera-label">Colecao Riviera Botanica</span>
-        <h1 class="hero-riviera-title">Onde o Mar<br>Encontra a Flora</h1>
+        <span class="hero-riviera-label">Val's - Luxury Handcrafted</span>
+        <h1 class="hero-riviera-title">Arte que Voce<br>Carrega Consigo</h1>
         <div class="hero-riviera-divider"></div>
         <p class="hero-riviera-description">
-            Pecas artesanais de luxo inspiradas na costa e batizadas com nomes de flores. Cada criacao carrega a brisa do oceano e a delicadeza da natureza.
+            Pecas artesanais unicas, feitas a mao com amor e inspiradas na beleza da costa brasileira.
         </p>
         <div class="hero-riviera-actions">
             <a href="{{ url_for('products') }}" class="btn-hero-primary">
                 <span>Explorar Colecao</span>
                 <i class="fas fa-arrow-right"></i>
             </a>
-            <a href="https://wa.me/5521973108293?text=Olá! Gostaria de conhecer a coleção Riviera Botanica da Val's" target="_blank" class="btn-hero-secondary">
-                <i class="fab fa-whatsapp"></i>
-                <span>Atendimento Exclusivo</span>
+            <a href="{{ url_for('products', tipo='unicas') }}" class="btn-hero-secondary">
+                <i class="fas fa-fingerprint"></i>
+                <span>Pecas Unicas</span>
             </a>
         </div>
     </div>
@@ -171,17 +171,28 @@
 </section>
 {% endif %}
 
-<!-- Banner Image -->
+<!-- Banner Lifestyle -->
 <section class="banner-lifestyle">
-    <div class="banner-lifestyle-inner">
-        <img src="{{ url_for('static', filename='images/banner_lifestyle.jpg') }}" alt="Val's - Colecao Riviera Botanica">
-        <div class="banner-lifestyle-overlay">
-            <span class="section-label" style="color: var(--gold);">Riviera Botanica</span>
-            <h2>Feitas Para Quem Valoriza o Unico</h2>
-            <a href="{{ url_for('products') }}" class="btn-hero-primary">
-                <span>Ver Colecao</span>
-                <i class="fas fa-arrow-right"></i>
-            </a>
+    <div class="container">
+        <div class="banner-lifestyle-grid">
+            <div class="banner-lifestyle-image">
+                <img src="{{ url_for('static', filename='images/banner_lifestyle.jpg') }}" alt="Val's - Colecao Riviera Botanica">
+            </div>
+            <div class="banner-lifestyle-text">
+                <span class="section-label">Riviera Botanica</span>
+                <h2>Feitas Para Quem Valoriza o Unico</h2>
+                <p>Nossas pecas sao mais do que acessorios. Sao expressoes de arte, feitas a mao com materiais nobres e inspiracao da costa.</p>
+                <div class="banner-cta-group">
+                    <a href="{{ url_for('products', tipo='unicas') }}" class="btn-hero-primary">
+                        <span>Pecas Unicas</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                    <a href="{{ url_for('products') }}" class="btn-hero-secondary-dark">
+                        <span>Ver Tudo</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 </section>
