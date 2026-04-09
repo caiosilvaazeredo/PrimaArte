@@ -68,7 +68,7 @@
 
             <div class="order-summary-confirm">
                 <h3>Resumo</h3>
-                {% for item in order.items %}
+                {% for item in order['items'] %}
                 <div class="summary-item">
                     <span>{{ item.name }} x{{ item.quantity }}</span>
                     <span>R$ {{ "%.2f"|format(item.subtotal) }}</span>

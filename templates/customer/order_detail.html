@@ -21,7 +21,7 @@
                 <div class="profile-card">
                     <h2>Itens do Pedido</h2>
                     <div class="order-items-list">
-                        {% for item in order.items %}
+                        {% for item in order['items'] %}
                         <div class="order-detail-item">
                             <span class="item-name">{{ item.name }}</span>
                             <span class="item-qty">x{{ item.quantity }}</span>
