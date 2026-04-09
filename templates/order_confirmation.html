@@ -16,9 +16,7 @@
     .confirmation-icon { font-size: 4rem; color: #4CAF50; margin-bottom: 1rem; }
     .confirmation-card h2 { color: var(--navy, #1B2A4A); margin-bottom: 0.5rem; }
 
-    /* Payment sections */
     .payment-info {
-        background: #f8f9fa;
         border-radius: 12px;
         padding: 2rem;
         margin: 2rem 0;
@@ -27,7 +25,6 @@
     }
     .payment-info h3 { color: var(--navy, #1B2A4A); margin-bottom: 1.5rem; font-size: 1.2rem; }
 
-    /* PIX */
     .pix-info { border-color: #00b894; background: #f0faf7; }
     .pix-qr { margin: 1.5rem 0; }
     .pix-qr img { max-width: 250px; border-radius: 10px; border: 3px solid #00b894; padding: 8px; background: white; }
@@ -36,15 +33,12 @@
     .pix-expiration { margin-top: 1rem; font-size: 0.85rem; color: #666; }
     .pix-expiration i { color: #f39c12; margin-right: 0.3rem; }
 
-    /* Boleto */
     .boleto-info { border-color: #6c5ce7; background: #f5f3ff; }
     .boleto-code { margin-bottom: 1.5rem; text-align: left; }
     .boleto-code label { display: block; font-weight: 600; margin-bottom: 0.5rem; color: #333; font-size: 0.9rem; }
 
-    /* Card */
     .card-info { border-color: #0984e3; background: #f0f7ff; }
 
-    /* Copy field */
     .copy-field {
         display: flex;
         gap: 0;
@@ -74,7 +68,6 @@
     }
     .btn-copy:hover { background: #2d3e63; }
 
-    /* Order summary */
     .order-summary-confirm {
         text-align: left;
         margin: 2rem 0;
@@ -89,7 +82,6 @@
     .summary-row { display: flex; justify-content: space-between; padding: 0.3rem 0; color: #666; font-size: 0.9rem; }
     .summary-row.discount { color: #4CAF50; }
 
-    /* Actions */
     .confirmation-actions { display: flex; gap: 1rem; justify-content: center; margin-top: 2rem; flex-wrap: wrap; }
     .btn-primary-large, .btn-secondary-large {
         padding: 1rem 2rem;
@@ -98,21 +90,33 @@
         font-weight: 600;
         font-size: 0.95rem;
         transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
     }
     .btn-primary-large { background: var(--navy, #1B2A4A); color: white; }
     .btn-primary-large:hover { background: #2d3e63; }
     .btn-secondary-large { background: #f0f0f0; color: #333; }
     .btn-secondary-large:hover { background: #e0e0e0; }
 
-    /* Pending / waiting status */
-    .payment-waiting {
-        background: #fff3cd;
-        border: 2px solid #ffc107;
+    .btn-payment-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 1.2rem 2.5rem;
+        background: #00b894;
+        color: white;
         border-radius: 10px;
-        padding: 1.5rem;
-        margin: 1.5rem 0;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 1.1rem;
+        transition: all 0.2s;
+        margin: 1rem 0;
     }
-    .payment-waiting i { color: #f39c12; margin-right: 0.5rem; }
+    .btn-payment-link:hover { background: #00a381; transform: translateY(-1px); }
+    .btn-payment-link.boleto { background: #6c5ce7; }
+    .btn-payment-link.boleto:hover { background: #5a4bd1; }
+
     .payment-confirmed {
         background: #d4edda;
         border: 2px solid #28a745;
@@ -122,18 +126,11 @@
     }
     .payment-confirmed i { color: #28a745; margin-right: 0.5rem; }
 
-    .btn-boleto-open {
-        display: inline-block;
-        padding: 1rem 2rem;
-        background: #6c5ce7;
-        color: white;
-        border-radius: 8px;
-        text-decoration: none;
-        font-weight: 600;
-        margin-top: 1rem;
-        transition: all 0.2s;
+    .invoice-fallback-note {
+        font-size: 0.85rem;
+        color: #666;
+        margin-top: 0.8rem;
     }
-    .btn-boleto-open:hover { background: #5a4bd1; }
 </style>
 {% endblock %}
 
@@ -168,18 +165,17 @@
             <div class="payment-info pix-info">
                 <h3><i class="fas fa-qrcode"></i> Pagamento via PIX</h3>
 
-                {% if pix_data %}
-                    {% if pix_data.encodedImage or pix_data.get('encodedImage') %}
+                {% if pix_data and (pix_data.get('encodedImage') or pix_data.encodedImage) %}
                     <div class="pix-qr">
-                        <img src="data:image/png;base64,{{ pix_data.encodedImage or pix_data.get('encodedImage', '') }}" alt="QR Code PIX">
+                        <img src="data:image/png;base64,{{ pix_data.get('encodedImage', '') or pix_data.encodedImage }}" alt="QR Code PIX">
                     </div>
-                    {% endif %}
 
-                    {% if pix_data.payload or pix_data.get('payload') %}
+                    {% set pix_payload = pix_data.get('payload', '') or pix_data.payload %}
+                    {% if pix_payload %}
                     <div class="pix-copy">
                         <label><i class="fas fa-copy"></i> Código PIX Copia e Cola:</label>
                         <div class="copy-field">
-                            <input type="text" value="{{ pix_data.payload or pix_data.get('payload', '') }}" id="pix-code" readonly>
+                            <input type="text" value="{{ pix_payload }}" id="pix-code" readonly>
                             <button onclick="copyToClipboard('pix-code', this)" class="btn-copy">
                                 <i class="fas fa-copy"></i> Copiar
                             </button>
@@ -187,18 +183,19 @@
                     </div>
                     {% endif %}
 
-                    {% if pix_data.expirationDate or pix_data.get('expirationDate') %}
-                    <div class="pix-expiration">
-                        <i class="fas fa-clock"></i> Validade: {{ pix_data.expirationDate or pix_data.get('expirationDate', '') }}
-                    </div>
-                    {% endif %}
+                {% elif invoice_url %}
+                    <p style="margin-bottom: 1rem; color: #333;">
+                        Clique no botão abaixo para realizar o pagamento via PIX:
+                    </p>
+                    <a href="{{ invoice_url }}" target="_blank" class="btn-payment-link">
+                        <i class="fas fa-external-link-alt"></i> Pagar com PIX
+                    </a>
+                    <p class="invoice-fallback-note">
+                        Você será redirecionado para a página segura do Asaas para concluir o pagamento.
+                    </p>
 
-                {% elif order.payment_status == 'PENDING' %}
-                    <div class="payment-waiting">
-                        <i class="fas fa-spinner fa-spin"></i>
-                        <strong>Gerando QR Code PIX...</strong>
-                        <p style="margin: 0.5rem 0 0;">Aguarde um momento. A página será atualizada automaticamente.</p>
-                    </div>
+                {% else %}
+                    <p style="color: #666;">Pagamento PIX pendente. Verifique seu e-mail para instruções.</p>
                 {% endif %}
             </div>
 
@@ -208,7 +205,7 @@
                 <h3><i class="fas fa-barcode"></i> Pagamento via Boleto Bancário</h3>
 
                 {% if boleto_data %}
-                    {% set id_field = boleto_data.identificationField or boleto_data.get('identificationField', '') %}
+                    {% set id_field = boleto_data.get('identificationField', '') if boleto_data.get is defined else boleto_data.identificationField %}
                     {% if id_field %}
                     <div class="boleto-code">
                         <label><i class="fas fa-barcode"></i> Linha Digitável:</label>
@@ -221,37 +218,37 @@
                     </div>
                     {% endif %}
 
-                    {% set slip_url = boleto_data.bankSlipUrl or boleto_data.get('bankSlipUrl', '') %}
+                    {% set slip_url = boleto_data.get('bankSlipUrl', '') if boleto_data.get is defined else boleto_data.bankSlipUrl %}
                     {% if slip_url %}
-                    <a href="{{ slip_url }}" target="_blank" class="btn-boleto-open">
-                        <i class="fas fa-external-link-alt"></i> Abrir Boleto para Impressão
+                    <a href="{{ slip_url }}" target="_blank" class="btn-payment-link boleto">
+                        <i class="fas fa-file-pdf"></i> Abrir Boleto para Impressão
+                    </a>
+                    {% elif invoice_url %}
+                    <a href="{{ invoice_url }}" target="_blank" class="btn-payment-link boleto">
+                        <i class="fas fa-external-link-alt"></i> Ver Boleto
                     </a>
                     {% endif %}
 
-                {% elif order.payment_status == 'PENDING' %}
-                    <div class="payment-waiting">
-                        <i class="fas fa-spinner fa-spin"></i>
-                        <strong>Gerando boleto...</strong>
-                        <p style="margin: 0.5rem 0 0;">Aguarde um momento. A página será atualizada automaticamente.</p>
-                    </div>
-                {% endif %}
-            </div>
+                {% elif invoice_url %}
+                    <p style="margin-bottom: 1rem; color: #333;">
+                        Clique no botão abaixo para visualizar e pagar o boleto:
+                    </p>
+                    <a href="{{ invoice_url }}" target="_blank" class="btn-payment-link boleto">
+                        <i class="fas fa-external-link-alt"></i> Abrir Boleto
+                    </a>
+                    <p class="invoice-fallback-note">
+                        Você será redirecionado para a página segura do Asaas.
+                    </p>
 
-            {# ===== CARTAO DE CREDITO ===== #}
-            {% elif order.payment_method == 'CREDIT_CARD' %}
-            <div class="payment-info card-info">
-                <h3><i class="fas fa-credit-card"></i> Pagamento via Cartão de Crédito</h3>
-                {% if order.payment_status in ('CONFIRMED', 'RECEIVED') %}
-                <p><i class="fas fa-check" style="color: #4CAF50;"></i> Pagamento aprovado!</p>
                 {% else %}
-                <p>Seu pagamento está sendo processado. Você receberá a confirmação em breve.</p>
+                    <p style="color: #666;">Boleto sendo gerado. Verifique seu e-mail para instruções.</p>
                 {% endif %}
             </div>
 
-            {# ===== CARTAO DE DEBITO ===== #}
-            {% elif order.payment_method == 'DEBIT_CARD' %}
+            {# ===== CARTAO ===== #}
+            {% elif order.payment_method in ('CREDIT_CARD', 'DEBIT_CARD') %}
             <div class="payment-info card-info">
-                <h3><i class="fas fa-credit-card"></i> Pagamento via Cartão de Débito</h3>
+                <h3><i class="fas fa-credit-card"></i> Pagamento via Cartão</h3>
                 {% if order.payment_status in ('CONFIRMED', 'RECEIVED') %}
                 <p><i class="fas fa-check" style="color: #4CAF50;"></i> Pagamento aprovado!</p>
                 {% else %}
@@ -330,7 +327,7 @@ function copyToClipboard(inputId, btn) {
 }
 
 {% if order.payment_method in ('PIX', 'BOLETO') and order.payment_status == 'PENDING' %}
-// Auto-refresh to check for payment data and status
+// Poll for payment confirmation (no page reload)
 const orderId = "{{ order.id }}";
 let pollCount = 0;
 const maxPolls = 120;
@@ -344,13 +341,6 @@ function checkPayment() {
         .then(data => {
             if (data.payment_status === 'CONFIRMED' || data.payment_status === 'RECEIVED') {
                 location.reload();
-            } else if (pollCount <= 3) {
-                // First few polls: reload page to pick up PIX/boleto data that may have been generated
-                {% if not pix_data and not boleto_data %}
-                location.reload();
-                {% else %}
-                setTimeout(checkPayment, 5000);
-                {% endif %}
             } else {
                 setTimeout(checkPayment, 5000);
             }
@@ -358,7 +348,7 @@ function checkPayment() {
         .catch(() => setTimeout(checkPayment, 10000));
 }
 
-setTimeout(checkPayment, 3000);
+setTimeout(checkPayment, 5000);
 {% endif %}
 </script>
 {% endblock %}

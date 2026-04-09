@@ -811,10 +811,12 @@ def checkout_process():
             payment_id = pay_result.get('id')
             order['asaas_payment_id'] = payment_id
             order['payment_status'] = pay_result.get('status', 'PENDING')
+            # Save invoice URL (Asaas hosted payment page) as universal fallback
+            order['invoice_url'] = pay_result.get('invoiceUrl', '')
 
             # Fetch PIX QR code immediately after creating payment
             if billing_type == 'PIX' and payment_id:
-                time.sleep(1)  # Small delay for Asaas to generate QR code
+                time.sleep(1)
                 pix_result, pix_status = asaas.get_pix_qrcode(payment_id)
                 if pix_status == 200 and pix_result.get('encodedImage'):
                     order['pix_data'] = {
@@ -822,10 +824,12 @@ def checkout_process():
                         'payload': pix_result.get('payload', ''),
                         'expirationDate': pix_result.get('expirationDate', '')
                     }
+                else:
+                    print(f'[Asaas] PIX QR code não disponível (status={pix_status}). Usando invoiceUrl como fallback.')
 
             # Fetch boleto data immediately after creating payment
             elif billing_type == 'BOLETO' and payment_id:
-                time.sleep(1)  # Small delay for Asaas to generate boleto
+                time.sleep(1)
                 boleto_result, boleto_status = asaas.get_boleto_url(payment_id)
                 if boleto_status == 200:
                     order['boleto_data'] = {
@@ -886,42 +890,55 @@ def order_confirmation(order_id):
     # Get PIX / Boleto data - use saved data first, re-fetch from API as fallback
     pix_data = order.get('pix_data')
     boleto_data = order.get('boleto_data')
+    invoice_url = order.get('invoice_url', '')
+    needs_save = False
 
     if order.get('asaas_payment_id'):
+        # Try to get invoiceUrl if not saved yet
+        if not invoice_url:
+            pay_result, pay_status = asaas.get_payment(order['asaas_payment_id'])
+            if pay_status == 200:
+                invoice_url = pay_result.get('invoiceUrl', '')
+                if invoice_url:
+                    order['invoice_url'] = invoice_url
+                    needs_save = True
+
         if order['payment_method'] == 'PIX' and not pix_data:
             result, status = asaas.get_pix_qrcode(order['asaas_payment_id'])
             if status == 200 and result.get('encodedImage'):
                 pix_data = result
-                # Save for future page loads
                 order['pix_data'] = {
                     'encodedImage': result.get('encodedImage', ''),
                     'payload': result.get('payload', ''),
                     'expirationDate': result.get('expirationDate', '')
                 }
-                save_item('orders', order['id'], order)
+                needs_save = True
 
         elif order['payment_method'] == 'BOLETO' and not boleto_data:
             result, status = asaas.get_boleto_url(order['asaas_payment_id'])
-            if status == 200:
-                boleto_data = result
-                # Also get bankSlipUrl from payment object
-                pay_result, pay_status = asaas.get_payment(order['asaas_payment_id'])
-                bank_slip_url = ''
-                if pay_status == 200:
-                    bank_slip_url = pay_result.get('bankSlipUrl', '')
-                order['boleto_data'] = {
+            if status == 200 and result.get('identificationField'):
+                boleto_data = {
                     'identificationField': result.get('identificationField', ''),
                     'nossoNumero': result.get('nossoNumero', ''),
                     'barCode': result.get('barCode', ''),
-                    'bankSlipUrl': bank_slip_url or result.get('bankSlipUrl', '')
+                    'bankSlipUrl': result.get('bankSlipUrl', '')
                 }
-                boleto_data = order['boleto_data']
-                save_item('orders', order['id'], order)
+                # Get bankSlipUrl from payment if not in identification response
+                if not boleto_data['bankSlipUrl']:
+                    pay_r, pay_s = asaas.get_payment(order['asaas_payment_id'])
+                    if pay_s == 200:
+                        boleto_data['bankSlipUrl'] = pay_r.get('bankSlipUrl', '')
+                order['boleto_data'] = boleto_data
+                needs_save = True
+
+        if needs_save:
+            save_item('orders', order['id'], order)
 
     return render_template('order_confirmation.html',
                            order=order,
                            pix_data=pix_data,
-                           boleto_data=boleto_data)
+                           boleto_data=boleto_data,
+                           invoice_url=invoice_url)
 
 
 @app.route('/finalizar-pedido')
