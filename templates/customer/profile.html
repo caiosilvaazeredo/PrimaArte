@@ -46,7 +46,7 @@
             <!-- Main Content -->
             <div class="profile-main">
                 <div class="profile-card">
-                    <h2>Informacoes Pessoais</h2>
+                    <h2>Informações Pessoais</h2>
                     <form action="{{ url_for('customer_profile_update') }}" method="post">
                         <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
 
@@ -118,7 +118,7 @@
                         </div>
                         <div class="security-item">
                             <i class="fas fa-shield-alt"></i>
-                            <span>Autenticacao 2FA</span>
+                            <span>Autenticação 2FA</span>
                             {% if customer.totp_enabled %}
                             <span class="badge-active">Ativa</span>
                             {% else %}

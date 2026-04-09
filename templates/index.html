@@ -13,19 +13,19 @@
     <div class="hero-riviera-overlay"></div>
     <div class="hero-riviera-content container">
         <span class="hero-riviera-label">Val's - Luxury Handcrafted</span>
-        <h1 class="hero-riviera-title">Arte que Voce<br>Carrega Consigo</h1>
+        <h1 class="hero-riviera-title">Arte que Você<br>Carrega Consigo</h1>
         <div class="hero-riviera-divider"></div>
         <p class="hero-riviera-description">
-            Pecas artesanais unicas, feitas a mao com amor e inspiradas na beleza da costa brasileira.
+            Peças artesanais únicas, feitas a mao com amor e inspiradas na beleza da costa brasileira.
         </p>
         <div class="hero-riviera-actions">
             <a href="{{ url_for('products') }}" class="btn-hero-primary">
-                <span>Explorar Colecao</span>
+                <span>Explorar Coleção</span>
                 <i class="fas fa-arrow-right"></i>
             </a>
             <a href="{{ url_for('products', tipo='unicas') }}" class="btn-hero-secondary">
                 <i class="fas fa-fingerprint"></i>
-                <span>Pecas Unicas</span>
+                <span>Peças Únicas</span>
             </a>
         </div>
     </div>
@@ -64,10 +64,10 @@
                     Born from the Ocean
                 </h2>
                 <p>
-                    Na Region dos Lagos, onde o azul do mar se funde com o verde da restinga, nasceu a Val's. Inspiradas pela paisagem costeira e pela flora exuberante, Flavia e Valeria decidiram dar vida a pecas que carregam a alma desse lugar.
+                    Na Região dos Lagos, onde o azul do mar se funde com o verde da restinga, nasceu a Val's. Inspiradas pela paisagem costeira e pela flora exuberante, Flavia e Valeria decidiram dar vida a peças que carregam a alma desse lugar.
                 </p>
                 <p>
-                    Cada bolsa da colecao Riviera Botanica recebe o nome de uma flor — Dalia, Lirio, Azaleia, Hortensia — como tributo a natureza que nos inspira e a tradicao familiar que nos guia desde tres geracoes.
+                    Cada bolsa da coleção Riviera Botanica recebe o nome de uma flor — Dalia, Lirio, Azaleia, Hortensia — como tributo a natureza que nos inspira e a tradicao familiar que nos guia desde tres geracoes.
                 </p>
                 <div class="origin-signature">
                     <div class="origin-sig-line"></div>
@@ -79,7 +79,7 @@
                 <div class="origin-stats">
                     <div class="origin-stat" data-aos="fade-up">
                         <i class="fas fa-water"></i>
-                        <span class="origin-stat-number">Region dos Lagos</span>
+                        <span class="origin-stat-number">Região dos Lagos</span>
                         <span class="origin-stat-label">Origem</span>
                     </div>
                     <div class="origin-stat" data-aos="fade-up" data-aos-delay="100">
@@ -103,8 +103,8 @@
 <section class="riviera-collection">
     <div class="container">
         <div class="section-header-luxury">
-            <span class="section-label">Colecao Riviera Botanica</span>
-            <h2 class="section-title-luxury">Pecas que Contam Historias</h2>
+            <span class="section-label">Coleção Riviera Botanica</span>
+            <h2 class="section-title-luxury">Peças que Contam Historias</h2>
             <p class="section-subtitle-riviera">Cada bolsa leva o nome de uma flor, unindo a elegancia costeira ao artesanato de luxo</p>
             <div class="section-divider"></div>
         </div>
@@ -163,7 +163,7 @@
 
         <div class="section-footer-luxury">
             <a href="{{ url_for('products') }}" class="btn-view-all-luxury">
-                <span>Ver Toda a Colecao</span>
+                <span>Ver Toda a Coleção</span>
                 <i class="fas fa-arrow-right"></i>
             </a>
         </div>
@@ -176,15 +176,15 @@
     <div class="container">
         <div class="banner-lifestyle-grid">
             <div class="banner-lifestyle-image">
-                <img src="{{ url_for('static', filename='images/banner_lifestyle.jpg') }}" alt="Val's - Colecao Riviera Botanica">
+                <img src="{{ url_for('static', filename='images/banner_lifestyle.jpg') }}" alt="Val's - Coleção Riviera Botanica">
             </div>
             <div class="banner-lifestyle-text">
                 <span class="section-label">Riviera Botanica</span>
                 <h2>Feitas Para Quem Valoriza o Unico</h2>
-                <p>Nossas pecas sao mais do que acessorios. Sao expressoes de arte, feitas a mao com materiais nobres e inspiracao da costa.</p>
+                <p>Nossas peças são mais do que acessorios. São expressoes de arte, feitas a mao com materiais nobres e inspiracao da costa.</p>
                 <div class="banner-cta-group">
                     <a href="{{ url_for('products', tipo='unicas') }}" class="btn-hero-primary">
-                        <span>Pecas Unicas</span>
+                        <span>Peças Únicas</span>
                         <i class="fas fa-arrow-right"></i>
                     </a>
                     <a href="{{ url_for('products') }}" class="btn-hero-secondary-dark">
@@ -203,8 +203,8 @@
     <div class="container">
         <div class="section-header-luxury">
             <span class="section-label">Exclusividade</span>
-            <h2 class="section-title-luxury">Pecas Unicas</h2>
-            <p class="section-subtitle-riviera">Criadas uma unica vez. Quando acabar, nao volta.</p>
+            <h2 class="section-title-luxury">Peças Únicas</h2>
+            <p class="section-subtitle-riviera">Criadas uma única vez. Quando acabar, não volta.</p>
             <div class="section-divider"></div>
         </div>
 
@@ -219,7 +219,7 @@
                     {% endif %}
 
                     <div class="unique-badge-home">
-                        <i class="fas fa-fingerprint"></i> Peca Unica
+                        <i class="fas fa-fingerprint"></i> Peça Única
                     </div>
 
                     {% if product.promotion_active and product.promotional_price %}
@@ -258,7 +258,7 @@
 
         <div class="section-footer-luxury">
             <a href="{{ url_for('products', tipo='unicas') }}" class="btn-view-all-luxury">
-                <span>Ver Todas as Pecas Unicas</span>
+                <span>Ver Todas as Peças Únicas</span>
                 <i class="fas fa-arrow-right"></i>
             </a>
         </div>
@@ -271,9 +271,9 @@
 <section class="collection-products-section">
     <div class="container">
         <div class="section-header-luxury">
-            <span class="section-label">Colecao</span>
+            <span class="section-label">Coleção</span>
             <h2 class="section-title-luxury">Linha Permanente</h2>
-            <p class="section-subtitle-riviera">Pecas que fazem parte da nossa colecao fixa</p>
+            <p class="section-subtitle-riviera">Peças que fazem parte da nossa coleção fixa</p>
             <div class="section-divider"></div>
         </div>
 
@@ -323,7 +323,7 @@
 
         <div class="section-footer-luxury">
             <a href="{{ url_for('products', tipo='colecao') }}" class="btn-view-all-luxury">
-                <span>Ver Toda a Colecao</span>
+                <span>Ver Toda a Coleção</span>
                 <i class="fas fa-arrow-right"></i>
             </a>
         </div>
@@ -348,7 +348,7 @@
                         <div class="craft-step-number">02</div>
                         <div class="craft-step-info">
                             <h4>Corte Artesanal</h4>
-                            <p>Cada peca e cortada manualmente com precisao e atencao aos detalhes</p>
+                            <p>Cada peça e cortada manualmente com precisao e atenção aos detalhes</p>
                         </div>
                     </div>
                     <div class="craft-step" data-aos="fade-up" data-aos-delay="200">
@@ -371,13 +371,13 @@
                 <span class="section-label">Artesanato Sem Concessoes</span>
                 <h2>Uncompromising<br>Craftsmanship</h2>
                 <p>
-                    Nossas pecas nao sao apenas bolsas — sao obras de arte artesanais. Cada costura e feita a mao, cada detalhe e pensado para durar e encantar. A tradicao de alfaiataria de nossa familia, que remonta a tres geracoes, vive em cada peca que criamos.
+                    Nossas peças não são apenas bolsas — são obras de arte artesanais. Cada costura e feita a mao, cada detalhe e pensado para durar e encantar. A tradicao de alfaiataria de nossa familia, que remonta a tres geracoes, vive em cada peça que criamos.
                 </p>
                 <p>
-                    Do atelie na Region dos Lagos, trabalhamos com materiais nobres e tecnicas ancestrais para criar pecas que transcendem tendencias e se tornam legados.
+                    Do atelie na Região dos Lagos, trabalhamos com materiais nobres e tecnicas ancestrais para criar peças que transcendem tendencias e se tornam legados.
                 </p>
                 <a href="{{ url_for('about') }}" class="btn-craft-link">
-                    <span>Conheca Nossa Historia</span>
+                    <span>Conheca Nossa História</span>
                     <i class="fas fa-arrow-right"></i>
                 </a>
             </div>
@@ -401,7 +401,7 @@
                 </div>
                 <div class="pillar-number">I</div>
                 <h3>Elegancia</h3>
-                <p>Design sofisticado que une a beleza da costa a nobreza dos materiais. Cada peca e projetada para elevar qualquer ocasiao com graca atemporal.</p>
+                <p>Design sofisticado que une a beleza da costa a nobreza dos materiais. Cada peça e projetada para elevar qualquer ocasiao com graca atemporal.</p>
                 <div class="pillar-line"></div>
             </div>
 
@@ -411,7 +411,7 @@
                 </div>
                 <div class="pillar-number">II</div>
                 <h3>Qualidade</h3>
-                <p>Materiais selecionados, costuras impecaveis e acabamento de luxo. Nossas pecas sao feitas para serem apreciadas e passadas adiante como verdadeiros tesouros.</p>
+                <p>Materiais selecionados, costuras impecaveis e acabamento de luxo. Nossas peças são feitas para serem apreciadas e passadas adiante como verdadeiros tesouros.</p>
                 <div class="pillar-line"></div>
             </div>
 
@@ -421,7 +421,7 @@
                 </div>
                 <div class="pillar-number">III</div>
                 <h3>Sustentabilidade</h3>
-                <p>Producao consciente com materiais responsaveis e tecnicas que respeitam o meio ambiente. Luxo e sustentabilidade caminham juntos na Val's.</p>
+                <p>Produção consciente com materiais responsaveis e tecnicas que respeitam o meio ambiente. Luxo e sustentabilidade caminham juntos na Val's.</p>
                 <div class="pillar-line"></div>
             </div>
         </div>
@@ -433,7 +433,7 @@
     <div class="container">
         <div class="section-header-luxury">
             <span class="section-label">Categorias</span>
-            <h2 class="section-title-luxury">Nossas Colecoes</h2>
+            <h2 class="section-title-luxury">Nossas Coleções</h2>
             <div class="section-divider"></div>
         </div>
 
@@ -443,7 +443,7 @@
                     <i class="fas fa-gem"></i>
                 </div>
                 <h3>Acessorios</h3>
-                <p>Pecas exclusivas que complementam seu estilo com sofisticacao</p>
+                <p>Peças exclusivas que complementam seu estilo com sofisticacao</p>
                 <a href="{{ url_for('products', categoria='acessorios') }}" class="btn-collection">
                     <span>Descobrir</span>
                     <i class="fas fa-arrow-right"></i>
@@ -467,7 +467,7 @@
                     <i class="fas fa-star"></i>
                 </div>
                 <h3>Personalizados</h3>
-                <p>Pecas unicas criadas sob medida para voce</p>
+                <p>Peças únicas criadas sob medida para você</p>
                 <a href="{{ url_for('products', categoria='personalizados') }}" class="btn-collection">
                     <span>Descobrir</span>
                     <i class="fas fa-arrow-right"></i>
@@ -484,7 +484,7 @@
             <div class="cta-text-luxury" data-aos="fade-right">
                 <span class="section-label">Atendimento Personalizado</span>
                 <h2>Vamos Conversar?</h2>
-                <p>Entre em contato para um atendimento exclusivo. Estamos prontos para ajuda-lo a encontrar a peca perfeita ou criar algo unico para voce.</p>
+                <p>Entre em contato para um atendimento exclusivo. Estamos prontos para ajuda-lo a encontrar a peça perfeita ou criar algo unico para você.</p>
             </div>
             <div class="cta-actions-luxury" data-aos="fade-left" data-aos-delay="200">
                 <a href="https://wa.me/5521973108293?text=Olá! Gostaria de conhecer mais sobre a coleção Riviera Botanica da Val's!" target="_blank" class="btn-whatsapp-luxury">

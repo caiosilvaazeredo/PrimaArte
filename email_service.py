@@ -74,8 +74,8 @@ def _base_html(content, preview_text=""):
   </div>
   <div class="footer">
     <p><a href="#">Val's - Luxury Handcrafted</a></p>
-    <p>Colecao Riviera Botanica</p>
-    <p style="margin-top:15px;">Este e-mail foi enviado automaticamente. Nao responda.</p>
+    <p>Coleção Riviera Botanica</p>
+    <p style="margin-top:15px;">Este e-mail foi enviado automaticamente. Não responda.</p>
   </div>
 </div>
 </body>
@@ -85,7 +85,7 @@ def _base_html(content, preview_text=""):
 def _send_email(to_email, subject, html_content):
     """Send email via SMTP. Returns True on success."""
     if not _ENABLED:
-        print(f"[Email] SMTP nao configurado. Email para {to_email} nao enviado.")
+        print(f"[Email] SMTP não configurado. Email para {to_email} não enviado.")
         return False
 
     msg = MIMEMultipart('alternative')
@@ -125,18 +125,18 @@ def send_welcome_email(app, customer_name, customer_email):
     content = f"""
     <h2>Bem-vinda a Val's, {customer_name}!</h2>
     <p>Estamos felizes em te-la conosco. Sua conta foi criada com sucesso.</p>
-    <p>Na Val's, cada peca e feita a mao com dedicacao e carinho, inspirada na beleza da natureza e no luxo artesanal da Riviera.</p>
+    <p>Na Val's, cada peça e feita a mao com dedicação e carinho, inspirada na beleza da natureza e no luxo artesanal da Riviera.</p>
 
     <div class="highlight-box">
-      <p><strong>O que voce pode fazer agora:</strong></p>
-      <p>&#8226; Explorar nossa colecao exclusiva</p>
+      <p><strong>O que você pode fazer agora:</strong></p>
+      <p>&#8226; Explorar nossa coleção exclusiva</p>
       <p>&#8226; Adicionar produtos a sua sacola</p>
       <p>&#8226; Pagar com PIX, cartao ou boleto</p>
       <p>&#8226; Acompanhar seus pedidos</p>
-      <p>&#8226; Ativar autenticacao em 2 fatores para mais seguranca</p>
+      <p>&#8226; Ativar autenticação em 2 fatores para mais seguranca</p>
     </div>
 
-    <p>Dica: Ative a verificacao em duas etapas no seu perfil para proteger sua conta.</p>
+    <p>Dica: Ative a verificação em duas etapas no seu perfil para proteger sua conta.</p>
     """
     html = _base_html(content, f"Bem-vinda a Val's, {customer_name}!")
     send_email_async(app, customer_email, "Bem-vinda a Val's! ✨", html)
@@ -162,7 +162,7 @@ def send_order_confirmation_email(app, order):
 
     content = f"""
     <h2>Pedido Confirmado!</h2>
-    <p>Ola, {order.get('customer_name', '')}! Recebemos seu pedido e ele esta sendo processado.</p>
+    <p>Olá, {order.get('customer_name', '')}! Recebemos seu pedido e ele esta sendo processado.</p>
 
     <div class="highlight-box">
       <p><strong>Pedido:</strong> {order.get('order_number', '')}</p>
@@ -184,7 +184,7 @@ def send_order_confirmation_email(app, order):
     </table>
 
     <hr class="divider">
-    <p>Voce pode acompanhar o status do seu pedido na sua area de cliente.</p>
+    <p>Você pode acompanhar o status do seu pedido na sua area de cliente.</p>
     """
     html = _base_html(content, f"Pedido {order.get('order_number', '')} confirmado!")
     send_email_async(
@@ -208,7 +208,7 @@ def send_payment_status_email(app, order):
         'OVERDUE': ('Pagamento Vencido', 'status-cancelled',
                     'O prazo de pagamento do seu pedido expirou. Se ainda deseja receber os produtos, entre em contato conosco.'),
         'REFUNDED': ('Pagamento Estornado', 'status-cancelled',
-                     'O pagamento do seu pedido foi estornado. O valor sera devolvido conforme o prazo da sua operadora.'),
+                     'O pagamento do seu pedido foi estornado. O valor será devolvido conforme o prazo da sua operadora.'),
     }
 
     if status not in status_configs:
@@ -217,8 +217,8 @@ def send_payment_status_email(app, order):
     title, badge_class, message = status_configs[status]
 
     content = f"""
-    <h2>Atualizacao do Pedido</h2>
-    <p>Ola, {order.get('customer_name', '')}!</p>
+    <h2>Atualização do Pedido</h2>
+    <p>Olá, {order.get('customer_name', '')}!</p>
 
     <div class="highlight-box">
       <p><strong>Pedido:</strong> {order.get('order_number', '')}</p>
@@ -247,7 +247,7 @@ def send_order_status_email(app, order):
     tracking_line = ''
     if tracking_code:
         tracking_url = order.get('tracking_url', f'https://www.linkcorreios.com.br/?id={tracking_code}')
-        tracking_line = f'<p><strong>Codigo de Rastreio:</strong> <a href="{tracking_url}" style="color:#1B2A4A; font-weight:bold;">{tracking_code}</a></p>'
+        tracking_line = f'<p><strong>Código de Rastreio:</strong> <a href="{tracking_url}" style="color:#1B2A4A; font-weight:bold;">{tracking_code}</a></p>'
 
     status_configs = {
         'paid': ('Pagamento Confirmado', 'status-paid',
@@ -257,11 +257,11 @@ def send_order_status_email(app, order):
         'packing': ('Em Embalagem', 'status-pending',
                     'Seu pedido esta sendo embalado com todo cuidado. Em breve estara a caminho!'),
         'shipped': ('Pedido Enviado', 'status-shipped',
-                    'Seu pedido foi enviado!' + (f' Rastreie com o codigo: <strong>{tracking_code}</strong>' if tracking_code else '')),
+                    'Seu pedido foi enviado!' + (f' Rastreie com o código: <strong>{tracking_code}</strong>' if tracking_code else '')),
         'in_transit': ('Em Transito', 'status-shipped',
-                       'Seu pedido esta a caminho!' + (f' Acompanhe pelo codigo: <strong>{tracking_code}</strong>' if tracking_code else '')),
+                       'Seu pedido esta a caminho!' + (f' Acompanhe pelo código: <strong>{tracking_code}</strong>' if tracking_code else '')),
         'delivered': ('Pedido Entregue', 'status-paid',
-                      'Seu pedido foi entregue! Esperamos que ame suas novas pecas. Obrigada por escolher Val\'s!'),
+                      'Seu pedido foi entregue! Esperamos que ame suas novas peças. Obrigada por escolher Val\'s!'),
         'cancelled': ('Pedido Cancelado', 'status-cancelled',
                       'Seu pedido foi cancelado. Se tiver duvidas, entre em contato conosco.'),
     }
@@ -272,8 +272,8 @@ def send_order_status_email(app, order):
     title, badge_class, message = status_configs[status]
 
     content = f"""
-    <h2>Atualizacao do Pedido</h2>
-    <p>Ola, {order.get('customer_name', '')}!</p>
+    <h2>Atualização do Pedido</h2>
+    <p>Olá, {order.get('customer_name', '')}!</p>
 
     <div class="highlight-box">
       <p><strong>Pedido:</strong> {order.get('order_number', '')}</p>
@@ -300,17 +300,17 @@ def send_password_reset_email(app, customer_email, customer_name, reset_url):
     """Send password reset email."""
     content = f"""
     <h2>Recuperacao de Senha</h2>
-    <p>Ola, {customer_name}!</p>
+    <p>Olá, {customer_name}!</p>
     <p>Recebemos uma solicitacao para redefinir a senha da sua conta Val's.</p>
 
     <p style="text-align:center;">
       <a href="{reset_url}" class="btn">Redefinir Minha Senha</a>
     </p>
 
-    <p style="font-size:12px; color:#8A8A8A;">Este link expira em 1 hora. Se voce nao solicitou a redefinicao de senha, ignore este e-mail.</p>
+    <p style="font-size:12px; color:#8A8A8A;">Este link expira em 1 hora. Se você não solicitou a redefinicao de senha, ignore este e-mail.</p>
 
     <hr class="divider">
-    <p style="font-size:12px; color:#8A8A8A;">Se o botao nao funcionar, copie e cole este link no navegador:</p>
+    <p style="font-size:12px; color:#8A8A8A;">Se o botao não funcionar, copie e cole este link no navegador:</p>
     <p style="font-size:11px; color:#8A8A8A; word-break:break-all;">{reset_url}</p>
     """
     html = _base_html(content, "Redefinicao de senha - Val's")

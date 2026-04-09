@@ -12,7 +12,7 @@
         <div class="auth-card auth-card-wide">
             <div class="auth-header">
                 <div class="auth-badge"><i class="fas fa-shield-alt"></i></div>
-                <h1>Autenticacao de 2 Fatores</h1>
+                <h1>Autenticação de 2 Fatores</h1>
                 <p>Escaneie o QR Code com seu aplicativo autenticador (Google Authenticator, Authy, etc.)</p>
             </div>
 
@@ -30,7 +30,7 @@
                     <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
 
                     <div class="form-group">
-                        <label>Digite o codigo gerado pelo app para confirmar</label>
+                        <label>Digite o código gerado pelo app para confirmar</label>
                         <input type="text" name="token" required maxlength="6" pattern="[0-9]{6}"
                                placeholder="000000" class="input-2fa" autocomplete="off">
                     </div>

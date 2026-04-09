@@ -33,7 +33,7 @@
                 {% endif %}
                 {% if pix_data.get('payload') %}
                 <div class="pix-copy">
-                    <label>Codigo PIX Copia e Cola:</label>
+                    <label>Código PIX Copia e Cola:</label>
                     <div class="copy-field">
                         <input type="text" value="{{ pix_data.payload }}" id="pix-code" readonly>
                         <button onclick="navigator.clipboard.writeText(document.getElementById('pix-code').value); this.textContent='Copiado!'" class="btn-copy">Copiar</button>
@@ -62,7 +62,7 @@
             {% elif order.payment_method == 'CREDIT_CARD' %}
             <div class="payment-info card-info">
                 <h3><i class="fas fa-credit-card"></i> Pagamento via Cartao</h3>
-                <p>Seu pagamento esta sendo processado. Voce recebera a confirmacao em breve.</p>
+                <p>Seu pagamento esta sendo processado. Você recebera a confirmacao em breve.</p>
             </div>
             {% endif %}
 

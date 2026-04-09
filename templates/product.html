@@ -80,6 +80,7 @@
                 </div>
 
                 <form action="{{ url_for('add_to_cart') }}" method="POST" class="purchase-form">
+                    <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
                     <input type="hidden" name="product_id" value="{{ product.id }}">
                     <input type="hidden" name="current_price" value="{% if product.promotion_active and product.promotional_price %}{{ product.promotional_price }}{% else %}{{ product.price }}{% endif %}">
 

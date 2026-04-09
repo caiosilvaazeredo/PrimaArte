@@ -2,7 +2,7 @@
 """
 VAL'S - LUXURY HANDCRAFTED
 ===========================
-Colecao Riviera Botanica
+Coleção Riviera Botanica
 Aplicacao principal com pagamentos Asaas, area do cliente e seguranca
 """
 
@@ -58,7 +58,7 @@ if os.path.exists(FIREBASE_CRED_FILE):
     except Exception as e:
         print(f"[Firebase] Erro ao conectar: {e}. Usando JSON como fallback.")
 else:
-    print(f"[Firebase] Arquivo {FIREBASE_CRED_FILE} nao encontrado. Usando JSON como fallback.")
+    print(f"[Firebase] Arquivo {FIREBASE_CRED_FILE} não encontrado. Usando JSON como fallback.")
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'vals-luxury-secret-key-2025')
@@ -67,7 +67,7 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0  # No cache in dev
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=2)
 
 # ================================
-# CONFIGURACOES
+# CONFIGURAÇÕES
 # ================================
 WHATSAPP_NUMBER = os.environ.get('WHATSAPP_NUMBER', '+5521973108293')
 INSTAGRAM_URL = os.environ.get('INSTAGRAM_URL', 'https://www.instagram.com/primaarte2025/')
@@ -274,7 +274,7 @@ def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not session.get('customer_id'):
-            flash('Faca login para acessar esta pagina.', 'info')
+            flash('Faca login para acessar esta página.', 'info')
             return redirect(url_for('customer_login'))
         return f(*args, **kwargs)
     return decorated_function
@@ -489,7 +489,7 @@ def product_detail(product_slug):
             break
 
     if not product:
-        flash('Produto nao encontrado!', 'error')
+        flash('Produto não encontrado!', 'error')
         return redirect(url_for('products'))
 
     product['current_price'] = get_product_current_price(product)
@@ -855,7 +855,7 @@ def order_confirmation(order_id):
     order = next((o for o in data.get('orders', []) if o['id'] == order_id), None)
 
     if not order:
-        flash('Pedido nao encontrado.', 'error')
+        flash('Pedido não encontrado.', 'error')
         return redirect(url_for('index'))
 
     # Get PIX QR Code if applicable
@@ -911,7 +911,7 @@ def checkout_whatsapp():
 
     message += f"\n*TOTAL: R$ {total:.2f}*\n"
     message += "=" * 35 + "\n\n"
-    message += "Ola! Gostaria de finalizar este pedido!\n"
+    message += "Olá! Gostaria de finalizar este pedido!\n"
 
     whatsapp_url = (
         f"https://wa.me/{WHATSAPP_NUMBER.replace('+', '').replace(' ', '')}"
@@ -1019,7 +1019,7 @@ def customer_register():
         return redirect(url_for('customer_register'))
 
     if password != confirm_password:
-        flash('As senhas nao conferem.', 'error')
+        flash('As senhas não conferem.', 'error')
         return redirect(url_for('customer_register'))
 
     data = load_data()
@@ -1076,7 +1076,7 @@ def customer_register():
     email_service.send_welcome_email(app, name, email)
 
     session['customer_id'] = customer['id']
-    flash('Cadastro realizado com sucesso! Configure a autenticacao de 2 fatores para maior seguranca.', 'success')
+    flash('Cadastro realizado com sucesso! Configure a autenticação de 2 fatores para maior seguranca.', 'success')
     return redirect(url_for('customer_profile'))
 
 
@@ -1148,7 +1148,7 @@ def forgot_password():
         reset_url = url_for('reset_password', token=token, _external=True)
         email_service.send_password_reset_email(app, email, customer['name'], reset_url)
 
-    flash('Se o email estiver cadastrado, voce recebera um link para redefinir sua senha.', 'info')
+    flash('Se o email estiver cadastrado, você recebera um link para redefinir sua senha.', 'info')
     return redirect(url_for('customer_login'))
 
 
@@ -1170,7 +1170,7 @@ def reset_password(token):
         return redirect(url_for('reset_password', token=token))
 
     if password != confirm_password:
-        flash('As senhas nao conferem.', 'error')
+        flash('As senhas não conferem.', 'error')
         return redirect(url_for('reset_password', token=token))
 
     customer = get_customer(token_data['customer_id'])
@@ -1208,14 +1208,14 @@ def customer_2fa_verify():
         flash(f'Bem-vinda, {customer["name"]}!', 'success')
         return redirect(url_for('customer_profile'))
     else:
-        flash('Codigo invalido. Tente novamente.', 'error')
+        flash('Código invalido. Tente novamente.', 'error')
         return redirect(url_for('customer_2fa_verify'))
 
 
 @app.route('/logout')
 def customer_logout():
     session.pop('customer_id', None)
-    flash('Voce saiu da sua conta.', 'info')
+    flash('Você saiu da sua conta.', 'info')
     return redirect(url_for('index'))
 
 
@@ -1291,10 +1291,10 @@ def customer_2fa_setup():
     if totp.verify(token, valid_window=1):
         customer['totp_enabled'] = True
         save_item('customers', customer['id'], customer)
-        flash('Autenticacao de 2 fatores ativada com sucesso!', 'success')
+        flash('Autenticação de 2 fatores ativada com sucesso!', 'success')
         return redirect(url_for('customer_profile'))
     else:
-        flash('Codigo invalido. Tente novamente.', 'error')
+        flash('Código invalido. Tente novamente.', 'error')
         return redirect(url_for('customer_2fa_setup'))
 
 
@@ -1320,7 +1320,7 @@ def customer_order_detail(order_id):
         None
     )
     if not order:
-        flash('Pedido nao encontrado.', 'error')
+        flash('Pedido não encontrado.', 'error')
         return redirect(url_for('customer_orders'))
 
     return render_template('customer/order_detail.html', order=order)
@@ -1402,7 +1402,7 @@ def admin_order_detail(order_id):
     order = next((o for o in data.get('orders', []) if o['id'] == order_id), None)
 
     if not order:
-        flash('Pedido nao encontrado.', 'error')
+        flash('Pedido não encontrado.', 'error')
         return redirect(url_for('admin_orders'))
 
     return render_template('admin/order_detail.html', order=order)
@@ -1472,7 +1472,7 @@ def admin_generate_invoice(order_id):
     order = next((o for o in data.get('orders', []) if o['id'] == order_id), None)
 
     if not order:
-        flash('Pedido nao encontrado.', 'error')
+        flash('Pedido não encontrado.', 'error')
         return redirect(url_for('admin_orders'))
 
     try:
@@ -1589,7 +1589,7 @@ def admin_generate_invoice(order_id):
         c.rect(0, 0, width, 40, fill=True)
         c.setFillColor(HexColor('#FAF8F5'))
         c.setFont('Helvetica', 7)
-        c.drawCentredString(width / 2, 20, "Val's - Luxury Handcrafted | Colecao Riviera Botanica")
+        c.drawCentredString(width / 2, 20, "Val's - Luxury Handcrafted | Coleção Riviera Botanica")
         c.drawCentredString(width / 2, 10, f"Documento gerado em {datetime.now().strftime('%d/%m/%Y %H:%M')}")
 
         c.showPage()
@@ -1604,7 +1604,7 @@ def admin_generate_invoice(order_id):
         return response
 
     except ImportError:
-        flash('Biblioteca reportlab nao instalada. Execute: pip install reportlab', 'error')
+        flash('Biblioteca reportlab não instalada. Execute: pip install reportlab', 'error')
         return redirect(url_for('admin_order_detail', order_id=order_id))
 
 
@@ -1628,7 +1628,7 @@ def admin_product_edit(product_id):
     data = load_data()
     product = next((p for p in data['products'] if p['id'] == product_id), None)
     if not product:
-        flash('Produto nao encontrado!', 'error')
+        flash('Produto não encontrado!', 'error')
         return redirect(url_for('admin_products'))
     return render_template('admin/product_form.html', product=product)
 
@@ -1731,7 +1731,7 @@ def admin_edit_announcement(announcement_id):
         (a for a in data['announcements'] if a['id'] == announcement_id), None
     )
     if not announcement:
-        flash('Anuncio nao encontrado!', 'error')
+        flash('Anuncio não encontrado!', 'error')
         return redirect(url_for('admin_announcements'))
     return render_template('admin/announcement_form.html', announcement=announcement)
 
@@ -1801,7 +1801,7 @@ def admin_customers():
     data = load_data()
     return render_template('admin/customers.html', customers=data.get('customers', []))
 
-@app.route('/admin/configuracoes', methods=['GET', 'POST'])
+@app.route('/admin/configurações', methods=['GET', 'POST'])
 @admin_required
 def admin_settings():
     settings = get_item('settings', 'store') or {}
@@ -1830,7 +1830,7 @@ def admin_settings():
 
         settings['id'] = 'store'
         save_item('settings', 'store', settings)
-        flash('Configuracoes salvas!', 'success')
+        flash('Configurações salvas!', 'success')
         return redirect(url_for('admin_settings'))
 
     return render_template('admin/settings.html', settings=settings)
@@ -1915,7 +1915,7 @@ def upload_file():
         file.save(file_path)
         return jsonify({'url': f"/static/uploads/{filename}"})
 
-    return jsonify({'error': 'Tipo de arquivo nao permitido'}), 400
+    return jsonify({'error': 'Tipo de arquivo não permitido'}), 400
 
 @app.route('/api/payment-status/<order_id>')
 def api_payment_status(order_id):

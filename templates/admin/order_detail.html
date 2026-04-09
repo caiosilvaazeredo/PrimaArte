@@ -63,7 +63,7 @@
 
             {% if order.tracking_code %}
             <div class="tracking-info">
-                <strong><i class="fas fa-barcode"></i> Codigo de Rastreio:</strong>
+                <strong><i class="fas fa-barcode"></i> Código de Rastreio:</strong>
                 <code>{{ order.tracking_code }}</code>
                 {% if order.tracking_url %}
                 <a href="{{ order.tracking_url }}" target="_blank" class="btn-admin-sm">
@@ -214,7 +214,7 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Codigo de Rastreio:</label>
+                            <label>Código de Rastreio:</label>
                             <input type="text" name="tracking_code" value="{{ order.tracking_code or '' }}" placeholder="Ex: BR123456789XX">
                         </div>
                         <div class="form-group">

@@ -42,13 +42,13 @@
 
                 <nav class="main-nav desktop-nav">
                     <ul>
-                        <li><a href="{{ url_for('index') }}"><span class="nav-text">INICIO</span></a></li>
+                        <li><a href="{{ url_for('index') }}"><span class="nav-text">INÍCIO</span></a></li>
                         <li class="nav-dropdown">
-                            <a href="{{ url_for('products') }}"><span class="nav-text">COLECAO</span></a>
+                            <a href="{{ url_for('products') }}"><span class="nav-text">COLEÇÃO</span></a>
                             <ul class="nav-dropdown-menu">
                                 <li><a href="{{ url_for('products') }}">Todos</a></li>
-                                <li><a href="{{ url_for('products', tipo='unicas') }}">Pecas Unicas</a></li>
-                                <li><a href="{{ url_for('products', tipo='colecao') }}">Colecao</a></li>
+                                <li><a href="{{ url_for('products', tipo='unicas') }}">Peças Únicas</a></li>
+                                <li><a href="{{ url_for('products', tipo='colecao') }}">Coleção</a></li>
                             </ul>
                         </li>
                         <li><a href="{{ url_for('about') }}"><span class="nav-text">SOBRE</span></a></li>
@@ -58,10 +58,10 @@
 
                 <nav class="main-nav mobile-nav" id="mobileNav">
                     <ul>
-                        <li><a href="{{ url_for('index') }}">Inicio</a></li>
+                        <li><a href="{{ url_for('index') }}">Início</a></li>
                         <li><a href="{{ url_for('products') }}">Todos os Produtos</a></li>
-                        <li><a href="{{ url_for('products', tipo='unicas') }}">Pecas Unicas</a></li>
-                        <li><a href="{{ url_for('products', tipo='colecao') }}">Colecao</a></li>
+                        <li><a href="{{ url_for('products', tipo='unicas') }}">Peças Únicas</a></li>
+                        <li><a href="{{ url_for('products', tipo='colecao') }}">Coleção</a></li>
                         <li><a href="{{ url_for('about') }}">Sobre</a></li>
                         <li><a href="https://www.instagram.com/primaarte2025/" target="_blank">Instagram</a></li>
                         {% if current_customer %}
@@ -115,7 +115,7 @@
                 <div class="footer-section footer-brand">
                     <h3>VAL'S</h3>
                     <p class="footer-tagline">LUXURY HANDCRAFTED</p>
-                    <p>Pecas artesanais de luxo, confeccionadas a mao com materiais nobres e atencao a cada detalhe.</p>
+                    <p>Peças artesanais de luxo, confeccionadas a mao com materiais nobres e atenção a cada detalhe.</p>
                     <div class="social-links">
                         <a href="https://www.instagram.com/primaarte2025/" target="_blank" aria-label="Instagram">
                             <i class="fab fa-instagram"></i>
@@ -128,8 +128,8 @@
                 <div class="footer-section">
                     <h4>NAVEGACAO</h4>
                     <ul class="footer-links">
-                        <li><a href="{{ url_for('index') }}">Inicio</a></li>
-                        <li><a href="{{ url_for('products') }}">Colecao</a></li>
+                        <li><a href="{{ url_for('index') }}">Início</a></li>
+                        <li><a href="{{ url_for('products') }}">Coleção</a></li>
                         <li><a href="{{ url_for('about') }}">Sobre</a></li>
                         {% if current_customer %}
                         <li><a href="{{ url_for('customer_profile') }}">Minha Conta</a></li>

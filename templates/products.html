@@ -4,16 +4,16 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/products.css') }}">
 {% endblock %}
 
-{% block title %}Colecao - Val's{% endblock %}
+{% block title %}Coleção - Val's{% endblock %}
 
 {% block content %}
 <section class="section">
     <div class="container">
         <div class="section-header">
-            <span class="section-label" style="display: block; font-size: 0.7rem; font-weight: 500; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.8rem;">Colecao Exclusiva</span>
-            <h1 class="section-title">Nossa Colecao</h1>
+            <span class="section-label" style="display: block; font-size: 0.7rem; font-weight: 500; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.8rem;">Coleção Exclusiva</span>
+            <h1 class="section-title">Nossa Coleção</h1>
             <div style="width: 60px; height: 1px; background: var(--gold); margin: 1rem auto 0;"></div>
-            <p class="section-subtitle">Pecas artesanais de luxo, feitas a mao com dedicacao</p>
+            <p class="section-subtitle">Peças artesanais de luxo, feitas a mao com dedicação</p>
         </div>
 
         <!-- Filtro por tipo -->
@@ -23,10 +23,10 @@
                     Todos
                 </a>
                 <a href="{{ url_for('products', tipo='unicas') }}" class="filter-btn filter-tipo {% if current_tipo == 'unicas' %}active{% endif %}">
-                    <i class="fas fa-fingerprint"></i> Pecas Unicas
+                    <i class="fas fa-fingerprint"></i> Peças Únicas
                 </a>
                 <a href="{{ url_for('products', tipo='colecao') }}" class="filter-btn filter-tipo {% if current_tipo == 'colecao' %}active{% endif %}">
-                    <i class="fas fa-layer-group"></i> Colecao
+                    <i class="fas fa-layer-group"></i> Coleção
                 </a>
             </div>
         </div>
@@ -66,7 +66,7 @@
 
                 {% if product.is_unique %}
                 <div class="unique-badge">
-                    <i class="fas fa-fingerprint"></i> Peca Unica
+                    <i class="fas fa-fingerprint"></i> Peça Única
                 </div>
                 {% endif %}
 
@@ -119,7 +119,7 @@
                 {% if current_category %}
                 Explore outras categorias ou entre em contato conosco.
                 {% else %}
-                Em breve teremos pecas exclusivas aqui.
+                Em breve teremos peças exclusivas aqui.
                 {% endif %}
             </p>
             <div style="display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; margin-top: 2rem;">
