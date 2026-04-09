@@ -18,6 +18,7 @@ import hashlib
 import math
 import random
 import string
+import time
 from datetime import datetime, timedelta
 import uuid
 from werkzeug.utils import secure_filename
@@ -807,11 +808,35 @@ def checkout_process():
         )
 
         if pay_status in (200, 201):
-            order['asaas_payment_id'] = pay_result.get('id')
+            payment_id = pay_result.get('id')
+            order['asaas_payment_id'] = payment_id
             order['payment_status'] = pay_result.get('status', 'PENDING')
 
+            # Fetch PIX QR code immediately after creating payment
+            if billing_type == 'PIX' and payment_id:
+                time.sleep(1)  # Small delay for Asaas to generate QR code
+                pix_result, pix_status = asaas.get_pix_qrcode(payment_id)
+                if pix_status == 200 and pix_result.get('encodedImage'):
+                    order['pix_data'] = {
+                        'encodedImage': pix_result.get('encodedImage', ''),
+                        'payload': pix_result.get('payload', ''),
+                        'expirationDate': pix_result.get('expirationDate', '')
+                    }
+
+            # Fetch boleto data immediately after creating payment
+            elif billing_type == 'BOLETO' and payment_id:
+                time.sleep(1)  # Small delay for Asaas to generate boleto
+                boleto_result, boleto_status = asaas.get_boleto_url(payment_id)
+                if boleto_status == 200:
+                    order['boleto_data'] = {
+                        'identificationField': boleto_result.get('identificationField', ''),
+                        'nossoNumero': boleto_result.get('nossoNumero', ''),
+                        'barCode': boleto_result.get('barCode', ''),
+                        'bankSlipUrl': pay_result.get('bankSlipUrl', '') or boleto_result.get('bankSlipUrl', '')
+                    }
+
             # Handle credit card immediate payment
-            if billing_type == 'CREDIT_CARD':
+            elif billing_type == 'CREDIT_CARD' and payment_id:
                 card_data = {
                     'holderName': request.form.get('card_holder_name', ''),
                     'number': request.form.get('card_number', '').replace(' ', ''),
@@ -828,7 +853,7 @@ def checkout_process():
                     'addressNumber': request.form.get('address_number', '')
                 }
                 cc_result, cc_status = asaas.pay_with_credit_card(
-                    pay_result['id'], card_data, holder_info
+                    payment_id, card_data, holder_info
                 )
                 if cc_status in (200, 201):
                     order['payment_status'] = cc_result.get('status', 'CONFIRMED')
@@ -858,19 +883,40 @@ def order_confirmation(order_id):
         flash('Pedido não encontrado.', 'error')
         return redirect(url_for('index'))
 
-    # Get PIX QR Code if applicable
-    pix_data = None
-    boleto_data = None
+    # Get PIX / Boleto data - use saved data first, re-fetch from API as fallback
+    pix_data = order.get('pix_data')
+    boleto_data = order.get('boleto_data')
 
     if order.get('asaas_payment_id'):
-        if order['payment_method'] == 'PIX':
+        if order['payment_method'] == 'PIX' and not pix_data:
             result, status = asaas.get_pix_qrcode(order['asaas_payment_id'])
-            if status == 200:
+            if status == 200 and result.get('encodedImage'):
                 pix_data = result
-        elif order['payment_method'] == 'BOLETO':
+                # Save for future page loads
+                order['pix_data'] = {
+                    'encodedImage': result.get('encodedImage', ''),
+                    'payload': result.get('payload', ''),
+                    'expirationDate': result.get('expirationDate', '')
+                }
+                save_item('orders', order['id'], order)
+
+        elif order['payment_method'] == 'BOLETO' and not boleto_data:
             result, status = asaas.get_boleto_url(order['asaas_payment_id'])
             if status == 200:
                 boleto_data = result
+                # Also get bankSlipUrl from payment object
+                pay_result, pay_status = asaas.get_payment(order['asaas_payment_id'])
+                bank_slip_url = ''
+                if pay_status == 200:
+                    bank_slip_url = pay_result.get('bankSlipUrl', '')
+                order['boleto_data'] = {
+                    'identificationField': result.get('identificationField', ''),
+                    'nossoNumero': result.get('nossoNumero', ''),
+                    'barCode': result.get('barCode', ''),
+                    'bankSlipUrl': bank_slip_url or result.get('bankSlipUrl', '')
+                }
+                boleto_data = order['boleto_data']
+                save_item('orders', order['id'], order)
 
     return render_template('order_confirmation.html',
                            order=order,

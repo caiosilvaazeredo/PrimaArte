@@ -2,6 +2,139 @@
 
 {% block page_css %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/customer.css') }}">
+<style>
+    .confirmation-section { padding: 3rem 0; }
+    .confirmation-card {
+        max-width: 700px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 15px;
+        padding: 3rem 2rem;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        text-align: center;
+    }
+    .confirmation-icon { font-size: 4rem; color: #4CAF50; margin-bottom: 1rem; }
+    .confirmation-card h2 { color: var(--navy, #1B2A4A); margin-bottom: 0.5rem; }
+
+    /* Payment sections */
+    .payment-info {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 2rem;
+        margin: 2rem 0;
+        text-align: center;
+        border: 2px solid #e9ecef;
+    }
+    .payment-info h3 { color: var(--navy, #1B2A4A); margin-bottom: 1.5rem; font-size: 1.2rem; }
+
+    /* PIX */
+    .pix-info { border-color: #00b894; background: #f0faf7; }
+    .pix-qr { margin: 1.5rem 0; }
+    .pix-qr img { max-width: 250px; border-radius: 10px; border: 3px solid #00b894; padding: 8px; background: white; }
+    .pix-copy { margin-top: 1.5rem; text-align: left; }
+    .pix-copy label { display: block; font-weight: 600; margin-bottom: 0.5rem; color: #333; font-size: 0.9rem; }
+    .pix-expiration { margin-top: 1rem; font-size: 0.85rem; color: #666; }
+    .pix-expiration i { color: #f39c12; margin-right: 0.3rem; }
+
+    /* Boleto */
+    .boleto-info { border-color: #6c5ce7; background: #f5f3ff; }
+    .boleto-code { margin-bottom: 1.5rem; text-align: left; }
+    .boleto-code label { display: block; font-weight: 600; margin-bottom: 0.5rem; color: #333; font-size: 0.9rem; }
+
+    /* Card */
+    .card-info { border-color: #0984e3; background: #f0f7ff; }
+
+    /* Copy field */
+    .copy-field {
+        display: flex;
+        gap: 0;
+        border-radius: 8px;
+        overflow: hidden;
+        border: 2px solid #ddd;
+    }
+    .copy-field input {
+        flex: 1;
+        padding: 0.8rem 1rem;
+        border: none;
+        font-size: 0.85rem;
+        font-family: monospace;
+        background: white;
+        color: #333;
+    }
+    .btn-copy {
+        padding: 0.8rem 1.5rem;
+        background: var(--navy, #1B2A4A);
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.85rem;
+        white-space: nowrap;
+        transition: background 0.2s;
+    }
+    .btn-copy:hover { background: #2d3e63; }
+
+    /* Order summary */
+    .order-summary-confirm {
+        text-align: left;
+        margin: 2rem 0;
+        padding: 1.5rem;
+        background: #f8f9fa;
+        border-radius: 10px;
+    }
+    .order-summary-confirm h3 { margin-bottom: 1rem; color: var(--navy, #1B2A4A); }
+    .summary-item { display: flex; justify-content: space-between; padding: 0.5rem 0; }
+    .summary-divider { border-top: 1px solid #ddd; margin: 0.8rem 0; }
+    .summary-total { display: flex; justify-content: space-between; font-weight: 700; font-size: 1.1rem; color: var(--navy, #1B2A4A); }
+    .summary-row { display: flex; justify-content: space-between; padding: 0.3rem 0; color: #666; font-size: 0.9rem; }
+    .summary-row.discount { color: #4CAF50; }
+
+    /* Actions */
+    .confirmation-actions { display: flex; gap: 1rem; justify-content: center; margin-top: 2rem; flex-wrap: wrap; }
+    .btn-primary-large, .btn-secondary-large {
+        padding: 1rem 2rem;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.95rem;
+        transition: all 0.2s;
+    }
+    .btn-primary-large { background: var(--navy, #1B2A4A); color: white; }
+    .btn-primary-large:hover { background: #2d3e63; }
+    .btn-secondary-large { background: #f0f0f0; color: #333; }
+    .btn-secondary-large:hover { background: #e0e0e0; }
+
+    /* Pending / waiting status */
+    .payment-waiting {
+        background: #fff3cd;
+        border: 2px solid #ffc107;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin: 1.5rem 0;
+    }
+    .payment-waiting i { color: #f39c12; margin-right: 0.5rem; }
+    .payment-confirmed {
+        background: #d4edda;
+        border: 2px solid #28a745;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin: 1.5rem 0;
+    }
+    .payment-confirmed i { color: #28a745; margin-right: 0.5rem; }
+
+    .btn-boleto-open {
+        display: inline-block;
+        padding: 1rem 2rem;
+        background: #6c5ce7;
+        color: white;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        margin-top: 1rem;
+        transition: all 0.2s;
+    }
+    .btn-boleto-open:hover { background: #5a4bd1; }
+</style>
 {% endblock %}
 
 {% block title %}Pedido Confirmado - Val's{% endblock %}
@@ -23,57 +156,138 @@
             <h2>Pedido Realizado com Sucesso!</h2>
             <p>Seu pedido <strong>{{ order.order_number }}</strong> foi registrado.</p>
 
-            {% if order.payment_method == 'PIX' and pix_data %}
-            <div class="payment-info pix-info">
-                <h3><i class="fas fa-qrcode"></i> Pagamento via PIX</h3>
-                {% if pix_data.get('encodedImage') %}
-                <div class="pix-qr">
-                    <img src="data:image/png;base64,{{ pix_data.encodedImage }}" alt="QR Code PIX">
-                </div>
-                {% endif %}
-                {% if pix_data.get('payload') %}
-                <div class="pix-copy">
-                    <label>Código PIX Copia e Cola:</label>
-                    <div class="copy-field">
-                        <input type="text" value="{{ pix_data.payload }}" id="pix-code" readonly>
-                        <button onclick="navigator.clipboard.writeText(document.getElementById('pix-code').value); this.textContent='Copiado!'" class="btn-copy">Copiar</button>
-                    </div>
-                </div>
-                {% endif %}
-            </div>
-            {% elif order.payment_method == 'BOLETO' and boleto_data %}
-            <div class="payment-info boleto-info">
-                <h3><i class="fas fa-barcode"></i> Pagamento via Boleto</h3>
-                {% if boleto_data.get('identificationField') %}
-                <div class="boleto-code">
-                    <label>Linha Digitavel:</label>
-                    <div class="copy-field">
-                        <input type="text" value="{{ boleto_data.identificationField }}" id="boleto-code" readonly>
-                        <button onclick="navigator.clipboard.writeText(document.getElementById('boleto-code').value); this.textContent='Copiado!'" class="btn-copy">Copiar</button>
-                    </div>
-                </div>
-                {% endif %}
-                {% if boleto_data.get('bankSlipUrl') %}
-                <a href="{{ boleto_data.bankSlipUrl }}" target="_blank" class="btn-primary-large">
-                    <i class="fas fa-download"></i> Abrir Boleto
-                </a>
-                {% endif %}
-            </div>
-            {% elif order.payment_method == 'CREDIT_CARD' %}
-            <div class="payment-info card-info">
-                <h3><i class="fas fa-credit-card"></i> Pagamento via Cartao</h3>
-                <p>Seu pagamento esta sendo processado. Você recebera a confirmacao em breve.</p>
+            {% if order.payment_status in ('CONFIRMED', 'RECEIVED', 'RECEIVED_IN_CASH') %}
+            <div class="payment-confirmed">
+                <i class="fas fa-check-circle"></i>
+                <strong>Pagamento confirmado!</strong>
             </div>
             {% endif %}
 
+            {# ===== PIX ===== #}
+            {% if order.payment_method == 'PIX' %}
+            <div class="payment-info pix-info">
+                <h3><i class="fas fa-qrcode"></i> Pagamento via PIX</h3>
+
+                {% if pix_data %}
+                    {% if pix_data.encodedImage or pix_data.get('encodedImage') %}
+                    <div class="pix-qr">
+                        <img src="data:image/png;base64,{{ pix_data.encodedImage or pix_data.get('encodedImage', '') }}" alt="QR Code PIX">
+                    </div>
+                    {% endif %}
+
+                    {% if pix_data.payload or pix_data.get('payload') %}
+                    <div class="pix-copy">
+                        <label><i class="fas fa-copy"></i> Código PIX Copia e Cola:</label>
+                        <div class="copy-field">
+                            <input type="text" value="{{ pix_data.payload or pix_data.get('payload', '') }}" id="pix-code" readonly>
+                            <button onclick="copyToClipboard('pix-code', this)" class="btn-copy">
+                                <i class="fas fa-copy"></i> Copiar
+                            </button>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if pix_data.expirationDate or pix_data.get('expirationDate') %}
+                    <div class="pix-expiration">
+                        <i class="fas fa-clock"></i> Validade: {{ pix_data.expirationDate or pix_data.get('expirationDate', '') }}
+                    </div>
+                    {% endif %}
+
+                {% elif order.payment_status == 'PENDING' %}
+                    <div class="payment-waiting">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <strong>Gerando QR Code PIX...</strong>
+                        <p style="margin: 0.5rem 0 0;">Aguarde um momento. A página será atualizada automaticamente.</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            {# ===== BOLETO ===== #}
+            {% elif order.payment_method == 'BOLETO' %}
+            <div class="payment-info boleto-info">
+                <h3><i class="fas fa-barcode"></i> Pagamento via Boleto Bancário</h3>
+
+                {% if boleto_data %}
+                    {% set id_field = boleto_data.identificationField or boleto_data.get('identificationField', '') %}
+                    {% if id_field %}
+                    <div class="boleto-code">
+                        <label><i class="fas fa-barcode"></i> Linha Digitável:</label>
+                        <div class="copy-field">
+                            <input type="text" value="{{ id_field }}" id="boleto-code" readonly>
+                            <button onclick="copyToClipboard('boleto-code', this)" class="btn-copy">
+                                <i class="fas fa-copy"></i> Copiar
+                            </button>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% set slip_url = boleto_data.bankSlipUrl or boleto_data.get('bankSlipUrl', '') %}
+                    {% if slip_url %}
+                    <a href="{{ slip_url }}" target="_blank" class="btn-boleto-open">
+                        <i class="fas fa-external-link-alt"></i> Abrir Boleto para Impressão
+                    </a>
+                    {% endif %}
+
+                {% elif order.payment_status == 'PENDING' %}
+                    <div class="payment-waiting">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <strong>Gerando boleto...</strong>
+                        <p style="margin: 0.5rem 0 0;">Aguarde um momento. A página será atualizada automaticamente.</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            {# ===== CARTAO DE CREDITO ===== #}
+            {% elif order.payment_method == 'CREDIT_CARD' %}
+            <div class="payment-info card-info">
+                <h3><i class="fas fa-credit-card"></i> Pagamento via Cartão de Crédito</h3>
+                {% if order.payment_status in ('CONFIRMED', 'RECEIVED') %}
+                <p><i class="fas fa-check" style="color: #4CAF50;"></i> Pagamento aprovado!</p>
+                {% else %}
+                <p>Seu pagamento está sendo processado. Você receberá a confirmação em breve.</p>
+                {% endif %}
+            </div>
+
+            {# ===== CARTAO DE DEBITO ===== #}
+            {% elif order.payment_method == 'DEBIT_CARD' %}
+            <div class="payment-info card-info">
+                <h3><i class="fas fa-credit-card"></i> Pagamento via Cartão de Débito</h3>
+                {% if order.payment_status in ('CONFIRMED', 'RECEIVED') %}
+                <p><i class="fas fa-check" style="color: #4CAF50;"></i> Pagamento aprovado!</p>
+                {% else %}
+                <p>Seu pagamento está sendo processado. Você receberá a confirmação em breve.</p>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            {# ===== RESUMO DO PEDIDO ===== #}
             <div class="order-summary-confirm">
-                <h3>Resumo</h3>
+                <h3>Resumo do Pedido</h3>
                 {% for item in order['items'] %}
                 <div class="summary-item">
                     <span>{{ item.name }} x{{ item.quantity }}</span>
                     <span>R$ {{ "%.2f"|format(item.subtotal) }}</span>
                 </div>
                 {% endfor %}
+                <div class="summary-divider"></div>
+                {% if order.subtotal and order.subtotal != order.total %}
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <span>R$ {{ "%.2f"|format(order.subtotal) }}</span>
+                </div>
+                {% endif %}
+                {% if order.shipping_cost %}
+                <div class="summary-row">
+                    <span>Frete ({{ order.shipping_method }})</span>
+                    <span>R$ {{ "%.2f"|format(order.shipping_cost) }}</span>
+                </div>
+                {% endif %}
+                {% if order.discount_amount %}
+                <div class="summary-row discount">
+                    <span>Desconto {{ order.discount_label }}</span>
+                    <span>- R$ {{ "%.2f"|format(order.discount_amount) }}</span>
+                </div>
+                {% endif %}
                 <div class="summary-divider"></div>
                 <div class="summary-total">
                     <span>Total</span>
@@ -83,20 +297,43 @@
 
             <div class="confirmation-actions">
                 {% if current_customer %}
-                <a href="{{ url_for('customer_orders') }}" class="btn-primary-large">Ver Meus Pedidos</a>
+                <a href="{{ url_for('customer_orders') }}" class="btn-primary-large">
+                    <i class="fas fa-list"></i> Ver Meus Pedidos
+                </a>
                 {% endif %}
-                <a href="{{ url_for('products') }}" class="btn-secondary-large">Continuar Comprando</a>
+                <a href="{{ url_for('products') }}" class="btn-secondary-large">
+                    <i class="fas fa-shopping-bag"></i> Continuar Comprando
+                </a>
             </div>
         </div>
     </div>
 </section>
 
-{% if order.payment_method == 'PIX' and order.payment_status == 'PENDING' %}
 <script>
-// Poll for payment confirmation
+function copyToClipboard(inputId, btn) {
+    const input = document.getElementById(inputId);
+    if (input) {
+        navigator.clipboard.writeText(input.value).then(() => {
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check"></i> Copiado!';
+            btn.style.background = '#4CAF50';
+            setTimeout(() => {
+                btn.innerHTML = originalHTML;
+                btn.style.background = '';
+            }, 2000);
+        }).catch(() => {
+            input.select();
+            document.execCommand('copy');
+            btn.textContent = 'Copiado!';
+        });
+    }
+}
+
+{% if order.payment_method in ('PIX', 'BOLETO') and order.payment_status == 'PENDING' %}
+// Auto-refresh to check for payment data and status
 const orderId = "{{ order.id }}";
 let pollCount = 0;
-const maxPolls = 60;
+const maxPolls = 120;
 
 function checkPayment() {
     if (pollCount >= maxPolls) return;
@@ -107,6 +344,13 @@ function checkPayment() {
         .then(data => {
             if (data.payment_status === 'CONFIRMED' || data.payment_status === 'RECEIVED') {
                 location.reload();
+            } else if (pollCount <= 3) {
+                // First few polls: reload page to pick up PIX/boleto data that may have been generated
+                {% if not pix_data and not boleto_data %}
+                location.reload();
+                {% else %}
+                setTimeout(checkPayment, 5000);
+                {% endif %}
             } else {
                 setTimeout(checkPayment, 5000);
             }
@@ -114,7 +358,7 @@ function checkPayment() {
         .catch(() => setTimeout(checkPayment, 10000));
 }
 
-setTimeout(checkPayment, 5000);
-</script>
+setTimeout(checkPayment, 3000);
 {% endif %}
+</script>
 {% endblock %}
